@@ -1,4 +1,4 @@
-package hello;
+package com.andreasogeirik.model;
 
 import java.io.Serializable;
 

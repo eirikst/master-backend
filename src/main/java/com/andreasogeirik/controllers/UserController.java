@@ -1,21 +1,25 @@
-package hello;
+package com.andreasogeirik.controllers;
 
-import java.util.concurrent.atomic.AtomicLong;
-
+import com.andreasogeirik.model.AppUser;
+import com.andreasogeirik.model.Greeting;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 @RestController
-public class GreetingController {
+@RequestMapping("/user")
+public class UserController {
 
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
-    @RequestMapping("/greeting")
+    @RequestMapping(method = RequestMethod.GET)
     public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
         return new Greeting(1L, "tester543");
     }
