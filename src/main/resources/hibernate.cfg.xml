@@ -19,7 +19,7 @@
         <property name="show_sql">true</property>
 
         <!-- Drop and re-create all database on startup -->
-        <property name="hibernate.hbm2ddl.auto">create-drop</property>
+        <property name="hibernate.hbm2ddl.auto"> create-drop</property>
 
         <!--c3p0 config-->
         <property name="hibernate.c3p0.min_size">5</property>
@@ -31,6 +31,13 @@
         <!-- Annotated entity classes -->
         <mapping class="com.andreasogeirik.model.User"/>
         <mapping class="com.andreasogeirik.model.UserRole"/>
+        <mapping class="com.andreasogeirik.model.Comment"/>
+        <mapping class="com.andreasogeirik.model.Post"/>
+        <mapping class="com.andreasogeirik.model.Event"/>
+        <mapping class="com.andreasogeirik.model.Friendship"/>
+        <mapping class="com.andreasogeirik.model.Likes"/>
+        <mapping class="com.andreasogeirik.model.PostLikes"/>
+        <mapping class="com.andreasogeirik.model.CommentLikes"/>
 
     </session-factory>
 </hibernate-configuration>

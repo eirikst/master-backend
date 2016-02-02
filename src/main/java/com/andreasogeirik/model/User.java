@@ -1,7 +1,6 @@
 package com.andreasogeirik.model;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import javax.persistence.*;
 
 /**
@@ -12,30 +11,35 @@ import javax.persistence.*;
 public class User {
 
     private int id;
-    private String username;
     private String password;
     private String email;
     private boolean enabled;
+    private String firstname;
+    private String lastname;
+    private String location;
+    private String imageUri;
+    private Date timeCreated;
     private Set<UserRole> userRole = new HashSet<UserRole>(0);
+    private Set<Post> posts = new HashSet<Post>(0);
+    private Set<Comment> comments = new HashSet<Comment>(0);
+    private Set<Event> events = new HashSet<Event>(0);
+    private Set<Friendship> friends = new HashSet<Friendship>(0);
+    private Set<Likes> likes = new HashSet<Likes>(0);
 
     public User() {
     }
 
-    public User(String username, String password, String email, boolean enabled) {
-        this.username = username;
+    public User(String email, String password, boolean enabled, String firstname, String lastname,
+                String location, Date timeCreated) {
         this.password = password;
         this.email = email;
         this.enabled = enabled;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.location = location;
+        this.timeCreated = timeCreated;
     }
 
-    public User(String username, String password, String email,
-                boolean enabled, Set<UserRole> userRole) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.enabled = enabled;
-        this.userRole = userRole;
-    }
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -49,14 +53,14 @@ public class User {
         this.id = id;
     }
 
-    @Column(name = "username", unique = true,
-            nullable = false, length = 45)
-    public String getUsername() {
-        return this.username;
+    @Column(name = "email", unique = true,
+            nullable = false, length = 60)
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Column(name = "password",
@@ -69,16 +73,6 @@ public class User {
         this.password = password;
     }
 
-    @Column(name = "email", unique = true,
-            nullable = false, length = 60)
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     @Column(name = "enabled", nullable = false)
     public boolean isEnabled() {
         return this.enabled;
@@ -86,6 +80,46 @@ public class User {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
+    }
+
+    public Date getTimeCreated() {
+        return timeCreated;
+    }
+
+    public void setTimeCreated(Date timeCreated) {
+        this.timeCreated = timeCreated;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
@@ -97,4 +131,48 @@ public class User {
         this.userRole = userRole;
     }
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    public Set<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(Set<Post> posts) {
+        this.posts = posts;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "friend1")
+    public Set<Friendship> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(Set<Friendship> friends) {
+        this.friends = friends;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    public Set<Likes> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Set<Likes> likes) {
+        this.likes = likes;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    public Set<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Set<Event> events) {
+        this.events = events;
+    }
 }

@@ -1,7 +1,6 @@
 package com.andreasogeirik.beans;
 
-import com.andreasogeirik.service.dao.UserDao;
-import com.andreasogeirik.service.dao.UserDaoImpl;
+import com.andreasogeirik.service.dao.*;
 import com.andreasogeirik.tools.InputManager;
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +18,16 @@ public class BeanConfig {
     @Bean
     public UserDao userDao() {
         return new UserDaoImpl();
+    }
+
+    @Bean
+    public PostDao postDao() {
+        return new PostDaoImpl();
+    }
+
+    @Bean
+    public EventDao eventDao() {
+        return new EventDaoImpl();
     }
 
     @Bean

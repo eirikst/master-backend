@@ -26,8 +26,8 @@ public class HibernateUserDetailsService implements UserDetailsService {
      * Retrieves the specified user from dao object and creates a UserDetails object(needed for http authentication)
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userDao.findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userDao.findByEmail(email);
         if(user != null) {
             return buildUser(user);
         }
@@ -50,7 +50,7 @@ public class HibernateUserDetailsService implements UserDetailsService {
                 authorities.add(new SimpleGrantedAuthority(((UserRole) it.next()).getRole()));
             }
         }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
                 user.isEnabled(), true, true, true, authorities);
     }
 }

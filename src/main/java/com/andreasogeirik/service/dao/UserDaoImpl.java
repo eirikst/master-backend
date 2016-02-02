@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.ConstraintViolationException;
+import java.util.Date;
 
 /**
  * Created by eirikstadheim on 29/01/16.
@@ -37,44 +37,47 @@ public class UserDaoImpl implements UserDao {
      * Creates new user with role USER
      */
     @Override
-    public int newUser(String username, String password, String email) {
-        return newUser(username, password, email, ROLE_USER);
+    public int newUser(String email, String password, String firstname, String lastname, String location) {
+        return newUser(email, password, firstname, lastname, location, ROLE_USER);
     }
 
     /*
    * Creates new user with role ADMIN
    */
     @Override
-    public int newAdminUser(String username, String password, String email) {
-        return newUser(username, password, email, ROLE_ADMIN);
+    public int newAdminUser(String email, String password, String firstname, String lastname, String location) {
+        return newUser(email, password, firstname, lastname, location, ROLE_ADMIN);
     }
 
     /*
      * Creates a new user in the DB, with given username, password, email and role
      */
-    private int newUser(String username, String password, String email, int role) {
-        if(!inputManager.isValidUsername(username)) {
-            return INVALID_USERNAME;
+    private int newUser(String email, String password, String firstname, String lastname, String location, int role) {
+        if(!inputManager.isValidEmail(email)) {
+            return INVALID_EMAIL;
         }
         if(!inputManager.isValidPassword(password)) {
             return INVALID_PASSWORD;
         }
-        if(!inputManager.isValidEmail(email)) {
-            return INVALID_EMAIL;
+        if(!inputManager.isValidName(firstname)) {
+            return INVALID_FIRSTNAME;
+        }
+        if(!inputManager.isValidName(lastname)) {
+            return INVALID_LASTNAME;
+        }
+        if(!inputManager.isValidLocation(location)) {
+            return INVALID_LOCATION;
         }
 
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
         //These are called here to include them in the transaction that adds the new user, to avoid duplication
-        if(usernameExists(username, session)) {
-            return USERNAME_EXISTS;
-        }
         if(emailExists(email, session)) {
             return EMAIL_EXISTS;
         }
 
-        User user = new User(username, passwordEncoder.encode(password), email, true);//true for enabled user
+        User user = new User(email, passwordEncoder.encode(password), true, firstname, lastname, location, new Date());//true for enabled user
 
         session.save(user);
 
@@ -119,7 +122,7 @@ public class UserDaoImpl implements UserDao {
      * Checks if a user with given username exists
      */
     private boolean usernameExists(String username) {
-        return findByUsername(username) != null;
+        return findByEmail(username) != null;
     }
 
     /*
@@ -127,11 +130,11 @@ public class UserDaoImpl implements UserDao {
      */
     @Transactional(readOnly = true)
     @Override
-    public User findByUsername(String username) {
+    public User findByEmail(String email) {
         Session session = sessionFactory.openSession();
 
         Criteria criteria = session.createCriteria(User.class);
-        User user = (User)criteria.add(Restrictions.eq("username", username))
+        User user = (User)criteria.add(Restrictions.eq("email", email))
                 .uniqueResult();
         if(user != null) {
             Hibernate.initialize(user.getUserRole());
@@ -141,4 +144,22 @@ public class UserDaoImpl implements UserDao {
 
         return user;
     }
+
+    /*
+ * Finds a User entity based on id
+ */
+    @Transactional(readOnly = true)
+    @Override
+    public User findById(int id) {
+        Session session = sessionFactory.openSession();
+
+        Criteria criteria = session.createCriteria(User.class);
+        User user = (User)criteria.add(Restrictions.eq("id", id))
+                .uniqueResult();
+
+        session.close();
+
+        return user;
+    }
+
 }

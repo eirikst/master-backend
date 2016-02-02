@@ -43,7 +43,6 @@ public class UserRole{
     public void setUserRoleId(Integer userRoleId) {
         this.userRoleId = userRoleId;
     }
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     public User getUser() {
