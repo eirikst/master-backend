@@ -1,9 +1,10 @@
 package com.andreasogeirik.service.dao;
 
-import com.andreasogeirik.model.Comment;
-import com.andreasogeirik.model.Post;
-import com.andreasogeirik.model.User;
+import com.andreasogeirik.model.*;
+import com.andreasogeirik.service.dao.interfaces.PostDao;
+import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.tools.InputManager;
+import com.andreasogeirik.tools.Codes;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -26,18 +27,17 @@ public class PostDaoImpl implements PostDao {
     private InputManager inputManager;
 
     @Autowired
-    private UserDao userDao;
+    private UserDao userDao;//trenger den denne da? fjerne de
 
     @Override
-    public int newPost(String message, String imageUri, int userId) {
+    public int newUserPost(String message, String imageUri, int userId) {
         User user = userDao.findById(userId);//denne inni transaction??
 
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        Post post = new Post(message, new Date(), imageUri, user);
+        UserPost post = new UserPost(message, new Date(), imageUri, user);
 
-        System.out.println(post);
         session.save(post);
 
         session.getTransaction().commit();
@@ -49,12 +49,12 @@ public class PostDaoImpl implements PostDao {
     @Override
     public int comment(String message, int postId, int userId) {
         User user = userDao.findById(userId);//denne inni transaction??
-        Post post = findById(postId);//denne inni transaction??
+        UserPost post = findById(postId);//denne inni transaction??
 
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        Comment comment = new Comment(message, new Date(), user, post);
+        UserPostComment comment = new UserPostComment(message, new Date(), user, post);
 
         session.save(comment);
 
@@ -65,15 +65,15 @@ public class PostDaoImpl implements PostDao {
     }
 
     /*
-    * Finds a Post entity based on id
+    * Finds a UserPost entity based on id
     */
     @Transactional(readOnly = true)
     @Override
-    public Post findById(int id) {
+    public UserPost findById(int id) {
         Session session = sessionFactory.openSession();
 
-        Criteria criteria = session.createCriteria(Post.class);
-        Post post = (Post)criteria.add(Restrictions.eq("id", id))
+        Criteria criteria = session.createCriteria(UserPost.class);
+        UserPost post = (UserPost)criteria.add(Restrictions.eq("id", id))
                 .uniqueResult();
 
         session.close();
@@ -81,4 +81,31 @@ public class PostDaoImpl implements PostDao {
         return post;
     }
 
+    @Override
+    public int likePost(int postId, int userId) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        UserPost post = session.get(UserPost.class, postId);
+
+        User user = session.get(User.class, userId);
+
+        if(post != null) {
+            if(user != null) {
+                UserPostLike like = new UserPostLike(user, post);
+                session.save(like);
+            }
+            else {
+                return Codes.USER_NOT_FOUND;
+            }
+        }
+        else {
+            return Codes.POST_NOT_FOUND;
+        }
+
+        session.getTransaction().commit();
+        session.close();
+
+        return Codes.OK;
+    }
 }

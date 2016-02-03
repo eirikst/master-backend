@@ -9,20 +9,20 @@ import java.util.Set;
  * Created by eirikstadheim on 01/02/16.
  */
 @Entity
-@Table(name = "comments")
-public class Comment {
+@Table(name = "user_post_comments")
+public class UserPostComment {
 
     private int id;
     private String message;
     private Date timeCreated;
     private User user;
-    private Post post;
-    private Set<CommentLikes> likes = new HashSet<CommentLikes>(0);
+    private UserPost post;
+    private Set<EventCommentLike> likes = new HashSet<EventCommentLike>(0);
 
-    public Comment() {
+    public UserPostComment() {
     }
 
-    public Comment(String message, Date timeCreated, User user, Post post) {
+    public UserPostComment(String message, Date timeCreated, User user, UserPost post) {
         this.message = message;
         this.timeCreated = timeCreated;
         this.user = user;
@@ -40,6 +40,7 @@ public class Comment {
         this.id = id;
     }
 
+    @Column(nullable = false)
     public String getMessage() {
         return message;
     }
@@ -48,6 +49,7 @@ public class Comment {
         this.message = message;
     }
 
+    @Column(nullable = false)
     public Date getTimeCreated() {
         return timeCreated;
     }
@@ -68,20 +70,20 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
-    public Post getPost() {
+    public UserPost getPost() {
         return post;
     }
 
-    public void setPost(Post post) {
+    public void setPost(UserPost post) {
         this.post = post;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment")
-    public Set<CommentLikes> getLikes() {
+    public Set<EventCommentLike> getLikes() {
         return likes;
     }
 
-    public void setLikes(Set<CommentLikes> likes) {
+    public void setLikes(Set<EventCommentLike> likes) {
         this.likes = likes;
     }
 }

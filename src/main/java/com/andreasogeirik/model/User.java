@@ -20,11 +20,12 @@ public class User {
     private String imageUri;
     private Date timeCreated;
     private Set<UserRole> userRole = new HashSet<UserRole>(0);
-    private Set<Post> posts = new HashSet<Post>(0);
-    private Set<Comment> comments = new HashSet<Comment>(0);
+    private Set<UserPost> posts = new HashSet<UserPost>(0);
+    private Set<UserPostComment> comments = new HashSet<UserPostComment>(0);
     private Set<Event> events = new HashSet<Event>(0);
     private Set<Friendship> friends = new HashSet<Friendship>(0);
-    private Set<Likes> likes = new HashSet<Likes>(0);
+    private Set<UserPostLike> userPostLikes = new HashSet<UserPostLike>(0);
+    private Set<EventCommentLike> eventCommentLikes = new HashSet<EventCommentLike>(0);
 
     public User() {
     }
@@ -82,6 +83,7 @@ public class User {
         this.enabled = enabled;
     }
 
+    @Column(length = 60, nullable = false)
     public String getFirstname() {
         return firstname;
     }
@@ -90,6 +92,7 @@ public class User {
         this.firstname = firstname;
     }
 
+    @Column(length = 60, nullable = false)
     public String getLastname() {
         return lastname;
     }
@@ -98,6 +101,7 @@ public class User {
         this.lastname = lastname;
     }
 
+    @Column(length = 100)
     public String getLocation() {
         return location;
     }
@@ -106,6 +110,7 @@ public class User {
         this.location = location;
     }
 
+    @Column(length = 300)
     public String getImageUri() {
         return imageUri;
     }
@@ -114,6 +119,7 @@ public class User {
         this.imageUri = imageUri;
     }
 
+    @Column(nullable = false)
     public Date getTimeCreated() {
         return timeCreated;
     }
@@ -132,20 +138,20 @@ public class User {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    public Set<Post> getPosts() {
+    public Set<UserPost> getPosts() {
         return posts;
     }
 
-    public void setPosts(Set<Post> posts) {
+    public void setPosts(Set<UserPost> posts) {
         this.posts = posts;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    public Set<Comment> getComments() {
+    public Set<UserPostComment> getComments() {
         return comments;
     }
 
-    public void setComments(Set<Comment> comments) {
+    public void setComments(Set<UserPostComment> comments) {
         this.comments = comments;
     }
 
@@ -159,12 +165,21 @@ public class User {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    public Set<Likes> getLikes() {
-        return likes;
+    public Set<UserPostLike> getUserPostLikes() {
+        return userPostLikes;
     }
 
-    public void setLikes(Set<Likes> likes) {
-        this.likes = likes;
+    public void setUserPostLikes(Set<UserPostLike> likes) {
+        this.userPostLikes = likes;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    public Set<EventCommentLike> getEventCommentLikes() {
+        return eventCommentLikes;
+    }
+
+    public void setEventCommentLikes(Set<EventCommentLike> eventCommentLikes) {
+        this.eventCommentLikes = eventCommentLikes;
     }
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

@@ -29,15 +29,22 @@
         <property name="hibernate.c3p0.idle_test_period">3000</property>
 
         <!-- Annotated entity classes -->
-        <mapping class="com.andreasogeirik.model.User"/>
-        <mapping class="com.andreasogeirik.model.UserRole"/>
-        <mapping class="com.andreasogeirik.model.Comment"/>
-        <mapping class="com.andreasogeirik.model.Post"/>
         <mapping class="com.andreasogeirik.model.Event"/>
+        <mapping class="com.andreasogeirik.model.EventCommentLike"/>
+        <mapping class="com.andreasogeirik.model.EventPost"/>
+        <mapping class="com.andreasogeirik.model.EventPostComment"/>
+        <mapping class="com.andreasogeirik.model.EventPostLike"/>
+
         <mapping class="com.andreasogeirik.model.Friendship"/>
-        <mapping class="com.andreasogeirik.model.Likes"/>
-        <mapping class="com.andreasogeirik.model.PostLikes"/>
-        <mapping class="com.andreasogeirik.model.CommentLikes"/>
+
+        <mapping class="com.andreasogeirik.model.User"/>
+        <mapping class="com.andreasogeirik.model.UserCommentLike"/>
+        <mapping class="com.andreasogeirik.model.UserPost"/>
+        <mapping class="com.andreasogeirik.model.UserPostComment"/>
+        <mapping class="com.andreasogeirik.model.UserPostLike"/>
+
+        <mapping class="com.andreasogeirik.model.UserRole"/>
+
 
     </session-factory>
 </hibernate-configuration>

@@ -2,7 +2,7 @@ package com.andreasogeirik.service;
 
 import com.andreasogeirik.model.User;
 import com.andreasogeirik.model.UserRole;
-import com.andreasogeirik.service.dao.UserDao;
+import com.andreasogeirik.service.dao.interfaces.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -1,20 +1,13 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.model.Greeting;
-import com.andreasogeirik.service.dao.EventDao;
-import com.andreasogeirik.service.dao.UserDao;
+import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.tools.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
@@ -32,10 +25,9 @@ public class EventController {
                                               @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam(value="timeStart") Date timeStart,
                                               @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam(value="timeEnd") Date timeEnd,
                                               @RequestParam(value="imageURI") String imageURI,
-                                              @RequestParam(value="adminId") int adminId,
-                                              HttpServletResponse response) throws IOException {
+                                              @RequestParam(value="adminId") int adminId) throws IOException {
 
-        int status = eventDao.newEvent(name, location, description, timeStart, timeEnd, imageURI, adminId);
+        int status = eventDao.createEvent(name, location, description, timeStart, timeEnd, imageURI, adminId);
 
         if(status == EventDao.INVALID_NAME) {
             return new ResponseEntity<Status>(new Status(-1, "Invalid name"), HttpStatus.BAD_REQUEST);
@@ -62,21 +54,7 @@ public class EventController {
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
 
-
-
-
-
-    
-    /*
-     *  Methods for testing purposes
-     */
-    @RequestMapping(method = RequestMethod.GET)
-    public Greeting testGet(@RequestParam(value="name", defaultValue="World") String name) {
-        return new Greeting(1L, "Hei, " + name);
-    }
-
-    @RequestMapping(method = RequestMethod.POST)
-    public Greeting testPost(@RequestParam(value="name", defaultValue="World") String name) {
-        return new Greeting(1L, "Hei, " + name);
-    }
+    @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
+    @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
+    public void constraintViolation() {}
 }

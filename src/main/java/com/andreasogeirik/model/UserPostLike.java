@@ -2,18 +2,24 @@ package com.andreasogeirik.model;
 
 import javax.persistence.*;
 
+;
+
 /**
  * Created by eirikstadheim on 01/02/16.
  */
 @Entity
-@Table(name = "likes")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-public class Likes {
-
+@Table(name = "user_post_likes", uniqueConstraints=@UniqueConstraint(columnNames={"post_id", "user_id"}))
+public class UserPostLike {
     private int id;
     private User user;
+    private UserPost post;
 
-    public Likes() {
+    public UserPostLike() {
+    }
+
+    public UserPostLike(User user, UserPost post) {
+        this.user = user;
+        this.post = post;
     }
 
     @Id
@@ -35,5 +41,15 @@ public class Likes {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
+    public UserPost getPost() {
+        return post;
+    }
+
+    public void setPost(UserPost post) {
+        this.post = post;
     }
 }

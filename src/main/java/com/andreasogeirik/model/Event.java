@@ -22,7 +22,7 @@ public class Event {
     private String imageURI;
     private User admin;
     private Set<User> users = new HashSet<User>(0);
-    private Set<Post> posts = new HashSet<Post>(0);
+    private Set<EventPost> posts = new HashSet<EventPost>(0);
 
     public Event() {
     }
@@ -50,6 +50,7 @@ public class Event {
         this.id = id;
     }
 
+    @Column(nullable = false)
     public String getName() {
         return name;
     }
@@ -58,6 +59,7 @@ public class Event {
         this.name = name;
     }
 
+    @Column(nullable = false)
     public String getLocation() {
         return location;
     }
@@ -66,6 +68,7 @@ public class Event {
         this.location = location;
     }
 
+    @Column(nullable = false)
     public String getDescription() {
         return description;
     }
@@ -74,6 +77,7 @@ public class Event {
         this.description = description;
     }
 
+    @Column(nullable = false)
     public Date getTimeCreated() {
         return timeCreated;
     }
@@ -82,6 +86,7 @@ public class Event {
         this.timeCreated = timeCreated;
     }
 
+    @Column(nullable = false)
     public Date getTimeStart() {
         return timeStart;
     }
@@ -125,11 +130,11 @@ public class Event {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
-    public Set<Post> getPosts() {
+    public Set<EventPost> getPosts() {
         return posts;
     }
 
-    public void setPosts(Set<Post> posts) {
+    public void setPosts(Set<EventPost> posts) {
         this.posts = posts;
     }
 }

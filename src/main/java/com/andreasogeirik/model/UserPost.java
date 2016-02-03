@@ -9,22 +9,21 @@ import java.util.Set;
  * Created by eirikstadheim on 01/02/16.
  */
 @Entity
-@Table(name = "posts")
-public class Post {
-
+@Table(name = "user_posts")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+public class UserPost {
     private int id;
     private String message;
     private Date timeCreated;
     private String imageUri;
     private User user;
-    private Event event;
-    private Set<Comment> comments = new HashSet<Comment>(0);
-    private Set<PostLikes> likes = new HashSet<PostLikes>(0);
+    private Set<UserPostComment> comments = new HashSet<UserPostComment>(0);
+    private Set<UserPostLike> likes = new HashSet<UserPostLike>(0);
 
-    public Post() {
+    public UserPost() {
     }
 
-    public Post(String message, Date timeCreated, String imageUri, User user) {
+    public UserPost(String message, Date timeCreated, String imageUri, User user) {
         this.message = message;
         this.imageUri = imageUri;
         this.timeCreated = timeCreated;
@@ -42,6 +41,7 @@ public class Post {
         this.id = id;
     }
 
+    @Column(nullable = false)
     public String getMessage() {
         return message;
     }
@@ -50,6 +50,7 @@ public class Post {
         this.message = message;
     }
 
+    @Column(nullable = false)
     public Date getTimeCreated() {
         return timeCreated;
     }
@@ -76,31 +77,21 @@ public class Post {
         this.user = user;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false)
-    public Event getEvent() {
-        return event;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
-    public Set<Comment> getComments() {
+    public Set<UserPostComment> getComments() {
         return comments;
     }
 
-    public void setComments(Set<Comment> comments) {
+    public void setComments(Set<UserPostComment> comments) {
         this.comments = comments;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
-    public Set<PostLikes> getLikes() {
+    public Set<UserPostLike> getLikes() {
         return likes;
     }
 
-    public void setLikes(Set<PostLikes> likes) {
+    public void setLikes(Set<UserPostLike> likes) {
         this.likes = likes;
     }
 

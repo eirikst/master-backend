@@ -1,6 +1,9 @@
 package com.andreasogeirik.beans;
 
 import com.andreasogeirik.service.dao.*;
+import com.andreasogeirik.service.dao.interfaces.EventDao;
+import com.andreasogeirik.service.dao.interfaces.PostDao;
+import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.tools.InputManager;
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;

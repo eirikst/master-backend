@@ -1,40 +1,36 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.model.Greeting;
-import com.andreasogeirik.service.dao.PostDao;
-import com.andreasogeirik.service.dao.UserDao;
+import com.andreasogeirik.service.dao.interfaces.PostDao;
 import com.andreasogeirik.tools.Status;
+import com.andreasogeirik.tools.Codes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/post")
-public class PostController {
+@RequestMapping("user/post")
+public class UserPostController {
 
     @Autowired
     private PostDao postDao;
 
-
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<Status> post(@RequestParam(value="message") String message,
                                              @RequestParam(value="imageUri") String imageUri,
-                                             @RequestParam(value="userId") int userId,
-                                             HttpServletResponse response) throws IOException {
+                                             @RequestParam(value="userId") int userId) throws IOException {
 
-        int status = postDao.newPost(message, imageUri, userId);
+        int status = postDao.newUserPost(message, imageUri, userId);
 
-        if(status == PostDao.INVALID_MESSAGE) {
+        if(status == Codes.INVALID_MESSAGE) {
             return new ResponseEntity<Status>(new Status(-1, "Invalid message"), HttpStatus.BAD_REQUEST);
         }
-        if(status == PostDao.INVALID_URI) {
+        if(status == Codes.INVALID_URI) {
             return new ResponseEntity<Status>(new Status(-2, "Invalid URI"), HttpStatus.BAD_REQUEST);
         }
-        if(status == PostDao.USER_NOT_FOUND) {
+        if(status == Codes.USER_NOT_FOUND) {
             return new ResponseEntity<Status>(new Status(-3, "User not found"), HttpStatus.BAD_REQUEST);
         }
 
@@ -44,37 +40,40 @@ public class PostController {
     @RequestMapping(value = "/{postId}/comment", method = RequestMethod.PUT)
     public ResponseEntity<Status> comment(@RequestParam(value="message") String message,
                                           @PathVariable(value="postId") int postId,
-                                            @RequestParam(value="userId") int userId,
-                                             HttpServletResponse response) throws IOException {
+                                          @RequestParam(value="userId") int userId) throws IOException {
 
         int status = postDao.comment(message, postId, userId);
 
-        if(status == PostDao.INVALID_COMMENT_MESSAGE) {
+        if(status == Codes.INVALID_COMMENT_MESSAGE) {
             return new ResponseEntity<Status>(new Status(-1, "Invalid message"), HttpStatus.BAD_REQUEST);
         }
-        if(status == PostDao.POST_NOT_FOUND) {
+        if(status == Codes.POST_NOT_FOUND) {
             return new ResponseEntity<Status>(new Status(-2, "Post not found"), HttpStatus.BAD_REQUEST);
         }
-        if(status == PostDao.USER_NOT_FOUND) {
+        if(status == Codes.USER_NOT_FOUND) {
             return new ResponseEntity<Status>(new Status(-3, "User not found"), HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
 
+    @RequestMapping(value = "/{postId}/like", method = RequestMethod.PUT)
+    public ResponseEntity<Status> comment(@PathVariable(value = "postId") int postId,
+                                          @RequestParam(value = "userId") int userId) throws IOException {
 
+        int status = postDao.likePost(postId, userId);
 
+        if(status == Codes.POST_NOT_FOUND) {
+            return new ResponseEntity<Status>(new Status(-1, "Post not found"), HttpStatus.BAD_REQUEST);
+        }
+        if(status == Codes.USER_NOT_FOUND) {
+            return new ResponseEntity<Status>(new Status(-2, "User not found"), HttpStatus.BAD_REQUEST);
+        }
 
-    /*
-     *  Methods for testing purposes
-     */
-    @RequestMapping(method = RequestMethod.GET)
-    public Greeting testGet(@RequestParam(value="name", defaultValue="World") String name) {
-        return new Greeting(1L, "Hei, " + name);
+        return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public Greeting testPost(@RequestParam(value="name", defaultValue="World") String name) {
-        return new Greeting(1L, "Hei, " + name);
-    }
+    @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
+    @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
+    public void constraintViolation() {}
 }
