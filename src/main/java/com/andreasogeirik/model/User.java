@@ -190,4 +190,26 @@ public class User {
     public void setEvents(Set<Event> events) {
         this.events = events;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", enabled=" + enabled +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", location='" + location + '\'' +
+                ", imageUri='" + imageUri + '\'' +
+                ", timeCreated=" + timeCreated +
+                ", userRole=" + userRole +
+                ", posts=" + posts +
+                ", comments=" + comments +
+                ", events=" + events +
+                ", friends=" + friends +
+                ", userPostLikes=" + userPostLikes +
+                ", eventCommentLikes=" + eventCommentLikes +
+                '}';
+    }
 }

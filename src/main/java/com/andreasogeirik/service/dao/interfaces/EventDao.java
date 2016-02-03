@@ -15,5 +15,5 @@ public interface EventDao {
     int USER_NOT_FOUND = -7;
 
     int createEvent(String name, String location, String description, Date timeStart, Date timeEnd, String imageURI,
-                        int adminId);
+                        String adminUsername);
 }

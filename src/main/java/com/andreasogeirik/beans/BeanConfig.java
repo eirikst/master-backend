@@ -2,7 +2,7 @@ package com.andreasogeirik.beans;
 
 import com.andreasogeirik.service.dao.*;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
-import com.andreasogeirik.service.dao.interfaces.PostDao;
+import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.tools.InputManager;
 import org.hibernate.SessionFactory;
@@ -24,8 +24,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public PostDao postDao() {
-        return new PostDaoImpl();
+    public UserPostDao postDao() {
+        return new UserPostDaoImpl();
     }
 
     @Bean

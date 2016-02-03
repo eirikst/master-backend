@@ -16,12 +16,6 @@ import java.util.Date;
 /**
  * Created by eirikstadheim on 29/01/16.
  */
-
-/*
- * !!!!!!!!!!!!!!!!
- * Se på transaction-handlingen her etterhvert
- */
-
 public class UserDaoImpl implements UserDao {
     public static final int ROLE_ADMIN = 1;
     public static final int ROLE_USER = 2;
@@ -79,7 +73,8 @@ public class UserDaoImpl implements UserDao {
             return Codes.EMAIL_EXISTS;
         }
 
-        User user = new User(email, passwordEncoder.encode(password), true, firstname, lastname, location, new Date());//true for enabled user
+        User user = new User(email, passwordEncoder.encode(password), true, firstname, lastname,
+                location, new Date());//true for enabled user
 
         session.save(user);
 
@@ -110,7 +105,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     /*
-     * Finds a User entity based on email
+     * Finds a User entity based on email. Also initializes the user's roles(getUserRoles)
      */
     @Transactional(readOnly = true)
     @Override
@@ -136,13 +131,8 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User findById(int id) {
         Session session = sessionFactory.openSession();
-
-        Criteria criteria = session.createCriteria(User.class);
-        User user = (User)criteria.add(Restrictions.eq("id", id))
-                .uniqueResult();
-
+        User user = session.get(User.class, id);
         session.close();
-
         return user;
     }
 

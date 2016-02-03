@@ -1,6 +1,6 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.service.dao.interfaces.PostDao;
+import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.tools.Status;
 import com.andreasogeirik.tools.Codes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.io.IOException;
 public class UserPostController {
 
     @Autowired
-    private PostDao postDao;
+    private UserPostDao postDao;
 
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<Status> post(@RequestParam(value="message") String message,

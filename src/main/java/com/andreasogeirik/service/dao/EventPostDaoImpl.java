@@ -1,14 +1,11 @@
 package com.andreasogeirik.service.dao;
 
 import com.andreasogeirik.model.*;
-import com.andreasogeirik.service.dao.interfaces.PostDao;
-import com.andreasogeirik.service.dao.interfaces.UserDao;
-import com.andreasogeirik.tools.InputManager;
+import com.andreasogeirik.service.dao.interfaces.EventPostDao;
 import com.andreasogeirik.tools.Codes;
-import org.hibernate.Criteria;
+import com.andreasogeirik.tools.InputManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +15,7 @@ import java.util.Date;
  * Created by eirikstadheim on 29/01/16.
  */
 
-public class PostDaoImpl implements PostDao {
+public class EventPostDaoImpl implements EventPostDao {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -26,55 +23,74 @@ public class PostDaoImpl implements PostDao {
     @Autowired
     private InputManager inputManager;
 
-    @Autowired
-    private UserDao userDao;//trenger den denne da? fjerne de
-
     @Override
-    public int newUserPost(String message, String imageUri, int userId) {
-        User user = userDao.findById(userId);//denne inni transaction??
-
+    public int newEventPost(String message, String imageUri, int userId, int eventId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        UserPost post = new UserPost(message, new Date(), imageUri, user);
+        User user = session.get(User.class, userId);
+        Event event = session.get(Event.class, eventId);
 
-        session.save(post);
+        int status = 0;
 
+        if(user != null) {
+            if(event != null) {
+                EventPost post = new EventPost(message, new Date(), imageUri, user, event);
+                session.save(post);
+                status = Codes.OK;
+            }
+            else {
+                status = Codes.EVENT_NOT_FOUND;
+            }
+        }
+        else {
+            status = Codes.USER_NOT_FOUND;
+        }
         session.getTransaction().commit();
         session.close();
 
-        return 1;
+        return status;
     }
 
     @Override
     public int comment(String message, int postId, int userId) {
-        User user = userDao.findById(userId);//denne inni transaction??
-        UserPost post = findById(postId);//denne inni transaction??
-
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        UserPostComment comment = new UserPostComment(message, new Date(), user, post);
+        EventPost post = session.get(EventPost.class, postId);
 
-        session.save(comment);
+        User user = session.get(User.class, userId);
+
+        int status = 0;
+        if(post != null) {
+            if (user != null) {
+                EventPostComment comment = new EventPostComment(message, new Date(), user, post);
+                session.save(comment);
+                status = Codes.OK;
+            }
+            else {
+                status = Codes.USER_NOT_FOUND;
+            }
+        }
+        else {
+            status = Codes.POST_NOT_FOUND;
+        }
 
         session.getTransaction().commit();
         session.close();
 
-        return 1;
+        return status;
     }
 
     /*
-    * Finds a UserPost entity based on id
+    * Finds a EventPost entity based on id
     */
     @Transactional(readOnly = true)
     @Override
-    public UserPost findById(int id) {
+    public EventPost findById(int id) {
         Session session = sessionFactory.openSession();
 
-        Criteria criteria = session.createCriteria(UserPost.class);
-        UserPost post = (UserPost)criteria.add(Restrictions.eq("id", id))
-                .uniqueResult();
+        EventPost post = session.get(EventPost.class, id);
 
         session.close();
 
@@ -86,13 +102,13 @@ public class PostDaoImpl implements PostDao {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        UserPost post = session.get(UserPost.class, postId);
+        EventPost post = session.get(EventPost.class, postId);
 
         User user = session.get(User.class, userId);
 
         if(post != null) {
             if(user != null) {
-                UserPostLike like = new UserPostLike(user, post);
+                EventPostLike like = new EventPostLike(user, post);
                 session.save(like);
             }
             else {

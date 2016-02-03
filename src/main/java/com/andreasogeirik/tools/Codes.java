@@ -19,6 +19,7 @@ public class Codes {
     public static final int USERNAME_EXISTS = -11;
     public static final int EMAIL_EXISTS = -12;
     public static final int COMMENT_NOT_FOUND = -13;
+    public static final int EVENT_NOT_FOUND = -14;
 
 
 }
