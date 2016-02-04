@@ -17,11 +17,8 @@ public class CommentDaoImpl implements CommentDao {
     @Autowired
     private SessionFactory sessionFactory;
 
-    @Autowired
-    private InputManager inputManager;
-
     @Override
-    public int like(int commentId, int userId) {
+    public void like(int commentId, int userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
@@ -29,22 +26,10 @@ public class CommentDaoImpl implements CommentDao {
 
         User user = session.get(User.class, userId);
 
-        if(comment != null) {
-            if(user != null) {
-                UserCommentLike like = new UserCommentLike(user, comment);
-                session.save(like);
-            }
-            else {
-                return Codes.USER_NOT_FOUND;
-            }
-        }
-        else {
-            return Codes.COMMENT_NOT_FOUND;
-        }
+        UserCommentLike like = new UserCommentLike(user, comment);
+        session.save(like);
 
         session.getTransaction().commit();
         session.close();
-
-        return Codes.OK;
     }
 }

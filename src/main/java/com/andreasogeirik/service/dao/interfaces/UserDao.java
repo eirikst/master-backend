@@ -10,5 +10,4 @@ public interface UserDao {
     int createAdminUser(User user);
     User findByEmail(String email);
     User findById(int id);
-    void insert();
 }

@@ -5,6 +5,7 @@ import com.andreasogeirik.model.UserRole;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.tools.InputManager;
 import com.andreasogeirik.tools.Codes;
+import com.andreasogeirik.tools.InvalidInputException;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,19 +51,19 @@ public class UserDaoImpl implements UserDao {
      */
     private int createUser(User user, int role) {
         if(!inputManager.isValidEmail(user.getEmail())) {
-            return Codes.INVALID_EMAIL;
+            throw new InvalidInputException("Invalid email format");
         }
         if(!inputManager.isValidPassword(user.getPassword())) {
-            return Codes.INVALID_PASSWORD;
+            throw new InvalidInputException("Invalid password format");
         }
         if(!inputManager.isValidName(user.getFirstname())) {
-            return Codes.INVALID_FIRSTNAME;
+            throw new InvalidInputException("Invalid firstname format");
         }
         if(!inputManager.isValidName(user.getLastname())) {
-            return Codes.INVALID_LASTNAME;
+            throw new InvalidInputException("Invalid lastname format");
         }
         if(!inputManager.isValidLocation(user.getLocation())) {
-            return Codes.INVALID_LOCATION;
+            throw new InvalidInputException("Invalid location format");
         }
 
         user.setTimeCreated(new Date());//created now
@@ -115,9 +116,7 @@ public class UserDaoImpl implements UserDao {
         Criteria criteria = session.createCriteria(User.class);
         User user = (User)criteria.add(Restrictions.eq("email", email))
                 .uniqueResult();
-        if(user != null) {
-            Hibernate.initialize(user.getUserRole());
-        }
+        Hibernate.initialize(user.getUserRole());
 
         session.close();
 
@@ -134,27 +133,5 @@ public class UserDaoImpl implements UserDao {
         User user = session.get(User.class, id);
         session.close();
         return user;
-    }
-
-
-
-
-    //TEST
-    @Override
-    public void insert() {
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
-
-        User user = new User("1234567890123456789012345678901234567890123456789012345678901", "bror", true, "bror", "bror",
-                "location", new Date());//true for enabled user
-
-        session.save(user);
-
-        UserRole userRole = new UserRole(user, "USER");
-        session.save(userRole);
-
-
-        session.getTransaction().commit();
-        session.close();
     }
 }

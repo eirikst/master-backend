@@ -2,7 +2,7 @@ package com.andreasogeirik.service.dao;
 
 import com.andreasogeirik.model.*;
 import com.andreasogeirik.service.dao.interfaces.EventPostDao;
-import com.andreasogeirik.tools.Codes;
+import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.InputManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -24,36 +24,29 @@ public class EventPostDaoImpl implements EventPostDao {
     private InputManager inputManager;
 
     @Override
-    public int newEventPost(String message, String imageUri, int userId, int eventId) {
+    public void createEventPost(EventPost post, int userId) {
+        if(!inputManager.isValidPost(post.getMessage())) {
+            throw new InvalidInputException("Invalid post message format");
+        }
+
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
         User user = session.get(User.class, userId);
-        Event event = session.get(Event.class, eventId);
+        post.setTimeCreated(new Date());
+        post.setUser(user);
+        session.save(post);
 
-        int status = 0;
-
-        if(user != null) {
-            if(event != null) {
-                EventPost post = new EventPost(message, new Date(), imageUri, user, event);
-                session.save(post);
-                status = Codes.OK;
-            }
-            else {
-                status = Codes.EVENT_NOT_FOUND;
-            }
-        }
-        else {
-            status = Codes.USER_NOT_FOUND;
-        }
         session.getTransaction().commit();
         session.close();
-
-        return status;
     }
 
     @Override
-    public int comment(String message, int postId, int userId) {
+    public void comment(EventPostComment comment, int postId, int userId) {
+        if(!inputManager.isValidComment(comment.getMessage())) {
+            throw new InvalidInputException("Invalid comment message format");
+        }
+
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
@@ -61,25 +54,13 @@ public class EventPostDaoImpl implements EventPostDao {
 
         User user = session.get(User.class, userId);
 
-        int status = 0;
-        if(post != null) {
-            if (user != null) {
-                EventPostComment comment = new EventPostComment(message, new Date(), user, post);
-                session.save(comment);
-                status = Codes.OK;
-            }
-            else {
-                status = Codes.USER_NOT_FOUND;
-            }
-        }
-        else {
-            status = Codes.POST_NOT_FOUND;
-        }
+        comment.setUser(user);
+        comment.setPost(post);
+        comment.setTimeCreated(new Date());
+        session.save(comment);
 
         session.getTransaction().commit();
         session.close();
-
-        return status;
     }
 
     /*
@@ -98,30 +79,17 @@ public class EventPostDaoImpl implements EventPostDao {
     }
 
     @Override
-    public int likePost(int postId, int userId) {
+    public void like(int postId, int userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
         EventPost post = session.get(EventPost.class, postId);
-
         User user = session.get(User.class, userId);
 
-        if(post != null) {
-            if(user != null) {
-                EventPostLike like = new EventPostLike(user, post);
-                session.save(like);
-            }
-            else {
-                return Codes.USER_NOT_FOUND;
-            }
-        }
-        else {
-            return Codes.POST_NOT_FOUND;
-        }
+        EventPostLike like = new EventPostLike(user, post);
+        session.save(like);
 
         session.getTransaction().commit();
         session.close();
-
-        return Codes.OK;
     }
 }

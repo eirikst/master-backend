@@ -1,13 +1,14 @@
 package com.andreasogeirik.service.dao.interfaces;
 
 import com.andreasogeirik.model.EventPost;
+import com.andreasogeirik.model.EventPostComment;
 
 /**
  * Created by eirikstadheim on 29/01/16.
  */
 public interface EventPostDao {
-    int newEventPost(String message, String imageUri, int userId, int eventId);
-    int comment(String message, int postId, int userId);
+    void createEventPost(EventPost post, int userId);
+    void comment(EventPostComment comment, int postId, int userId);
     EventPost findById(int id);
-    int likePost(int postId, int userId);
+    void like(int postId, int userId);
     }

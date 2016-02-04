@@ -5,6 +5,7 @@ import com.andreasogeirik.model.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.tools.Codes;
 import com.andreasogeirik.tools.InputManager;
+import com.andreasogeirik.tools.InvalidInputException;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -20,28 +21,41 @@ public class EventDaoImpl implements EventDao {
     @Autowired
     private SessionFactory sessionFactory;
 
+    @Autowired
+    InputManager inputManager;
+
     @Override
-    public int createEvent(Event event, int adminId) {
+    public void createEvent(Event event, int adminId) {
+        if(!inputManager.isValidEventName(event.getName())) {
+            throw new InvalidInputException("Invalid name format");
+        }
+        if(!inputManager.isValidEventDescription(event.getDescription())) {
+            throw new InvalidInputException("Invalid description format");
+        }
+        if(!inputManager.isValidLocation(event.getLocation())) {
+            throw new InvalidInputException("Invalid location format");
+        }
+        if(event.getTimeStart().before(new Date())) {
+            throw new InvalidInputException("Invalid start time");
+        }
+        if(event.getTimeEnd().before(new Date())) {
+            throw new InvalidInputException("Invalid end time");
+        }
+        if(event.getTimeEnd().before(event.getTimeStart())) {
+            throw new InvalidInputException("End time cannot be before start time");
+        }
+
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
         User admin = session.get(User.class, adminId);
 
 
-        int status = 0;
-        if(admin != null) {
-            event.setTimeCreated(new Date());
-            event.setAdmin(admin);
-            session.save(event);
-            status = 1;
-        }
-        else {
-            status = Codes.USER_NOT_FOUND;
-        }
+        event.setTimeCreated(new Date());
+        event.setAdmin(admin);
+        session.save(event);
 
         session.getTransaction().commit();
         session.close();
-
-        return status;
     }
 }

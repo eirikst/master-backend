@@ -19,7 +19,7 @@
         <property name="show_sql">true</property>
 
         <!-- Drop and re-create all database on startup -->
-        <property name="hibernate.hbm2ddl.auto"> create-drop</property>
+        <property name="hibernate.hbm2ddl.auto"> update</property>
 
         <!--c3p0 config-->
         <property name="hibernate.c3p0.min_size">5</property>
