@@ -20,6 +20,10 @@ public class Codes {
     public static final int EMAIL_EXISTS = -12;
     public static final int COMMENT_NOT_FOUND = -13;
     public static final int EVENT_NOT_FOUND = -14;
-
-
+    public static final int INVALID_POST_MESSAGE = -15;
+    public static final int INVALID_EVENT_NAME = -16;
+    public static final int INVALID_DESCRIPTION = -17;
+    public static final int INVALID_TIME_START = -18;
+    public static final int INVALID_TIME_END = -19;
+    public static final int INVALID_IMAGE_URI = -20;
 }

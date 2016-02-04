@@ -3,10 +3,11 @@ package com.andreasogeirik.service.dao;
 import com.andreasogeirik.model.Event;
 import com.andreasogeirik.model.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
+import com.andreasogeirik.tools.Codes;
+import com.andreasogeirik.tools.InputManager;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
@@ -20,24 +21,27 @@ public class EventDaoImpl implements EventDao {
     private SessionFactory sessionFactory;
 
     @Override
-    public int createEvent(String name, String location, String description, Date timeStart, Date timeEnd,
-                           String imageURI, String adminUsername) {
-
+    public int createEvent(Event event, int adminId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        Criteria criteria = session.createCriteria(User.class);
-        User admin = (User)criteria.add(Restrictions.eq("email", adminUsername))
-                .uniqueResult();
+        User admin = session.get(User.class, adminId);
 
 
-        Event event = new Event(name, location, description, new Date(), timeStart, timeEnd, imageURI, admin);
-
-        session.save(event);
+        int status = 0;
+        if(admin != null) {
+            event.setTimeCreated(new Date());
+            event.setAdmin(admin);
+            session.save(event);
+            status = 1;
+        }
+        else {
+            status = Codes.USER_NOT_FOUND;
+        }
 
         session.getTransaction().commit();
         session.close();
 
-        return 1;
+        return status;
     }
 }

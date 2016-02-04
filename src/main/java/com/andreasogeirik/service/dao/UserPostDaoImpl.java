@@ -2,13 +2,10 @@ package com.andreasogeirik.service.dao;
 
 import com.andreasogeirik.model.*;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
-import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.tools.InputManager;
 import com.andreasogeirik.tools.Codes;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +24,19 @@ public class UserPostDaoImpl implements UserPostDao {
     private InputManager inputManager;
 
     @Override
-    public int newUserPost(String message, String imageUri, int userId) {
+    public int newUserPost(UserPost post, int userId) {
+        if(!inputManager.isValidPost(post.getMessage())) {
+            return Codes.INVALID_POST_MESSAGE;
+        }
+
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
         User user = session.get(User.class, userId);
         int status = 0;
         if(user != null) {
-            UserPost post = new UserPost(message, new Date(), imageUri, user);
+            post.setTimeCreated(new Date());
+            post.setUser(user);
             session.save(post);
             status = Codes.OK;
         }
@@ -48,7 +50,11 @@ public class UserPostDaoImpl implements UserPostDao {
     }
 
     @Override
-    public int comment(String message, int postId, int userId) {
+    public int comment(UserPostComment comment, int postId, int userId) {
+        if(!inputManager.isValidComment(comment.getMessage())) {
+            return Codes.INVALID_COMMENT_MESSAGE;
+        }
+
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
@@ -59,7 +65,9 @@ public class UserPostDaoImpl implements UserPostDao {
         int status = 0;
         if(post != null) {
             if (user != null) {
-                UserPostComment comment = new UserPostComment(message, new Date(), user, post);
+                comment.setUser(user);
+                comment.setPost(post);
+                comment.setTimeCreated(new Date());
                 session.save(comment);
                 status = Codes.OK;
             }

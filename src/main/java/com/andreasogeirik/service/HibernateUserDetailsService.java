@@ -50,7 +50,7 @@ public class HibernateUserDetailsService implements UserDetailsService {
                 authorities.add(new SimpleGrantedAuthority(((UserRole) it.next()).getRole()));
             }
         }
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
+        return new com.andreasogeirik.security.User(user.getId(), user.getEmail(), user.getPassword(),
                 user.isEnabled(), true, true, true, authorities);
     }
 }

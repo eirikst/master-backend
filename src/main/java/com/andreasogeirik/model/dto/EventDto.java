@@ -1,5 +1,7 @@
 package com.andreasogeirik.model.dto;
 
+import com.andreasogeirik.model.Event;
+
 import java.util.Date;
 
 /**
@@ -7,13 +9,18 @@ import java.util.Date;
  */
 public class EventDto {
     private int id;
-    private String name;
-    private String location;
-    private String description;
+    private String name = "";
+    private String location = "";
+    private String description = "";
     private Date timeStart;
     private Date timeEnd;
-    private String imageUri;
+    private String imageUri = "";
     private int adminId;
+
+    public Event toEvent() {
+        return new Event(name, location, description, timeStart, timeEnd, imageUri);
+    }
+
 
     public int getId() {
         return id;

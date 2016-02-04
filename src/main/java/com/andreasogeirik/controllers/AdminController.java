@@ -1,5 +1,7 @@
 package com.andreasogeirik.controllers;
 
+import com.andreasogeirik.model.dto.LikeDto;
+import com.andreasogeirik.model.dto.UserDto;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.tools.Status;
 import com.andreasogeirik.tools.Codes;
@@ -20,13 +22,9 @@ public class AdminController {
 
     @PreAuthorize(value="hasAuthority('ADMIN')")
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<Status> createAdmin(@RequestParam(value="email") String email,
-                                              @RequestParam(value="password") String password,
-                                              @RequestParam(value="firstname") String firstname,
-                                              @RequestParam(value="lastname") String lastname,
-                                              @RequestParam(value="location") String location) throws IOException {
+    public ResponseEntity<Status> createAdmin(@RequestBody UserDto user) throws IOException {
 
-        int status = userDao.createAdminUser(email, password, firstname, lastname, location);
+        int status = userDao.createAdminUser(user.toUser());
 
         if(status == Codes.INVALID_PASSWORD) {
             return new ResponseEntity<Status>(new Status(-1, "Invalid password"), HttpStatus.BAD_REQUEST);
@@ -53,7 +51,21 @@ public class AdminController {
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
 
+    //Test
+    @RequestMapping(value = "create", method = RequestMethod.PUT)
+    public ResponseEntity<Status> create(@RequestBody LikeDto like) {
+        userDao.insert();
+        return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
+    }
+
+
+
+
     @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
     @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
     public void constraintViolation() {}
+
+    @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Input length violation")  // 400
+    @ExceptionHandler(org.hibernate.exception.DataException.class)
+    public void inputLengthViolation() {}
 }

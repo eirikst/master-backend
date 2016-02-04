@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 @Configuration
-//@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -28,6 +27,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         //Registers the UserDetailsService to use for authentication
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
@@ -38,6 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .exceptionHandling()
+                .authenticationEntryPoint(restAuthenticationEntryPoint)
                 .and()
             .authorizeRequests()
                 .antMatchers("/")

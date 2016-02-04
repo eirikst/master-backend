@@ -23,6 +23,17 @@ public class UserPost {
     public UserPost() {
     }
 
+    public UserPost(String message, String imageUri) {
+        this.message = message;
+        this.imageUri = imageUri;
+    }
+
+    public UserPost(int id, String message, String imageUri) {
+        this.id = id;
+        this.message = message;
+        this.imageUri = imageUri;
+    }
+
     public UserPost(String message, Date timeCreated, String imageUri, User user) {
         this.message = message;
         this.imageUri = imageUri;

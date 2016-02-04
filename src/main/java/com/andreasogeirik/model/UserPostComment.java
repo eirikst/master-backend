@@ -22,6 +22,10 @@ public class UserPostComment {
     public UserPostComment() {
     }
 
+    public UserPostComment(String message) {
+        this.message = message;
+    }
+
     public UserPostComment(String message, Date timeCreated, User user, UserPost post) {
         this.message = message;
         this.timeCreated = timeCreated;

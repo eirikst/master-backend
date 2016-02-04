@@ -11,6 +11,7 @@ public class InputManager {
     public static final int URI_LENGTH = 200;
     public static final int POST_LENGTH = 1000;
     public static final int COMMENT_LENGTH = 500;
+    public static final int EVENT_NAME_LENGTH = 500;
 
 
     //Needs more restrictions
@@ -31,14 +32,14 @@ public class InputManager {
     }
 
     public boolean isValidURI(String Uri) {
-        return Uri.length() >= URI_LENGTH;
+        return Uri.length() <= URI_LENGTH;
     }
 
     public boolean isValidPost(String message) {
-        return message.length() >= POST_LENGTH;
+        return message.length() > 0 && message.length() <= POST_LENGTH;
     }
 
     public boolean isValidComment(String message) {
-        return message.length() >= COMMENT_LENGTH;
+        return message.length() > 0 && message.length() <= COMMENT_LENGTH;
     }
 }

@@ -1,6 +1,9 @@
 package com.andreasogeirik.controllers;
 
+import com.andreasogeirik.model.dto.UserDto;
+import com.andreasogeirik.model.dto.UserPostDto;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
+import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.tools.Status;
 import com.andreasogeirik.tools.Codes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.io.IOException;
 
 @RestController
@@ -17,14 +21,13 @@ public class UserController {
     @Autowired
     private UserDao userDao;
 
-    @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<Status> createUser(@RequestParam(value="email") String email,
-                                             @RequestParam(value="password") String password,
-                                             @RequestParam(value="firstname") String firstname,
-                                             @RequestParam(value="lastname") String lastname,
-                                             @RequestParam(value="location") String location) throws IOException {
+    @Autowired
+    private UserPostDao postDao;
 
-        int status = userDao.createUser(email, password, firstname, lastname, location);
+    @RequestMapping(method = RequestMethod.PUT)
+    public ResponseEntity<Status> createUser(@RequestBody UserDto user) throws IOException {
+
+        int status = userDao.createUser(user.toUser());
 
         if(status == Codes.INVALID_PASSWORD) {
             return new ResponseEntity<Status>(new Status(-1, "Invalid password"), HttpStatus.BAD_REQUEST);
@@ -51,7 +54,30 @@ public class UserController {
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
 
+    @RequestMapping(value = "/{userId}/post",method = RequestMethod.PUT)
+    public ResponseEntity<Status> post(@RequestBody UserPostDto post,
+                                       @PathParam(value="userId") int userId) throws IOException {
+
+        int status = postDao.newUserPost(post.toPost(), userId);
+
+        if(status == Codes.INVALID_MESSAGE) {
+            return new ResponseEntity<Status>(new Status(-1, "Invalid message"), HttpStatus.BAD_REQUEST);
+        }
+        if(status == Codes.INVALID_URI) {
+            return new ResponseEntity<Status>(new Status(-2, "Invalid URI"), HttpStatus.BAD_REQUEST);
+        }
+        if(status == Codes.USER_NOT_FOUND) {
+            return new ResponseEntity<Status>(new Status(-3, "User not found"), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
+    }
+
     @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
     @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
     public void constraintViolation() {}
+
+    @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Input length violation")  // 400
+    @ExceptionHandler(org.hibernate.exception.DataException.class)
+    public void inputLengthViolation() {}
 }

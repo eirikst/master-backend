@@ -33,48 +33,48 @@ public class UserDaoImpl implements UserDao {
      * Creates new user with role USER
      */
     @Override
-    public int createUser(String email, String password, String firstname, String lastname, String location) {
-        return createUser(email, password, firstname, lastname, location, ROLE_USER);
+    public int createUser(User user) {
+        return createUser(user, ROLE_USER);
     }
 
     /*
    * Creates new user with role ADMIN
    */
     @Override
-    public int createAdminUser(String email, String password, String firstname, String lastname, String location) {
-        return createUser(email, password, firstname, lastname, location, ROLE_ADMIN);
+    public int createAdminUser(User user) {
+        return createUser(user, ROLE_ADMIN);
     }
 
     /*
      * Creates a new user in the DB, with given username, password, email and role
      */
-    private int createUser(String email, String password, String firstname, String lastname, String location, int role) {
-        if(!inputManager.isValidEmail(email)) {
+    private int createUser(User user, int role) {
+        if(!inputManager.isValidEmail(user.getEmail())) {
             return Codes.INVALID_EMAIL;
         }
-        if(!inputManager.isValidPassword(password)) {
+        if(!inputManager.isValidPassword(user.getPassword())) {
             return Codes.INVALID_PASSWORD;
         }
-        if(!inputManager.isValidName(firstname)) {
+        if(!inputManager.isValidName(user.getFirstname())) {
             return Codes.INVALID_FIRSTNAME;
         }
-        if(!inputManager.isValidName(lastname)) {
+        if(!inputManager.isValidName(user.getLastname())) {
             return Codes.INVALID_LASTNAME;
         }
-        if(!inputManager.isValidLocation(location)) {
+        if(!inputManager.isValidLocation(user.getLocation())) {
             return Codes.INVALID_LOCATION;
         }
+
+        user.setTimeCreated(new Date());//created now
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        //These are called here to include them in the transaction that adds the new user, to avoid duplication
-        if(emailExists(email, session)) {
+        //This is called here to include them in the transaction that adds the new user, to avoid duplication
+        if(emailExists(user.getEmail(), session)) {
             return Codes.EMAIL_EXISTS;
         }
-
-        User user = new User(email, passwordEncoder.encode(password), true, firstname, lastname,
-                location, new Date());//true for enabled user
 
         session.save(user);
 
@@ -136,4 +136,25 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
+
+
+
+    //TEST
+    @Override
+    public void insert() {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        User user = new User("1234567890123456789012345678901234567890123456789012345678901", "bror", true, "bror", "bror",
+                "location", new Date());//true for enabled user
+
+        session.save(user);
+
+        UserRole userRole = new UserRole(user, "USER");
+        session.save(userRole);
+
+
+        session.getTransaction().commit();
+        session.close();
+    }
 }

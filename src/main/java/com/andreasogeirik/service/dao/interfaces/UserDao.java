@@ -6,8 +6,9 @@ import com.andreasogeirik.model.User;
  * Created by eirikstadheim on 29/01/16.
  */
 public interface UserDao {
-    int createUser(String email, String password, String firstname, String lastname, String location);
-    int createAdminUser(String email, String password, String firstname, String lastname, String location);
+    int createUser(User user);
+    int createAdminUser(User user);
     User findByEmail(String email);
     User findById(int id);
+    void insert();
 }
