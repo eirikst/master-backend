@@ -1,7 +1,5 @@
 package com.andreasogeirik.tools;
 
-import java.util.Date;
-
 /**
  * Created by eirikstadheim on 29/01/16.
  */

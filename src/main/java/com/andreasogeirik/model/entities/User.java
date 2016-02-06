@@ -1,4 +1,4 @@
-package com.andreasogeirik.model;
+package com.andreasogeirik.model.entities;
 
 import java.util.*;
 import javax.persistence.*;

@@ -29,21 +29,21 @@
         <property name="hibernate.c3p0.idle_test_period">3000</property>
 
         <!-- Annotated entity classes -->
-        <mapping class="com.andreasogeirik.model.Event"/>
-        <mapping class="com.andreasogeirik.model.EventCommentLike"/>
-        <mapping class="com.andreasogeirik.model.EventPost"/>
-        <mapping class="com.andreasogeirik.model.EventPostComment"/>
-        <mapping class="com.andreasogeirik.model.EventPostLike"/>
+        <mapping class="com.andreasogeirik.model.entities.Event"/>
+        <mapping class="com.andreasogeirik.model.entities.EventCommentLike"/>
+        <mapping class="com.andreasogeirik.model.entities.EventPost"/>
+        <mapping class="com.andreasogeirik.model.entities.EventPostComment"/>
+        <mapping class="com.andreasogeirik.model.entities.EventPostLike"/>
 
-        <mapping class="com.andreasogeirik.model.Friendship"/>
+        <mapping class="com.andreasogeirik.model.entities.Friendship"/>
 
-        <mapping class="com.andreasogeirik.model.User"/>
-        <mapping class="com.andreasogeirik.model.UserCommentLike"/>
-        <mapping class="com.andreasogeirik.model.UserPost"/>
-        <mapping class="com.andreasogeirik.model.UserPostComment"/>
-        <mapping class="com.andreasogeirik.model.UserPostLike"/>
+        <mapping class="com.andreasogeirik.model.entities.User"/>
+        <mapping class="com.andreasogeirik.model.entities.UserCommentLike"/>
+        <mapping class="com.andreasogeirik.model.entities.UserPost"/>
+        <mapping class="com.andreasogeirik.model.entities.UserPostComment"/>
+        <mapping class="com.andreasogeirik.model.entities.UserPostLike"/>
 
-        <mapping class="com.andreasogeirik.model.UserRole"/>
+        <mapping class="com.andreasogeirik.model.entities.UserRole"/>
 
 
     </session-factory>

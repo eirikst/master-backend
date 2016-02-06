@@ -1,7 +1,7 @@
 package com.andreasogeirik.service;
 
-import com.andreasogeirik.model.User;
-import com.andreasogeirik.model.UserRole;
+import com.andreasogeirik.model.entities.User;
+import com.andreasogeirik.model.entities.UserRole;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,7 +23,7 @@ public class HibernateUserDetailsService implements UserDetailsService {
     private UserDao userDao;
 
     /*
-     * Retrieves the specified user from dao object and creates a UserDetails object(needed for http authentication)
+     * Retrieves the specified user from entities object and creates a UserDetails object(needed for http authentication)
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -38,7 +38,7 @@ public class HibernateUserDetailsService implements UserDetailsService {
     }
 
     /*
-     * Converts a com.andreasogeirik.model.User to a org.springframework.security.core.userdetails.User
+     * Converts a com.andreasogeirik.model.entities.User to a org.springframework.security.core.userdetails.User
      */
     private org.springframework.security.core.userdetails.User buildUser(User user) {
         Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();

@@ -1,6 +1,6 @@
-package com.andreasogeirik.model.dto;
+package com.andreasogeirik.model.dto.incoming;
 
-import com.andreasogeirik.model.UserPostComment;
+import com.andreasogeirik.model.entities.UserPostComment;
 
 /**
  * Created by eirikstadheim on 04/02/16.

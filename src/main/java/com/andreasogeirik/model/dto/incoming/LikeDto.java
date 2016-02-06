@@ -1,4 +1,4 @@
-package com.andreasogeirik.model.dto;
+package com.andreasogeirik.model.dto.incoming;
 
 /**
  * Created by eirikstadheim on 03/02/16.

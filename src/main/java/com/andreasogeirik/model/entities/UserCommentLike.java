@@ -1,4 +1,4 @@
-package com.andreasogeirik.model;
+package com.andreasogeirik.model.entities;
 
 import javax.persistence.*;
 
@@ -8,17 +8,17 @@ import javax.persistence.*;
  * Created by eirikstadheim on 01/02/16.
  */
 @Entity
-@Table(name = "event_comment_likes", uniqueConstraints=@UniqueConstraint(columnNames={"comment_id", "user_id"}))
-public class EventCommentLike {
+@Table(name = "user_comment_likes", uniqueConstraints=@UniqueConstraint(columnNames={"comment_id", "user_id"}))
+public class UserCommentLike {
 
     private int id;
     private User user;
-    private EventPostComment comment;
+    private UserPostComment comment;
 
-    public EventCommentLike() {
+    public UserCommentLike() {
     }
 
-    public EventCommentLike(User user, EventPostComment comment) {
+    public UserCommentLike(User user, UserPostComment comment) {
         this.user = user;
         this.comment = comment;
     }
@@ -46,11 +46,11 @@ public class EventCommentLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
-    public EventPostComment getComment() {
+    public UserPostComment getComment() {
         return comment;
     }
 
-    public void setComment(EventPostComment comment) {
+    public void setComment(UserPostComment comment) {
         this.comment = comment;
     }
 }

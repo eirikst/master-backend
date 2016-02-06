@@ -1,6 +1,6 @@
-package com.andreasogeirik.model.dto;
+package com.andreasogeirik.model.dto.incoming;
 
-import com.andreasogeirik.model.Event;
+import com.andreasogeirik.model.entities.Event;
 
 import java.util.Date;
 

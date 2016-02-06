@@ -1,7 +1,8 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.model.dto.UserDto;
-import com.andreasogeirik.model.dto.UserPostDto;
+import com.andreasogeirik.model.dto.incoming.UserDto;
+import com.andreasogeirik.model.dto.incoming.UserPostDto;
+import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
@@ -28,6 +29,20 @@ public class UserController {
     @Autowired
     private UserPostDao postDao;
 
+    /*
+     * Get the user entity of the logged in user
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<UserDtoOut> getUser() {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        return new ResponseEntity<UserDtoOut>(new UserDtoOut(userDao.findById(userId)), HttpStatus.OK);
+    }
+
+    /*
+     * Create a user
+     */
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<Status> createUser(@RequestBody UserDto user) throws IOException {
 
@@ -40,11 +55,14 @@ public class UserController {
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
 
+    /*
+     * Create a post
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/post",method = RequestMethod.PUT)
     public ResponseEntity<Status> post(@RequestBody UserPostDto post) throws IOException {
 
-        postDao.newUserPost(post.toPost(),
+        postDao.createUserPost(post.toPost(),
                 ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
 
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
@@ -52,6 +70,9 @@ public class UserController {
 
 
 
+    /*
+     * Exception handling
+     */
     @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
     @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
     public void constraintViolation() {}

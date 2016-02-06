@@ -1,7 +1,7 @@
 package com.andreasogeirik.service.dao;
 
-import com.andreasogeirik.model.User;
-import com.andreasogeirik.model.UserRole;
+import com.andreasogeirik.model.entities.User;
+import com.andreasogeirik.model.entities.UserRole;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.tools.InputManager;
 import com.andreasogeirik.tools.Codes;

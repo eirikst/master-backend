@@ -1,6 +1,6 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.model.dto.EventDto;
+import com.andreasogeirik.model.dto.incoming.EventDto;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.tools.InvalidInputException;
@@ -22,7 +22,10 @@ public class EventController {
     @Autowired
     private EventDao eventDao;
 
-    @PreAuthorize(value="hasAuthority('ADMIN')")
+    /*
+     * Create event
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<Status> createEvent(@RequestBody EventDto event) throws IOException {
 
@@ -32,6 +35,11 @@ public class EventController {
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
 
+
+
+    /*
+     * Exception handling
+     */
     @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
     @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
     public void constraintViolation() {}

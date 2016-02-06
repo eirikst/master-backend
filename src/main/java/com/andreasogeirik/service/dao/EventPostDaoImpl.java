@@ -1,6 +1,9 @@
 package com.andreasogeirik.service.dao;
 
-import com.andreasogeirik.model.*;
+import com.andreasogeirik.model.entities.EventPost;
+import com.andreasogeirik.model.entities.EventPostComment;
+import com.andreasogeirik.model.entities.EventPostLike;
+import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.service.dao.interfaces.EventPostDao;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.InputManager;

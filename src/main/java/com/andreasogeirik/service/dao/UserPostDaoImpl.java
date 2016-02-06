@@ -1,15 +1,20 @@
 package com.andreasogeirik.service.dao;
 
-import com.andreasogeirik.model.*;
+import com.andreasogeirik.model.entities.User;
+import com.andreasogeirik.model.entities.UserPost;
+import com.andreasogeirik.model.entities.UserPostComment;
+import com.andreasogeirik.model.entities.UserPostLike;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.InputManager;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by eirikstadheim on 29/01/16.
@@ -76,6 +81,21 @@ public class UserPostDaoImpl implements UserPostDao {
         session.close();
 
         return post;
+    }
+
+    @Override
+    public List<UserPost> findPosts(int userId, int start, int quantity) {
+        Session session = sessionFactory.openSession();
+
+        String hql = "FROM UserPost P WHERE P.user.id = " + userId;
+        Query query = session.createQuery(hql);
+        query.setMaxResults(quantity);
+        query.setFirstResult(start);
+        List<UserPost> posts = (List<UserPost>)query.list();
+
+        session.close();
+
+        return posts;
     }
 
     @Override

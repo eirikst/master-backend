@@ -1,9 +1,9 @@
 package com.andreasogeirik.service.dao;
 
-import com.andreasogeirik.model.*;
+import com.andreasogeirik.model.entities.User;
+import com.andreasogeirik.model.entities.UserCommentLike;
+import com.andreasogeirik.model.entities.UserPostComment;
 import com.andreasogeirik.service.dao.interfaces.CommentDao;
-import com.andreasogeirik.tools.Codes;
-import com.andreasogeirik.tools.InputManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

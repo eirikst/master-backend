@@ -1,4 +1,4 @@
-package com.andreasogeirik.model;
+package com.andreasogeirik.model.entities;
 
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Column;

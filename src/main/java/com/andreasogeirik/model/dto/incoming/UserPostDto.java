@@ -1,6 +1,6 @@
-package com.andreasogeirik.model.dto;
+package com.andreasogeirik.model.dto.incoming;
 
-import com.andreasogeirik.model.UserPost;
+import com.andreasogeirik.model.entities.UserPost;
 
 /**
  * Created by eirikstadheim on 04/02/16.

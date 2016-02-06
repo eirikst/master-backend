@@ -1,6 +1,6 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.model.dto.UserDto;
+import com.andreasogeirik.model.dto.incoming.UserDto;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
@@ -21,6 +21,9 @@ public class AdminController {
     @Autowired
     private UserDao userDao;
 
+    /*
+     * Create admin user
+     */
     @PreAuthorize(value="hasAuthority('ADMIN')")
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<Status> createAdmin(@RequestBody UserDto user) throws IOException {
@@ -34,6 +37,10 @@ public class AdminController {
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
 
+
+    /*
+     * Exception handling
+     */
     @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
     @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
     public void constraintViolation() {}

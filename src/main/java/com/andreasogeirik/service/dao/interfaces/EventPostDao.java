@@ -1,7 +1,7 @@
 package com.andreasogeirik.service.dao.interfaces;
 
-import com.andreasogeirik.model.EventPost;
-import com.andreasogeirik.model.EventPostComment;
+import com.andreasogeirik.model.entities.EventPost;
+import com.andreasogeirik.model.entities.EventPostComment;
 
 /**
  * Created by eirikstadheim on 29/01/16.

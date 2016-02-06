@@ -1,12 +1,10 @@
 package com.andreasogeirik.service.dao;
 
-import com.andreasogeirik.model.Event;
-import com.andreasogeirik.model.User;
+import com.andreasogeirik.model.entities.Event;
+import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
-import com.andreasogeirik.tools.Codes;
 import com.andreasogeirik.tools.InputManager;
 import com.andreasogeirik.tools.InvalidInputException;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

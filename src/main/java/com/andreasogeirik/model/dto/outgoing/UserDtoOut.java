@@ -1,22 +1,41 @@
-package com.andreasogeirik.model.dto;
+package com.andreasogeirik.model.dto.outgoing;
 
-import com.andreasogeirik.model.User;
+import com.andreasogeirik.model.entities.User;
 
 /**
  * Created by eirikstadheim on 04/02/16.
  */
-public class UserDto {
+public class UserDtoOut {
     private int id;
-    private String password = "";
     private String email = "";
+    private boolean enabled;
     private String firstname = "";
     private String lastname = "";
     private String location = "";
     private String imageUri = "";
 
-    public User toUser() {
-        return new User(email, password, true, firstname, lastname,
-                location, null);
+    public UserDtoOut() {
+
+    }
+
+    public UserDtoOut(int id, String email, boolean enabled, String firstname, String lastname, String location, String imageUri) {
+        this.id = id;
+        this.email = email;
+        this.enabled = enabled;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.location = location;
+        this.imageUri = imageUri;
+    }
+
+    public UserDtoOut(User user) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.enabled = user.isEnabled();
+        this.firstname = user.getFirstname();
+        this.lastname = user.getLastname();
+        this.location = user.getLocation();
+        this.imageUri = user.getImageUri();
     }
 
     public int getId() {
@@ -27,13 +46,6 @@ public class UserDto {
         this.id = id;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getEmail() {
         return email;
@@ -41,6 +53,14 @@ public class UserDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getFirstname() {

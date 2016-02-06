@@ -1,4 +1,4 @@
-package com.andreasogeirik.model;
+package com.andreasogeirik.model.entities;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -9,20 +9,24 @@ import java.util.Set;
  * Created by eirikstadheim on 01/02/16.
  */
 @Entity
-@Table(name = "event_post_comments")
-public class EventPostComment {
+@Table(name = "user_post_comments")
+public class UserPostComment {
 
     private int id;
     private String message;
     private Date timeCreated;
     private User user;
-    private EventPost post;
+    private UserPost post;
     private Set<EventCommentLike> likes = new HashSet<EventCommentLike>(0);
 
-    public EventPostComment() {
+    public UserPostComment() {
     }
 
-    public EventPostComment(String message, Date timeCreated, User user, EventPost post) {
+    public UserPostComment(String message) {
+        this.message = message;
+    }
+
+    public UserPostComment(String message, Date timeCreated, User user, UserPost post) {
         this.message = message;
         this.timeCreated = timeCreated;
         this.user = user;
@@ -70,11 +74,11 @@ public class EventPostComment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
-    public EventPost getPost() {
+    public UserPost getPost() {
         return post;
     }
 
-    public void setPost(EventPost post) {
+    public void setPost(UserPost post) {
         this.post = post;
     }
 
