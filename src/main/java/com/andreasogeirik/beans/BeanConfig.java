@@ -1,5 +1,6 @@
 package com.andreasogeirik.beans;
 
+import com.andreasogeirik.security.AuthenticationSuccessHandlerImpl;
 import com.andreasogeirik.service.dao.*;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
@@ -60,5 +61,10 @@ public class BeanConfig {
     @Bean
     public SimpleUrlAuthenticationFailureHandler failureHandler(){
         return new SimpleUrlAuthenticationFailureHandler();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandlerImpl successHandler() {
+        return new AuthenticationSuccessHandlerImpl();
     }
 }

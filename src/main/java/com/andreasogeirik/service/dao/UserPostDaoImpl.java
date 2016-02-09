@@ -7,6 +7,7 @@ import com.andreasogeirik.model.entities.UserPostLike;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.InputManager;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -92,6 +94,15 @@ public class UserPostDaoImpl implements UserPostDao {
         query.setMaxResults(quantity);
         query.setFirstResult(start);
         List<UserPost> posts = (List<UserPost>)query.list();
+
+        for(int i = 0; i < posts.size(); i++) {
+            Hibernate.initialize(posts.get(i).getComments());
+            Hibernate.initialize(posts.get(i).getLikes());
+            Iterator<UserPostLike> it = posts.get(i).getLikes().iterator();
+            while(it.hasNext()) {
+                Hibernate.initialize(it.next().getUser());
+            }
+        }
 
         session.close();
 

@@ -1,8 +1,12 @@
 package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.CommentDto;
+import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
+import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
 import com.andreasogeirik.model.dto.outgoing.UserPostDtoOut;
 import com.andreasogeirik.model.entities.UserPost;
+import com.andreasogeirik.model.entities.UserPostComment;
+import com.andreasogeirik.model.entities.UserPostLike;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.tools.Constants;
@@ -17,8 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("user/post")
@@ -32,7 +35,7 @@ public class UserPostController {
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<UserPostDtoOut>> getPosts(@RequestParam int start) {
+    public ResponseEntity<List<UserPostDtoOut>> getPosts(@RequestParam(value = "start") int start) {
         if(start < 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
@@ -44,7 +47,26 @@ public class UserPostController {
         List<UserPostDtoOut> postsOut = new ArrayList<UserPostDtoOut>();
 
         for(int i = 0; i < posts.size(); i++) {
-            postsOut.add(new UserPostDtoOut(posts.get(i)));
+            UserPostDtoOut postOut = new UserPostDtoOut(posts.get(i));
+
+            //iterate comments
+            Set<CommentDtoOut> comments = new HashSet<>();
+            Iterator<UserPostComment> it = posts.get(i).getComments().iterator();
+            while(it.hasNext()) {
+                comments.add(new CommentDtoOut(it.next()));
+            }
+            postOut.setComments(comments);
+
+            //iterate likes
+            Set<UserDtoOut> likers = new HashSet<>();
+            Iterator<UserPostLike> likeIt = posts.get(i).getLikes().iterator();
+            while(likeIt.hasNext()) {
+                likers.add(new UserDtoOut(likeIt.next().getUser()));
+            }
+
+
+            postOut.setLikers(likers);
+            postsOut.add(postOut);
         }
 
         return new ResponseEntity<>(postsOut, HttpStatus.OK);

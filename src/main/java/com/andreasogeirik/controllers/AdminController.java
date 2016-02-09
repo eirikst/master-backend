@@ -1,6 +1,7 @@
 package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.UserDto;
+import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
@@ -26,15 +27,10 @@ public class AdminController {
      */
     @PreAuthorize(value="hasAuthority('ADMIN')")
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<Status> createAdmin(@RequestBody UserDto user) throws IOException {
+    public ResponseEntity<UserDtoOut> createUser(@RequestBody UserDto user) throws IOException {
+        UserDtoOut userOut = new UserDtoOut(userDao.createAdminUser(user.toUser()));
 
-        int status = userDao.createAdminUser(user.toUser());
-
-        if(status == Codes.EMAIL_EXISTS) {
-            return new ResponseEntity<Status>(new Status(-1, "Email already exists in the system"), HttpStatus.CONFLICT);
-        }
-
-        return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
+        return new ResponseEntity<UserDtoOut>(userOut, HttpStatus.CREATED);
     }
 
 

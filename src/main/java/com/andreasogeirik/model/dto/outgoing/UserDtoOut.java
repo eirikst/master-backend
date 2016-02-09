@@ -1,6 +1,9 @@
 package com.andreasogeirik.model.dto.outgoing;
 
 import com.andreasogeirik.model.entities.User;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Created by eirikstadheim on 04/02/16.
@@ -93,5 +96,18 @@ public class UserDtoOut {
 
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
+    }
+
+    public JsonNode toJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
+        node.put("id", id);
+        node.put("email", email);
+        node.put("enabled", enabled);
+        node.put("location", id);
+        node.put("firstname", firstname);
+        node.put("lastname", lastname);
+        node.put("imageUri", imageUri);
+        return node;
     }
 }

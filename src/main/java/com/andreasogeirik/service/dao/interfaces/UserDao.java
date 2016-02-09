@@ -6,8 +6,8 @@ import com.andreasogeirik.model.entities.User;
  * Created by eirikstadheim on 29/01/16.
  */
 public interface UserDao {
-    int createUser(User user);
-    int createAdminUser(User user);
+    User createUser(User user);
+    User createAdminUser(User user);
     User findByEmail(String email);
     User findById(int id);
 }

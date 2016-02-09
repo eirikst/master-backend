@@ -1,9 +1,8 @@
 package com.andreasogeirik.model.dto.outgoing;
 
-import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.model.entities.UserPost;
 
-import java.util.Date;
+import java.util.*;
 
 /**
  * Created by eirikstadheim on 06/02/16.
@@ -13,6 +12,9 @@ public class UserPostDtoOut {
     private String message;
     private Date timeCreated;
     private String imageUri;
+    private Set<CommentDtoOut> comments;
+    private Set<UserDtoOut> likers;
+
 
     public UserPostDtoOut() {
     }
@@ -24,6 +26,15 @@ public class UserPostDtoOut {
         this.imageUri = imageUri;
     }
 
+    public UserPostDtoOut(int id, String message, Date timeCreated, String imageUri, Set<CommentDtoOut> comments) {
+        this.id = id;
+        this.message = message;
+        this.timeCreated = timeCreated;
+        this.imageUri = imageUri;
+        this.comments = comments;
+    }
+
+    //if comments or likers should be added, use setters
     public UserPostDtoOut(UserPost post) {
         id = post.getId();
         message = post.getMessage();
@@ -63,4 +74,19 @@ public class UserPostDtoOut {
         this.imageUri = imageUri;
     }
 
+    public Set<CommentDtoOut> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<CommentDtoOut> comments) {
+        this.comments = comments;
+    }
+
+    public Set<UserDtoOut> getLikers() {
+        return likers;
+    }
+
+    public void setLikers(Set<UserDtoOut> likers) {
+        this.likers = likers;
+    }
 }

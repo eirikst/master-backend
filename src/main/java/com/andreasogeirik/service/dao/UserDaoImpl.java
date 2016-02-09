@@ -3,6 +3,7 @@ package com.andreasogeirik.service.dao;
 import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.model.entities.UserRole;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
+import com.andreasogeirik.tools.EmailExistsException;
 import com.andreasogeirik.tools.InputManager;
 import com.andreasogeirik.tools.Codes;
 import com.andreasogeirik.tools.InvalidInputException;
@@ -34,7 +35,7 @@ public class UserDaoImpl implements UserDao {
      * Creates new user with role USER
      */
     @Override
-    public int createUser(User user) {
+    public User createUser(User user) {
         return createUser(user, ROLE_USER);
     }
 
@@ -42,14 +43,14 @@ public class UserDaoImpl implements UserDao {
    * Creates new user with role ADMIN
    */
     @Override
-    public int createAdminUser(User user) {
+    public User createAdminUser(User user) {
         return createUser(user, ROLE_ADMIN);
     }
 
     /*
      * Creates a new user in the DB, with given username, password, email and role
      */
-    private int createUser(User user, int role) {
+    private User createUser(User user, int role) {
         if(!inputManager.isValidEmail(user.getEmail())) {
             throw new InvalidInputException("Invalid email format");
         }
@@ -74,7 +75,7 @@ public class UserDaoImpl implements UserDao {
 
         //This is called here to include them in the transaction that adds the new user, to avoid duplication
         if(emailExists(user.getEmail(), session)) {
-            return Codes.EMAIL_EXISTS;
+            throw new EmailExistsException("Email already exists in system");
         }
 
         session.save(user);
@@ -91,7 +92,7 @@ public class UserDaoImpl implements UserDao {
         session.getTransaction().commit();
         session.close();
 
-        return Codes.OK;
+        return user;
     }
 
     /*

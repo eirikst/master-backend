@@ -24,6 +24,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private SimpleUrlAuthenticationFailureHandler authenticationFailureHandler;
 
     @Autowired
+    AuthenticationSuccessHandlerImpl authenticationSuccessHandlerImpl;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -49,6 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .permitAll()
                 .failureHandler(authenticationFailureHandler)
+                .successHandler(authenticationSuccessHandlerImpl)
                 .and()
                 .logout()
                 .permitAll();

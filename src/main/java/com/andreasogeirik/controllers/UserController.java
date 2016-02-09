@@ -6,6 +6,7 @@ import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
+import com.andreasogeirik.tools.EmailExistsException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
 import com.andreasogeirik.tools.Codes;
@@ -44,15 +45,10 @@ public class UserController {
      * Create a user
      */
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<Status> createUser(@RequestBody UserDto user) throws IOException {
+    public ResponseEntity<UserDtoOut> createUser(@RequestBody UserDto user) throws IOException {
+        UserDtoOut userOut = new UserDtoOut(userDao.createUser(user.toUser()));
 
-        int status = userDao.createUser(user.toUser());
-
-        if(status == Codes.EMAIL_EXISTS) {
-            return new ResponseEntity<Status>(new Status(-1, "Email already exists in the system"), HttpStatus.CONFLICT);
-        }
-
-        return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
+        return new ResponseEntity<UserDtoOut>(userOut, HttpStatus.CREATED);
     }
 
     /*
@@ -90,6 +86,11 @@ public class UserController {
     public ResponseEntity<Status> formatViolation(MethodArgumentTypeMismatchException e) {
         return new ResponseEntity<Status>(new Status(-1, "Input of wrong type(eg. string when expecting integer)"),
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EmailExistsException.class)
+    public ResponseEntity<Status> formatViolation(EmailExistsException e) {
+        return new ResponseEntity<Status>(new Status(-1, "Email already exists in the system"), HttpStatus.CONFLICT);
     }
 
 }
