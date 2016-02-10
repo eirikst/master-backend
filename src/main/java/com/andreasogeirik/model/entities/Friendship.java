@@ -3,7 +3,6 @@ package com.andreasogeirik.model.entities;
 import javax.persistence.*;
 import java.util.Date;
 
-enum Status { FRIEND1_REQUESTS_FRIEND2, FRIEND2_REQUESTS_FRIEND1, FRIENDS};
 
 /**
  * Created by eirikstadheim on 01/02/16.
@@ -11,10 +10,13 @@ enum Status { FRIEND1_REQUESTS_FRIEND2, FRIEND2_REQUESTS_FRIEND1, FRIENDS};
 @Entity
 @Table(name = "friendship")
 public class Friendship {
+    public static final int FRIENDS = 1;
+    public static final int FRIEND1_REQUEST_FRIEND2 = 2;
+    public static final int FRIEND2_REQUEST_FRIEND1 = 3;
 
     private int id;
     private Date friendsSince;
-    private Status status;
+    private int status;
     private User friend1;
     private User friend2;
 
@@ -32,14 +34,16 @@ public class Friendship {
         this.id = id;
     }
 
-    public Status getStatus() {
+    @Column(name="status", nullable=false)
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
+    @Column(name="friends_since", nullable=false)
     public Date getFriendsSince() {
         return friendsSince;
     }

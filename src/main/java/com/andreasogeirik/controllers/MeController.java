@@ -1,6 +1,5 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.model.dto.incoming.UserDto;
 import com.andreasogeirik.model.dto.incoming.UserPostDto;
 import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
 import com.andreasogeirik.security.User;
@@ -9,7 +8,6 @@ import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.tools.EmailExistsException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
-import com.andreasogeirik.tools.Codes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +17,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/me")
+public class MeController {
 
     @Autowired
     private UserDao userDao;
@@ -31,14 +32,47 @@ public class UserController {
     private UserPostDao postDao;
 
     /*
-     * Create a user
+     * Get the user entity of the logged in user
      */
-    @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<UserDtoOut> createUser(@RequestBody UserDto user) throws IOException {
-        UserDtoOut userOut = new UserDtoOut(userDao.createUser(user.toUser()));
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<UserDtoOut> getUser() {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
 
-        return new ResponseEntity<UserDtoOut>(userOut, HttpStatus.CREATED);
+        return new ResponseEntity<UserDtoOut>(new UserDtoOut(userDao.findById(userId)), HttpStatus.OK);
     }
+
+    /*
+     * Create a post
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/post",method = RequestMethod.PUT)
+    public ResponseEntity<Status> post(@RequestBody UserPostDto post) throws IOException {
+
+        postDao.createUserPost(post.toPost(),
+                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
+
+        return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
+    }
+
+    /*
+     * Get friends 
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/friends", method = RequestMethod.GET)
+    public ResponseEntity<Set<UserDtoOut>> getFriends() {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        Set<com.andreasogeirik.model.entities.User> friends = userDao.findFriends(userId);
+        Set<UserDtoOut> friendsOut = new HashSet<UserDtoOut>();
+        Iterator<com.andreasogeirik.model.entities.User> it = friends.iterator();
+        while(it.hasNext()) {
+            friendsOut.add(new UserDtoOut(it.next()));
+        }
+
+        return new ResponseEntity<Set<UserDtoOut>>(friendsOut, HttpStatus.OK);
+    }
+
 
 
     /*
