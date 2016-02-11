@@ -35,12 +35,12 @@ public class UserPostController {
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<UserPostDtoOut>> getPosts(@RequestParam(value = "start") int start) {
+    public ResponseEntity<List<UserPostDtoOut>> getPosts(@RequestParam(value = "userId") int userId,
+                                                         @RequestParam(value = "start") int start) {
         if(start < 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         }
-        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
 
         List<UserPost> posts = postDao.findPosts(userId, start, Constants.NUMBER_OF_POSTS_RETURNED);
 

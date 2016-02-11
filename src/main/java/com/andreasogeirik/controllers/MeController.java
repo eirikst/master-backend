@@ -1,10 +1,16 @@
 package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.UserPostDto;
+import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
 import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
+import com.andreasogeirik.model.dto.outgoing.UserPostDtoOut;
+import com.andreasogeirik.model.entities.UserPost;
+import com.andreasogeirik.model.entities.UserPostComment;
+import com.andreasogeirik.model.entities.UserPostLike;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
+import com.andreasogeirik.tools.Constants;
 import com.andreasogeirik.tools.EmailExistsException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
@@ -17,9 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/me")
@@ -40,6 +44,48 @@ public class MeController {
         int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
 
         return new ResponseEntity<UserDtoOut>(new UserDtoOut(userDao.findById(userId)), HttpStatus.OK);
+    }
+
+    /*
+ * Get Constants.NUMBER_OF_POSTS_RETURNED latest posts from the start number(0 is the first)
+ */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/post", method = RequestMethod.GET)
+    public ResponseEntity<List<UserPostDtoOut>> getPosts(@RequestParam(value = "start") int start) {
+        if(start < 0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        }
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        List<UserPost> posts = postDao.findPosts(userId, start, Constants.NUMBER_OF_POSTS_RETURNED);
+
+        List<UserPostDtoOut> postsOut = new ArrayList<UserPostDtoOut>();
+
+        for(int i = 0; i < posts.size(); i++) {
+            UserPostDtoOut postOut = new UserPostDtoOut(posts.get(i));
+
+            //iterate comments
+            Set<CommentDtoOut> comments = new HashSet<>();
+            Iterator<UserPostComment> it = posts.get(i).getComments().iterator();
+            while(it.hasNext()) {
+                comments.add(new CommentDtoOut(it.next()));
+            }
+            postOut.setComments(comments);
+
+            //iterate likes
+            Set<UserDtoOut> likers = new HashSet<>();
+            Iterator<UserPostLike> likeIt = posts.get(i).getLikes().iterator();
+            while(likeIt.hasNext()) {
+                likers.add(new UserDtoOut(likeIt.next().getUser()));
+            }
+
+
+            postOut.setLikers(likers);
+            postsOut.add(postOut);
+        }
+
+        return new ResponseEntity<>(postsOut, HttpStatus.OK);
     }
 
     /*
