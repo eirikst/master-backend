@@ -1,6 +1,8 @@
 package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.EventDto;
+import com.andreasogeirik.model.dto.outgoing.EventDtoOut;
+import com.andreasogeirik.model.entities.Event;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.tools.InvalidInputException;
@@ -27,12 +29,11 @@ public class EventController {
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<Status> createEvent(@RequestBody EventDto event) throws IOException {
+    public ResponseEntity<EventDtoOut> createEvent(@RequestBody EventDto event) throws IOException {
+        EventDtoOut eventOut = new EventDtoOut(eventDao.createEvent(event.toEvent(),
+                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
 
-        eventDao.createEvent(event.toEvent(),
-                ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
-
-        return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
+        return new ResponseEntity(eventOut, HttpStatus.CREATED);
     }
 
 

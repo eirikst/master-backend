@@ -23,10 +23,12 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="gs-rest-service" />
+        <module name="rest-backend" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="gs-rest-service" target="1.8" />
+      <module name="rest-backend" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

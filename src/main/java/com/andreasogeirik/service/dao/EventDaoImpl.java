@@ -23,7 +23,7 @@ public class EventDaoImpl implements EventDao {
     InputManager inputManager;
 
     @Override
-    public void createEvent(Event event, int adminId) {
+    public Event createEvent(Event event, int adminId) {
         if(!inputManager.isValidEventName(event.getName())) {
             throw new InvalidInputException("Invalid name format");
         }
@@ -55,5 +55,6 @@ public class EventDaoImpl implements EventDao {
 
         session.getTransaction().commit();
         session.close();
+        return event;
     }
 }
