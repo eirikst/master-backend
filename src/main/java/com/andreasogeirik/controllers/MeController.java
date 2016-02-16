@@ -101,25 +101,6 @@ public class MeController {
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
 
-    /*
-     * Get friends 
-     */
-    @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/friends", method = RequestMethod.GET)
-    public ResponseEntity<Set<UserDtoOut>> getFriends() {
-        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
-
-        Set<com.andreasogeirik.model.entities.User> friends = userDao.findFriends(userId);
-        Set<UserDtoOut> friendsOut = new HashSet<UserDtoOut>();
-        Iterator<com.andreasogeirik.model.entities.User> it = friends.iterator();
-        while(it.hasNext()) {
-            friendsOut.add(new UserDtoOut(it.next()));
-        }
-
-        return new ResponseEntity<Set<UserDtoOut>>(friendsOut, HttpStatus.OK);
-    }
-
-
 
     /*
      * Exception handling

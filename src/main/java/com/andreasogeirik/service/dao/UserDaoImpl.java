@@ -117,7 +117,9 @@ public class UserDaoImpl implements UserDao {
         Criteria criteria = session.createCriteria(User.class);
         User user = (User)criteria.add(Restrictions.eq("email", email))
                 .uniqueResult();
-        Hibernate.initialize(user.getUserRole());
+        if(user != null) {
+            Hibernate.initialize(user.getUserRole());
+        }
 
         session.close();
 

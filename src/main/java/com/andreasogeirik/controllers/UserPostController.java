@@ -30,47 +30,7 @@ public class UserPostController {
     @Autowired
     private UserPostDao postDao;
 
-    /*
-     * Get Constants.NUMBER_OF_POSTS_RETURNED latest posts from the start number(0 is the first)
-     */
-    @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<UserPostDtoOut>> getPosts(@RequestParam(value = "userId") int userId,
-                                                         @RequestParam(value = "start") int start) {
-        if(start < 0) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        }
-
-        List<UserPost> posts = postDao.findPosts(userId, start, Constants.NUMBER_OF_POSTS_RETURNED);
-
-        List<UserPostDtoOut> postsOut = new ArrayList<UserPostDtoOut>();
-
-        for(int i = 0; i < posts.size(); i++) {
-            UserPostDtoOut postOut = new UserPostDtoOut(posts.get(i));
-
-            //iterate comments
-            Set<CommentDtoOut> comments = new HashSet<>();
-            Iterator<UserPostComment> it = posts.get(i).getComments().iterator();
-            while(it.hasNext()) {
-                comments.add(new CommentDtoOut(it.next()));
-            }
-            postOut.setComments(comments);
-
-            //iterate likes
-            Set<UserDtoOut> likers = new HashSet<>();
-            Iterator<UserPostLike> likeIt = posts.get(i).getLikes().iterator();
-            while(likeIt.hasNext()) {
-                likers.add(new UserDtoOut(likeIt.next().getUser()));
-            }
-
-
-            postOut.setLikers(likers);
-            postsOut.add(postOut);
-        }
-
-        return new ResponseEntity<>(postsOut, HttpStatus.OK);
-    }
 
     /*
      * Creates a comment to the specified post
