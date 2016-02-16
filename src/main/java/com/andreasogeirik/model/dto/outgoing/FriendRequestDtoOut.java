@@ -7,12 +7,12 @@ import java.util.Date;
 /**
  * Created by eirikstadheim on 16/02/16.
  */
-public class FriendRequest {
+public class FriendRequestDtoOut {
     private Date friendsSince;
     private boolean myRequest;
     private UserDtoOut friend;
 
-    public FriendRequest(Date friendsSince, boolean myRequest, User friend) {
+    public FriendRequestDtoOut(Date friendsSince, boolean myRequest, User friend) {
         this.friendsSince = friendsSince;
         this.myRequest = myRequest;
         this.friend = new UserDtoOut(friend);
