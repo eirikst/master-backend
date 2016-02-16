@@ -172,4 +172,31 @@ public class UserDaoImpl implements UserDao {
         session.close();
         return friends;
     }
+
+    /*
+     * Finds the set of friends of a user presented as i friendship, so that the status is also returned.
+     * Status is used to see friend requests as well as friendships
+     */
+    public List<Friendship> findFriendships(int userId) {
+        Session session = sessionFactory.openSession();
+
+        //the given user can be set on both friend1 and friend2, needs two queries
+        String hql = "FROM Friendship F WHERE (F.status = " + Friendship.FRIEND1_REQUEST_FRIEND2 + " OR F.status = " +
+                Friendship.FRIEND2_REQUEST_FRIEND1 + ") AND (F.friend1.id = " + userId + " OR F.friend2.id = " +
+                userId + ")";
+        Query query = session.createQuery(hql);
+        List<Friendship> friendships = (List<Friendship>)query.list();
+
+        Set<Friendship> friends = new HashSet<>();
+
+        Iterator<Friendship> it = friendships.iterator();
+        while(it.hasNext()) {
+            Friendship friendship = it.next();
+            Hibernate.initialize(friendship.getFriend1());
+            Hibernate.initialize(friendship.getFriend2());
+        }
+
+        session.close();
+        return friendships;
+    }
 }

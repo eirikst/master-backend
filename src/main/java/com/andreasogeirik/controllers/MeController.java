@@ -2,8 +2,10 @@ package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.UserPostDto;
 import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
+import com.andreasogeirik.model.dto.outgoing.FriendRequest;
 import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
 import com.andreasogeirik.model.dto.outgoing.UserPostDtoOut;
+import com.andreasogeirik.model.entities.Friendship;
 import com.andreasogeirik.model.entities.UserPost;
 import com.andreasogeirik.model.entities.UserPostComment;
 import com.andreasogeirik.model.entities.UserPostLike;
@@ -100,6 +102,46 @@ public class MeController {
 
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
+
+    /*
+     * Get friendships
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/friendsrequests", method = RequestMethod.GET)
+    public ResponseEntity<Set<FriendRequest>> getFriendships() {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        List<com.andreasogeirik.model.entities.Friendship> friendships = userDao.findFriendships(userId);
+
+
+        Set<FriendRequest> friendsOut = new HashSet<FriendRequest>();
+        Iterator<com.andreasogeirik.model.entities.Friendship> it = friendships.iterator();
+        while(it.hasNext()) {
+            Friendship friendship = it.next();
+
+            //You are friend1
+            if(friendship.getFriend1().getId() == userId) {
+                if(friendship.getStatus() == Friendship.FRIEND1_REQUEST_FRIEND2) {
+                    friendsOut.add(new FriendRequest(friendship.getFriendsSince(), true, friendship.getFriend2()));
+                }
+                else {
+                    friendsOut.add(new FriendRequest(friendship.getFriendsSince(), false, friendship.getFriend2()));
+                }
+            }
+            //You are friend2
+            else {
+                if(friendship.getStatus() == Friendship.FRIEND1_REQUEST_FRIEND2) {
+                    friendsOut.add(new FriendRequest(friendship.getFriendsSince(), false, friendship.getFriend1()));
+                }
+                else {
+                    friendsOut.add(new FriendRequest(friendship.getFriendsSince(), true, friendship.getFriend1()));
+                }
+            }
+        }
+
+        return new ResponseEntity<Set<FriendRequest>>(friendsOut, HttpStatus.OK);
+    }
+
 
 
     /*

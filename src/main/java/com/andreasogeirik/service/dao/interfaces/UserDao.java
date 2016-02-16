@@ -1,7 +1,9 @@
 package com.andreasogeirik.service.dao.interfaces;
 
+import com.andreasogeirik.model.entities.Friendship;
 import com.andreasogeirik.model.entities.User;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -13,4 +15,5 @@ public interface UserDao {
     User findByEmail(String email);
     User findById(int id);
     Set<User> findFriends(int userId);
-}
+    List<Friendship> findFriendships(int userId);
+    }
