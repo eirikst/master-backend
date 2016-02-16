@@ -1,13 +1,13 @@
-package com.andreasogeirik.model.dto.incoming;
+package com.andreasogeirik.model.dto.outgoing;
 
 import com.andreasogeirik.model.entities.Event;
 
 import java.util.Date;
 
 /**
- * Created by eirikstadheim on 03/02/16.
+ * Created by Andreas on 12.02.2016.
  */
-public class EventDto {
+public class EventDtoOut {
     private int id;
     private String name = "";
     private String location = "";
@@ -17,14 +17,27 @@ public class EventDto {
     private String imageUri = "";
     private int adminId;
 
-    public Event toEvent() {
-        return new Event(name, location, description, timeStart, timeEnd, imageUri);
+    public EventDtoOut(int id, String name, String location, String description, Date timeCreated, Date timeStart, Date timeEnd, String imageUri, int adminId) {
+        this.id = id;
+        this.name = name;
+        this.location = location;
+        this.description = description;
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
+        this.imageUri = imageUri;
+        this.adminId = adminId;
     }
 
-    public Event toEventNoTimeEnd() {
-        return new Event(name, location, description, timeStart, imageUri);
+    public EventDtoOut(Event event) {
+        this.id = event.getId();
+        this.name = event.getName();
+        this.location = event.getLocation();
+        this.description = event.getDescription();
+        this.timeStart = event.getTimeStart();
+        this.timeEnd = event.getTimeEnd();
+        this.imageUri = event.getImageURI();
+        this.adminId = event.getAdmin().getId();
     }
-
 
     public int getId() {
         return id;

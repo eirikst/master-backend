@@ -23,7 +23,7 @@ public class EventDaoImpl implements EventDao {
     InputManager inputManager;
 
     @Override
-    public void createEvent(Event event, int adminId) {
+    public Event createEvent(Event event, int adminId) {
         if(!inputManager.isValidEventName(event.getName())) {
             throw new InvalidInputException("Invalid name format");
         }
@@ -36,11 +36,13 @@ public class EventDaoImpl implements EventDao {
         if(event.getTimeStart().before(new Date())) {
             throw new InvalidInputException("Invalid start time");
         }
-        if(event.getTimeEnd().before(new Date())) {
-            throw new InvalidInputException("Invalid end time");
-        }
-        if(event.getTimeEnd().before(event.getTimeStart())) {
-            throw new InvalidInputException("End time cannot be before start time");
+        if (event.getTimeEnd() != null){
+            if(event.getTimeEnd().before(new Date())) {
+                throw new InvalidInputException("Invalid end time");
+            }
+            if(event.getTimeEnd().before(event.getTimeStart())) {
+                throw new InvalidInputException("End time cannot be before start time");
+            }
         }
 
         Session session = sessionFactory.openSession();
@@ -55,5 +57,6 @@ public class EventDaoImpl implements EventDao {
 
         session.getTransaction().commit();
         session.close();
+        return event;
     }
 }
