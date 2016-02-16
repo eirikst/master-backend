@@ -37,6 +37,14 @@ public class Event {
         this.imageURI = imageURI;
     }
 
+    public Event(String name, String location, String description, Date timeStart, String imageURI) {
+        this.name = name;
+        this.location = location;
+        this.description = description;
+        this.timeStart = timeStart;
+        this.imageURI = imageURI;
+    }
+
     public Event(String name, String location, String description, Date timeCreated, Date timeStart,
                  Date timeEnd, String imageURI, User admin) {
         this.name = name;

@@ -21,6 +21,10 @@ public class EventDto {
         return new Event(name, location, description, timeStart, timeEnd, imageUri);
     }
 
+    public Event toEventNoTimeEnd() {
+        return new Event(name, location, description, timeStart, imageUri);
+    }
+
 
     public int getId() {
         return id;
