@@ -31,17 +31,6 @@ public class UserController {
     private UserPostDao postDao;
 
     /*
-     * Get the user entity of the logged in user
-     */
-    @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<UserDtoOut> getUser() {
-        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
-
-        return new ResponseEntity<UserDtoOut>(new UserDtoOut(userDao.findById(userId)), HttpStatus.OK);
-    }
-
-    /*
      * Create a user
      */
     @RequestMapping(method = RequestMethod.PUT)
@@ -50,20 +39,6 @@ public class UserController {
 
         return new ResponseEntity<UserDtoOut>(userOut, HttpStatus.CREATED);
     }
-
-    /*
-     * Create a post
-     */
-    @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/post",method = RequestMethod.PUT)
-    public ResponseEntity<Status> post(@RequestBody UserPostDto post) throws IOException {
-
-        postDao.createUserPost(post.toPost(),
-                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
-
-        return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
-    }
-
 
 
     /*

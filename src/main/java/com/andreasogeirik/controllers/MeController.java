@@ -1,6 +1,6 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.model.dto.incoming.CommentDto;
+import com.andreasogeirik.model.dto.incoming.UserPostDto;
 import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
 import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
 import com.andreasogeirik.model.dto.outgoing.UserPostDtoOut;
@@ -8,8 +8,10 @@ import com.andreasogeirik.model.entities.UserPost;
 import com.andreasogeirik.model.entities.UserPostComment;
 import com.andreasogeirik.model.entities.UserPostLike;
 import com.andreasogeirik.security.User;
+import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.tools.Constants;
+import com.andreasogeirik.tools.EmailExistsException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,23 +26,37 @@ import java.io.IOException;
 import java.util.*;
 
 @RestController
-@RequestMapping("user/post")
-public class UserPostController {
+@RequestMapping("/me")
+public class MeController {
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private UserPostDao postDao;
 
     /*
-     * Get Constants.NUMBER_OF_POSTS_RETURNED latest posts from the start number(0 is the first)
+     * Get the user entity of the logged in user
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<UserPostDtoOut>> getPosts(@RequestParam(value = "userId") int userId,
-                                                         @RequestParam(value = "start") int start) {
+    public ResponseEntity<UserDtoOut> getUser() {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        return new ResponseEntity<UserDtoOut>(new UserDtoOut(userDao.findById(userId)), HttpStatus.OK);
+    }
+
+    /*
+ * Get Constants.NUMBER_OF_POSTS_RETURNED latest posts from the start number(0 is the first)
+ */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/post", method = RequestMethod.GET)
+    public ResponseEntity<List<UserPostDtoOut>> getPosts(@RequestParam(value = "start") int start) {
         if(start < 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         }
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
 
         List<UserPost> posts = postDao.findPosts(userId, start, Constants.NUMBER_OF_POSTS_RETURNED);
 
@@ -73,31 +89,36 @@ public class UserPostController {
     }
 
     /*
-     * Creates a comment to the specified post
+     * Create a post
      */
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/{postId}/comment", method = RequestMethod.PUT)
-    public ResponseEntity<Status> comment(@RequestBody CommentDto comment,
-                                          @PathVariable(value="postId") int postId) throws IOException {
+    @RequestMapping(value = "/post",method = RequestMethod.PUT)
+    public ResponseEntity<Status> post(@RequestBody UserPostDto post) throws IOException {
 
-        postDao.comment(comment.toUserPostComment(), postId,
+        postDao.createUserPost(post.toPost(),
                 ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
 
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
 
     /*
-     * Creates a like on the specified post from the logged in user
+     * Get friends 
      */
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/{postId}/like", method = RequestMethod.PUT)
-    public ResponseEntity<Status> like(@PathVariable(value = "postId") int postId) throws IOException {
+    @RequestMapping(value = "/friends", method = RequestMethod.GET)
+    public ResponseEntity<Set<UserDtoOut>> getFriends() {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
 
-        postDao.like(postId,
-                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
+        Set<com.andreasogeirik.model.entities.User> friends = userDao.findFriends(userId);
+        Set<UserDtoOut> friendsOut = new HashSet<UserDtoOut>();
+        Iterator<com.andreasogeirik.model.entities.User> it = friends.iterator();
+        while(it.hasNext()) {
+            friendsOut.add(new UserDtoOut(it.next()));
+        }
 
-        return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
+        return new ResponseEntity<Set<UserDtoOut>>(friendsOut, HttpStatus.OK);
     }
+
 
 
     /*
@@ -105,16 +126,14 @@ public class UserPostController {
      */
     @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
     @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
-    public void constraintViolation() {
-    }
+    public void constraintViolation() {}
 
     @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Input length violation")  // 400
     @ExceptionHandler(org.hibernate.exception.DataException.class)
-    public void inputLengthViolation() {
-    }
+    public void inputLengthViolation() {}
 
     @ExceptionHandler(InvalidInputException.class)
-    public ResponseEntity<Status> inputViolation(InvalidInputException e) {
+    public ResponseEntity<Status> violation(InvalidInputException e) {
         return new ResponseEntity<Status>(new Status(0, e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
@@ -123,4 +142,10 @@ public class UserPostController {
         return new ResponseEntity<Status>(new Status(-1, "Input of wrong type(eg. string when expecting integer)"),
                 HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(EmailExistsException.class)
+    public ResponseEntity<Status> formatViolation(EmailExistsException e) {
+        return new ResponseEntity<Status>(new Status(-1, "Email already exists in the system"), HttpStatus.CONFLICT);
+    }
+
 }

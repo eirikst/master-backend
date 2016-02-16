@@ -89,7 +89,7 @@ public class UserPostDaoImpl implements UserPostDao {
     public List<UserPost> findPosts(int userId, int start, int quantity) {
         Session session = sessionFactory.openSession();
 
-        String hql = "FROM UserPost P WHERE P.user.id = " + userId;
+        String hql = "FROM UserPost P WHERE P.user.id = " + userId + " ORDER BY P.timeCreated desc";
         Query query = session.createQuery(hql);
         query.setMaxResults(quantity);
         query.setFirstResult(start);

@@ -1,11 +1,11 @@
 package com.andreasogeirik.service.dao;
 
+import com.andreasogeirik.model.entities.Friendship;
 import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.model.entities.UserRole;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.tools.EmailExistsException;
 import com.andreasogeirik.tools.InputManager;
-import com.andreasogeirik.tools.Codes;
 import com.andreasogeirik.tools.InvalidInputException;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.util.*;
 
 /**
  * Created by eirikstadheim on 29/01/16.
@@ -134,5 +134,40 @@ public class UserDaoImpl implements UserDao {
         User user = session.get(User.class, id);
         session.close();
         return user;
+    }
+
+    /*
+     * Finds the set of friends of a user
+     */
+    public Set<User> findFriends(int userId) {
+        Session session = sessionFactory.openSession();
+
+        //the given user can be set on both friend1 and friend2, needs two queries
+        String hql = "FROM Friendship F WHERE F.status = " + Friendship.FRIENDS + " AND F.friend1.id = " + userId;
+        Query query = session.createQuery(hql);
+        List<Friendship> friendships = (List<Friendship>)query.list();
+
+        String hql2 = "FROM Friendship F WHERE F.status = " + Friendship.FRIENDS + " AND F.friend2.id = " + userId;
+        Query query2 = session.createQuery(hql2);
+        List<Friendship> friendships2 = (List<Friendship>)query2.list();
+
+        Set<User> friends = new HashSet<>();
+
+        Iterator<Friendship> it = friendships.iterator();
+        while(it.hasNext()) {
+            User friend = it.next().getFriend2();
+            Hibernate.initialize(friend);
+            friends.add(friend);
+        }
+
+        Iterator<Friendship> it2 = friendships2.iterator();
+        while(it2.hasNext()) {
+            User friend = it2.next().getFriend1();
+            Hibernate.initialize(friend);
+            friends.add(friend);
+        }
+
+        session.close();
+        return friends;
     }
 }
