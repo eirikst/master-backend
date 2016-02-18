@@ -1,10 +1,7 @@
 package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.UserPostDto;
-import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
-import com.andreasogeirik.model.dto.outgoing.FriendRequestDtoOut;
-import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
-import com.andreasogeirik.model.dto.outgoing.UserPostDtoOut;
+import com.andreasogeirik.model.dto.outgoing.*;
 import com.andreasogeirik.model.entities.Friendship;
 import com.andreasogeirik.model.entities.UserPost;
 import com.andreasogeirik.model.entities.UserPostComment;
@@ -42,17 +39,17 @@ public class MeController {
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<UserDtoOut> getUser() {
+    public ResponseEntity<UserDtoOut> getMe() {
         int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
 
         return new ResponseEntity<UserDtoOut>(new UserDtoOut(userDao.findById(userId)), HttpStatus.OK);
     }
 
     /*
- * Get Constants.NUMBER_OF_POSTS_RETURNED latest posts from the start number(0 is the first)
- */
+    * Get Constants.NUMBER_OF_POSTS_RETURNED latest posts from the start number(0 is the first)
+    */
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/post", method = RequestMethod.GET)
+    @RequestMapping(value = "/posts", method = RequestMethod.GET)
     public ResponseEntity<List<UserPostDtoOut>> getPosts(@RequestParam(value = "start") int start) {
         if(start < 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -94,7 +91,7 @@ public class MeController {
      * Create a post
      */
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/post",method = RequestMethod.PUT)
+    @RequestMapping(value = "/posts",method = RequestMethod.PUT)
     public ResponseEntity<Status> post(@RequestBody UserPostDto post) throws IOException {
 
         postDao.createUserPost(post.toPost(),
@@ -103,43 +100,29 @@ public class MeController {
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
 
-    /*
-     * Get friendships
+    /**
+     * Gets friendships of the logged in user.
+     * @return JSONArray with Friendship objects.
      */
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/friendrequests", method = RequestMethod.GET)
-    public ResponseEntity<Set<FriendRequestDtoOut>> getFriendships() {
+    @RequestMapping(value = "/friendships", method = RequestMethod.GET)
+    public ResponseEntity<Set<FriendshipDtoOut>> getFriendships() {
         int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
 
-        List<com.andreasogeirik.model.entities.Friendship> friendships = userDao.findFriendships(userId);
 
-
-        Set<FriendRequestDtoOut> friendsOut = new HashSet<FriendRequestDtoOut>();
-        Iterator<com.andreasogeirik.model.entities.Friendship> it = friendships.iterator();
-        while(it.hasNext()) {
-            Friendship friendship = it.next();
-
-            //You are friend1
-            if(friendship.getFriend1().getId() == userId) {
-                if(friendship.getStatus() == Friendship.FRIEND1_REQUEST_FRIEND2) {
-                    friendsOut.add(new FriendRequestDtoOut(friendship.getFriendsSince(), true, friendship.getFriend2()));
-                }
-                else {
-                    friendsOut.add(new FriendRequestDtoOut(friendship.getFriendsSince(), false, friendship.getFriend2()));
-                }
-            }
-            //You are friend2
-            else {
-                if(friendship.getStatus() == Friendship.FRIEND1_REQUEST_FRIEND2) {
-                    friendsOut.add(new FriendRequestDtoOut(friendship.getFriendsSince(), false, friendship.getFriend1()));
-                }
-                else {
-                    friendsOut.add(new FriendRequestDtoOut(friendship.getFriendsSince(), true, friendship.getFriend1()));
-                }
-            }
+        List<Friendship> friendships = userDao.findFriendsAndRequests(userId);
+        for(int i = 0; i < friendships.size(); i++) {
+            System.out.printf(friendships.get(i).toString());
         }
 
-        return new ResponseEntity<Set<FriendRequestDtoOut>>(friendsOut, HttpStatus.OK);
+        Set<FriendshipDtoOut> friendshipsOut = new HashSet<FriendshipDtoOut>();
+
+        Iterator<com.andreasogeirik.model.entities.Friendship> it = friendships.iterator();
+        while(it.hasNext()) {
+            friendshipsOut.add(new FriendshipDtoOut((Friendship)it.next(), userId));
+        }
+
+        return new ResponseEntity<Set<FriendshipDtoOut>>(friendshipsOut, HttpStatus.OK);
     }
 
 
