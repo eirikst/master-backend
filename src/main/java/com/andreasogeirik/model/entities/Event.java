@@ -27,6 +27,13 @@ public class Event {
     public Event() {
     }
 
+    public Event(String name, String location, String description, Date timeStart) {
+        this.name = name;
+        this.location = location;
+        this.description = description;
+        this.timeStart = timeStart;
+    }
+
     public Event(String name, String location, String description, Date timeStart,
                  Date timeEnd, String imageURI) {
         this.name = name;

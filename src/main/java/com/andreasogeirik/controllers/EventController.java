@@ -31,7 +31,7 @@ public class EventController {
     public ResponseEntity<EventDtoOut> createEvent(@RequestBody EventDto event) throws IOException {
         EventDtoOut eventOut;
         if (event.getTimeEnd() == null){
-            eventOut = new EventDtoOut(eventDao.createEvent(event.toEventNoTimeEnd(),
+            eventOut = new EventDtoOut(eventDao.createEvent(event.toEvent(),
                     ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
         }
         else{

@@ -1,7 +1,13 @@
 package com.andreasogeirik.model.dto.incoming;
 
 import com.andreasogeirik.model.entities.Event;
+import com.andreasogeirik.tools.ImageHandler;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -18,6 +24,12 @@ public class EventDto {
     private int adminId;
 
     public Event toEvent() {
+        Event event = new Event(name, location, description, timeStart);
+
+        if (timeEnd != null){
+            event.setTimeEnd(timeEnd);
+        }
+
         return new Event(name, location, description, timeStart, timeEnd, imageUri);
     }
 
@@ -78,8 +90,8 @@ public class EventDto {
         return imageUri;
     }
 
-    public void setImageUri(String imageUri) {
-        this.imageUri = imageUri;
+    public void setImageUri(String encodedImage) {
+        this.imageUri = encodedImage;
     }
 
     public int getAdminId() {

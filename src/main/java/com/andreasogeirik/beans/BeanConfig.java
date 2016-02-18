@@ -5,6 +5,8 @@ import com.andreasogeirik.service.dao.*;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
+import com.andreasogeirik.service.image.ImageServiceImpl;
+import com.andreasogeirik.service.image.interfaces.ImageService;
 import com.andreasogeirik.tools.InputManager;
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +34,11 @@ public class BeanConfig {
     @Bean
     public EventDao eventDao() {
         return new EventDaoImpl();
+    }
+
+    @Bean
+    public ImageService imageService() {
+        return new ImageServiceImpl();
     }
 
     @Bean
