@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.persistence.EntityNotFoundException;
-import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -35,18 +34,23 @@ public class UserController {
     @Autowired
     private UserPostDao postDao;
 
-    /*
-     * Create a user
+    /**
+     * Creates a user with USER authorization
+     * @param user the user object(JSON)
+     * @return the user object as JSON with ID
      */
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<UserDtoOut> createUser(@RequestBody UserDto user) throws IOException {
+    public ResponseEntity<UserDtoOut> createUser(@RequestBody UserDto user) {
         UserDtoOut userOut = new UserDtoOut(userDao.createUser(user.toUser()));
 
         return new ResponseEntity<UserDtoOut>(userOut, HttpStatus.CREATED);
     }
 
-    /*
-     * Get Constants.NUMBER_OF_POSTS_RETURNED latest posts from the start number(0 is the first)
+    /**
+     * Gets the a given number of posts(10 right now) of the user specified, with an offset specified
+     * @param userId id of user as integer
+     * @param start offset
+     * @return list of 10(or less, if no more present) user post objects as JSON
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{userId}/posts", method = RequestMethod.GET)
@@ -89,7 +93,7 @@ public class UserController {
 
 
     /**
-     * Gets friendships of the specified user. Ignores freend requests, as this is personal to the users.
+     * Gets friendships of the specified user. Ignores friend requests, as this is personal to the users.
      * @param userId user-id of user to get the friend list of
      * @return JSONArray with Friendship objects.
      */

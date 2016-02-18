@@ -22,12 +22,14 @@ public class AdminController {
     @Autowired
     private UserDao userDao;
 
-    /*
-     * Create admin user
+    /**
+     * Creates an admin user
+     * @param user JSON representation of the new user
+     * @return JSON representation of the new user including ID
      */
     @PreAuthorize(value="hasAuthority('ADMIN')")
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<UserDtoOut> createUser(@RequestBody UserDto user) throws IOException {
+    public ResponseEntity<UserDtoOut> createUser(@RequestBody UserDto user) {
         UserDtoOut userOut = new UserDtoOut(userDao.createAdminUser(user.toUser()));
 
         return new ResponseEntity<UserDtoOut>(userOut, HttpStatus.CREATED);
