@@ -1,15 +1,11 @@
 package com.andreasogeirik.service.image;
 
-import com.andreasogeirik.model.dto.incoming.ImageDto;
 import com.andreasogeirik.service.image.interfaces.ImageService;
-import com.andreasogeirik.tools.InvalidInputException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.RandomStringUtils;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.Base64;
+import java.io.*;
 
 /**
  * Created by Andreas on 18.02.2016.
@@ -17,18 +13,26 @@ import java.util.Base64;
 public class ImageServiceImpl implements ImageService {
 
     @Override
-    public String saveImage(ImageDto image) {
+    public String saveImage(String image, String fileName) {
         if (image != null) {
-            String encodedImage = image.getEncodedImage();
+            String extension = FilenameUtils.getExtension(fileName);
+            if ("jpg".equals(extension) || "png".equals(extension)) ;
+            else {
+                return null;
+            }
             try {
-                byte[] decoded = Base64.getDecoder().decode(encodedImage);
-                BufferedImage img = ImageIO.read(new ByteArrayInputStream(decoded));
-                File outputfile = new File("pic.jpg");
-                ImageIO.write(img, "jpg", outputfile);
-                File file = new File("pic.jpg");
-                return file.toPath().toString();
-            } catch (IOException e) {
-                throw new InvalidInputException("Could not decode image");
+                byte[] imageByteArray = Base64.decodeBase64(image);
+
+                FileOutputStream imageOutFile = new FileOutputStream(RandomStringUtils.randomAlphanumeric(20) + "." + extension);
+                imageOutFile.write(imageByteArray);
+                imageOutFile.close();
+
+                System.out.println("Image Successfully Stored");
+                return fileName;
+            } catch (FileNotFoundException fnfe) {
+                System.out.println("Image Path not found" + fnfe);
+            } catch (IOException ioe) {
+                System.out.println("Exception while converting the Image " + ioe);
             }
         }
         return null;

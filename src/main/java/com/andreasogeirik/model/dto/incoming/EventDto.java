@@ -1,13 +1,7 @@
 package com.andreasogeirik.model.dto.incoming;
 
 import com.andreasogeirik.model.entities.Event;
-import com.andreasogeirik.tools.ImageHandler;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 
 /**

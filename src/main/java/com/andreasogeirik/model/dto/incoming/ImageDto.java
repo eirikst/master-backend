@@ -1,23 +1,33 @@
 package com.andreasogeirik.model.dto.incoming;
 
 /**
- * Created by Andreas on 18.02.2016.
+ * Created by Andreas on 19.02.2016.
  */
 public class ImageDto {
-    String encodedImage;
+    private String image;
+    private String filename;
 
     public ImageDto() {
     }
 
-    public ImageDto(String encodedImage) {
-        this.encodedImage = encodedImage;
+    public ImageDto(String image, String filename) {
+        this.image = image;
+        this.filename = filename;
     }
 
-    public String getEncodedImage() {
-        return encodedImage;
+    public String getImage() {
+        return image;
     }
 
-    public void setEncodedImage(String encodedImage) {
-        this.encodedImage = encodedImage;
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }
