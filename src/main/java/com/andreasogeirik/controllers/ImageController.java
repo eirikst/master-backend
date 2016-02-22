@@ -28,10 +28,8 @@ public class ImageController {
     */
     @PreAuthorize(value = "hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<String> saveImage(@RequestBody String image) throws IOException {
-
-        String imageUrl = imageService.saveImage(image);
-
+    public ResponseEntity<String> saveImage(@RequestBody ImageDto imageDto) throws IOException {
+        String imageUrl = imageService.saveImage(imageDto);
         return new ResponseEntity(imageUrl, HttpStatus.OK);
     }
 }
