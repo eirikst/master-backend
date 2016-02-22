@@ -8,11 +8,11 @@ import java.util.Date;
  * Created by eirikstadheim on 01/02/16.
  */
 @Entity
-@Table(name = "friendship")
+@Table(name = "friendship", uniqueConstraints=
+@UniqueConstraint(columnNames={"friend1_id", "friend2_id"}))
 public class Friendship {
     public static final int FRIENDS = 1;
     public static final int FRIEND1_REQUEST_FRIEND2 = 2;
-    public static final int FRIEND2_REQUEST_FRIEND1 = 3;
 
     private int id;
     private Date friendsSince;
@@ -70,5 +70,16 @@ public class Friendship {
 
     public void setFriend2(User friend2) {
         this.friend2 = friend2;
+    }
+
+    @Override
+    public String toString() {
+        return "Friendship{" +
+                "id=" + id +
+                ", friendsSince=" + friendsSince +
+                ", status=" + status +
+                ", friend1=" + friend1 +
+                ", friend2=" + friend2 +
+                '}';
     }
 }

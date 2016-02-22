@@ -5,6 +5,7 @@ import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.model.entities.UserRole;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.tools.EmailExistsException;
+import com.andreasogeirik.tools.EntityConflictException;
 import com.andreasogeirik.tools.InputManager;
 import com.andreasogeirik.tools.InvalidInputException;
 import org.hibernate.*;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.*;
 
 /**
@@ -141,7 +143,7 @@ public class UserDaoImpl implements UserDao {
     /*
      * Finds the set of friends of a user
      */
-    public Set<User> findFriends(int userId) {
+    /*public Set<User> findFriendsAndRequests(int userId) {
         Session session = sessionFactory.openSession();
 
         //the given user can be set on both friend1 and friend2, needs two queries
@@ -171,5 +173,140 @@ public class UserDaoImpl implements UserDao {
 
         session.close();
         return friends;
+    }*/
+
+
+    /*
+     * Finds all friends and requests to/from the user(as friendships)
+     */
+    public List<Friendship> findFriendsAndRequests(int userId) {
+        Session session = sessionFactory.openSession();
+
+        //the given user can be set on both friend1 and friend2, needs two queries
+        String hql = "FROM Friendship F WHERE  F.friend1.id = " + userId + " OR F.friend2.id = " + userId;
+        Query query = session.createQuery(hql);
+        List<Friendship> friendships = (List<Friendship>)query.list();
+
+        Iterator<Friendship> it = friendships.iterator();
+        while(it.hasNext()) {
+            Friendship friendship = it.next();
+            Hibernate.initialize(friendship.getFriend1());
+            Hibernate.initialize(friendship.getFriend2());
+            Hibernate.initialize(friendship.getStatus());
+            Hibernate.initialize(friendship.getFriendsSince());
+        }
+
+        session.close();
+        return friendships;
+    }
+
+    /*
+     * Finds all friends of the specified user, ignores requests
+     */
+    public List<Friendship> findFriends(int userId) {
+        Session session = sessionFactory.openSession();
+
+        //the given user can be set on both friend1 and friend2, needs two queries
+        String hql = "FROM Friendship F WHERE F.status = " + Friendship.FRIENDS + " AND (F.friend1.id = " + userId +
+                " OR F.friend2.id = " + userId + ")";
+        Query query = session.createQuery(hql);
+        List<Friendship> friendships = (List<Friendship>)query.list();
+
+        Iterator<Friendship> it = friendships.iterator();
+        while(it.hasNext()) {
+            Friendship friendship = it.next();
+            Hibernate.initialize(friendship.getFriend1());
+            Hibernate.initialize(friendship.getFriend2());
+            Hibernate.initialize(friendship.getStatus());
+            Hibernate.initialize(friendship.getFriendsSince());
+        }
+
+        session.close();
+        return friendships;
+    }
+
+    /*
+     * The request is from userId1 to userId2
+     */
+    @Override
+    public Friendship addFriendRequest(int userId1, int userId2) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        User friend1 = session.get(User.class, userId1);
+        User friend2 = session.get(User.class, userId2);
+
+        if(friend1 == null || friend2 == null) {
+            session.getTransaction().commit();
+            session.close();
+            throw new EntityNotFoundException("Entity not found");
+        }
+
+        Friendship friendship = new Friendship();
+        friendship.setFriendsSince(new Date());
+        friendship.setFriend1(friend1);
+        friendship.setFriend2(friend2);
+
+        friendship.setStatus(Friendship.FRIEND1_REQUEST_FRIEND2);
+
+        session.save(friendship);
+
+        session.getTransaction().commit();
+        session.close();
+        return friendship;
+    }
+
+    @Override
+    public void acceptFriendRequest(int friendshipId, int userId) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        Friendship friendship = session.get(Friendship.class, friendshipId);
+
+        if(friendship == null) {
+            session.getTransaction().commit();
+            session.close();
+            throw new EntityNotFoundException("The user with the given user-id is not part of the friendship");
+        }
+        else if(friendship.getFriend2().getId() == userId) {
+            friendship.setStatus(Friendship.FRIENDS);
+            session.save(friendship);
+        }
+        else {
+            session.getTransaction().commit();
+            session.close();
+            throw new EntityConflictException("The user with the given user-id is not part of the friendship");
+        }
+
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    /*
+     * When unfriending and reject friend request
+     */
+    @Override
+    public void removeFriendship(int friendshipId, int userId) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        Friendship friendship = session.get(Friendship.class, friendshipId);
+
+        if(friendship == null) {
+            session.getTransaction().commit();
+            session.close();
+            throw new EntityNotFoundException("The user with the given user-id is not part of the friendship");
+        }
+        else if(friendship.getFriend1().getId() == userId || friendship.getFriend2().getId() == userId) {
+            session.delete(friendship);
+        }
+        else {
+            session.getTransaction().commit();
+            session.close();
+            throw new EntityConflictException("The user with the given user-id is not part of the friendship");
+        }
+
+        session.getTransaction().commit();
+        session.close();
     }
 }

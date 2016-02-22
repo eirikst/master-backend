@@ -203,13 +203,6 @@ public class User {
                 ", location='" + location + '\'' +
                 ", imageUri='" + imageUri + '\'' +
                 ", timeCreated=" + timeCreated +
-                ", userRole=" + userRole +
-                ", posts=" + posts +
-                ", comments=" + comments +
-                ", events=" + events +
-                ", friends=" + friends +
-                ", userPostLikes=" + userPostLikes +
-                ", eventCommentLikes=" + eventCommentLikes +
                 '}';
     }
 }

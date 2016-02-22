@@ -17,18 +17,20 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/event")
+@RequestMapping("/events")
 public class EventController {
 
     @Autowired
     private EventDao eventDao;
 
-    /*
-     * Create event
+    /**
+     * Creates event
+     * @param event JSON representation of the event to create
+     * @return JSON representation of the event with the ID
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<EventDtoOut> createEvent(@RequestBody EventDto event) throws IOException {
+    public ResponseEntity<EventDtoOut> createEvent(@RequestBody EventDto event) {
         EventDtoOut eventOut;
         if (event.getTimeEnd() == null){
             eventOut = new EventDtoOut(eventDao.createEvent(event.toEvent(),

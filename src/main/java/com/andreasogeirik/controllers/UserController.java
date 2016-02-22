@@ -1,10 +1,11 @@
 package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.UserDto;
-import com.andreasogeirik.model.dto.incoming.UserPostDto;
 import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
+import com.andreasogeirik.model.dto.outgoing.FriendshipDtoOut;
 import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
 import com.andreasogeirik.model.dto.outgoing.UserPostDtoOut;
+import com.andreasogeirik.model.entities.Friendship;
 import com.andreasogeirik.model.entities.UserPost;
 import com.andreasogeirik.model.entities.UserPostComment;
 import com.andreasogeirik.model.entities.UserPostLike;
@@ -20,13 +21,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import javax.persistence.EntityNotFoundException;
 import java.util.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
@@ -35,21 +34,26 @@ public class UserController {
     @Autowired
     private UserPostDao postDao;
 
-    /*
-     * Create a user
+    /**
+     * Creates a user with USER authorization
+     * @param user the user object(JSON)
+     * @return the user object as JSON with ID
      */
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<UserDtoOut> createUser(@RequestBody UserDto user) throws IOException {
+    public ResponseEntity<UserDtoOut> createUser(@RequestBody UserDto user) {
         UserDtoOut userOut = new UserDtoOut(userDao.createUser(user.toUser()));
 
         return new ResponseEntity<UserDtoOut>(userOut, HttpStatus.CREATED);
     }
 
-    /*
-     * Get Constants.NUMBER_OF_POSTS_RETURNED latest posts from the start number(0 is the first)
+    /**
+     * Gets the a given number of posts(10 right now) of the user specified, with an offset specified
+     * @param userId id of user as integer
+     * @param start offset
+     * @return list of 10(or less, if no more present) user post objects as JSON
      */
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/{userId}/post", method = RequestMethod.GET)
+    @RequestMapping(value = "/{userId}/posts", method = RequestMethod.GET)
     public ResponseEntity<List<UserPostDtoOut>> getPosts(@PathVariable(value = "userId") int userId,
                                                          @RequestParam(value = "start") int start) {
         if(start < 0) {
@@ -88,29 +92,82 @@ public class UserController {
     }
 
 
-    /*
-     * Get friends
-     * TODO: Egentlig burde denne sjekke om tilgang, og tilgang burde bare gis for venner av brukeren. Vi fikser dette tross alt frontend så tja...
+    /**
+     * Gets friendships of the specified user. Ignores friend requests, as this is personal to the users.
+     * @param userId user-id of user to get the friend list of
+     * @return JSONArray with Friendship objects.
      */
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/{userId}/friends", method = RequestMethod.GET)
-    public ResponseEntity<Set<UserDtoOut>> getFriends(@PathVariable(value = "userId") int userId) {
-        Set<com.andreasogeirik.model.entities.User> friends = userDao.findFriends(userId);
-        Set<UserDtoOut> friendsOut = new HashSet<UserDtoOut>();
-        Iterator<com.andreasogeirik.model.entities.User> it = friends.iterator();
+    @RequestMapping(value = "/{userId}/friendships", method = RequestMethod.GET)
+    public ResponseEntity<Set<FriendshipDtoOut>> getFriends(@PathVariable(value = "userId") int userId) {
+        List<Friendship> friendships = userDao.findFriends(userId);
+
+        Set<FriendshipDtoOut> friendshipsOut = new HashSet<FriendshipDtoOut>();
+
+        Iterator<com.andreasogeirik.model.entities.Friendship> it = friendships.iterator();
         while(it.hasNext()) {
-            friendsOut.add(new UserDtoOut(it.next()));
+            friendshipsOut.add(new FriendshipDtoOut((Friendship)it.next(), userId));
         }
 
-        return new ResponseEntity<Set<UserDtoOut>>(friendsOut, HttpStatus.OK);
+        return new ResponseEntity<Set<FriendshipDtoOut>>(friendshipsOut, HttpStatus.OK);
     }
+
+
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/{userId}/friendships", method = RequestMethod.PUT)
+    public ResponseEntity<FriendshipDtoOut> friendRequest(@PathVariable(value = "userId") int userId) {
+
+        int loggedInUserId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        Friendship friendship = userDao.addFriendRequest(loggedInUserId, userId);
+
+        return new ResponseEntity<FriendshipDtoOut>(new FriendshipDtoOut(friendship, loggedInUserId), HttpStatus.CREATED);
+    }
+
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/friendships/{id}/accept", method = RequestMethod.POST)
+    public ResponseEntity acceptFriend(@PathVariable(value = "id") int friendshipId) {
+
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        userDao.acceptFriendRequest(friendshipId, userId);
+
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/friendships/{id}/reject", method = RequestMethod.POST)
+    public ResponseEntity rejectFriend(@PathVariable(value = "id") int friendshipId) {
+
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        userDao.removeFriendship(friendshipId, userId);
+
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/friendships/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity unFriend(@PathVariable(value = "id") int friendshipId) {
+
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        userDao.removeFriendship(friendshipId, userId);
+
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+
 
     /*
      * Exception handling
      */
     @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
     @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
-    public void constraintViolation() {}
+    public ResponseEntity<Status> constraintViolation() {
+        return new ResponseEntity<Status>(new Status(-2, "Some persistance constraint occured"),
+                HttpStatus.BAD_REQUEST);
+    }
 
     @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Input length violation")  // 400
     @ExceptionHandler(org.hibernate.exception.DataException.class)
@@ -129,7 +186,22 @@ public class UserController {
 
     @ExceptionHandler(EmailExistsException.class)
     public ResponseEntity<Status> formatViolation(EmailExistsException e) {
-        return new ResponseEntity<Status>(new Status(-1, "Email already exists in the system"), HttpStatus.CONFLICT);
+        return new ResponseEntity<Status>(new Status(-4, "Email already exists in the system"), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Status> formatViolation(IllegalArgumentException e) {
+        return new ResponseEntity<Status>(new Status(-3, "Entity not found."), HttpStatus.NOT_FOUND);
+    }
+
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Status> formatViolation(EntityNotFoundException e) {
+        return new ResponseEntity<Status>(new Status(-5, "Entity not found."), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EntityConflictException.class)
+    public ResponseEntity<Status> formatViolation(EntityConflictException e) {
+        return new ResponseEntity<Status>(new Status(-5, "Conflicting entities."), HttpStatus.CONFLICT);
+    }
 }

@@ -24,21 +24,20 @@ import java.io.IOException;
 import java.util.*;
 
 @RestController
-@RequestMapping("user/post")
+@RequestMapping("users/posts")
 public class UserPostController {
 
     @Autowired
     private UserPostDao postDao;
 
 
-
     /*
-     * Creates a comment to the specified post
+     *  TODO: Så plutselig at denne må oppdateres til å sende tilbake den nye commenten med ID. Men det gidder jeg ikke gjøre nå...
      */
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/{postId}/comment", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{postId}/comments", method = RequestMethod.PUT)
     public ResponseEntity<Status> comment(@RequestBody CommentDto comment,
-                                          @PathVariable(value="postId") int postId) throws IOException {
+                                          @PathVariable(value="postId") int postId) {
 
         postDao.comment(comment.toUserPostComment(), postId,
                 ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
@@ -47,11 +46,11 @@ public class UserPostController {
     }
 
     /*
-     * Creates a like on the specified post from the logged in user
+     * TODO: Må også oppdateres og sende tilbake liken med id
      */
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/{postId}/like", method = RequestMethod.PUT)
-    public ResponseEntity<Status> like(@PathVariable(value = "postId") int postId) throws IOException {
+    @RequestMapping(value = "/{postId}/likes", method = RequestMethod.PUT)
+    public ResponseEntity<Status> like(@PathVariable(value = "postId") int postId) {
 
         postDao.like(postId,
                 ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());

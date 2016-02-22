@@ -1,9 +1,8 @@
 package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.UserPostDto;
-import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
-import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
-import com.andreasogeirik.model.dto.outgoing.UserPostDtoOut;
+import com.andreasogeirik.model.dto.outgoing.*;
+import com.andreasogeirik.model.entities.Friendship;
 import com.andreasogeirik.model.entities.UserPost;
 import com.andreasogeirik.model.entities.UserPostComment;
 import com.andreasogeirik.model.entities.UserPostLike;
@@ -22,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -35,22 +33,25 @@ public class MeController {
     @Autowired
     private UserPostDao postDao;
 
-    /*
+    /**
      * Get the user entity of the logged in user
+     * @return User entity of logged in user as JSON
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<UserDtoOut> getUser() {
+    public ResponseEntity<UserDtoOut> getMe() {
         int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
 
         return new ResponseEntity<UserDtoOut>(new UserDtoOut(userDao.findById(userId)), HttpStatus.OK);
     }
 
-    /*
- * Get Constants.NUMBER_OF_POSTS_RETURNED latest posts from the start number(0 is the first)
- */
+    /**
+     * Gets the a given number of UserPosts(10 right now) for the logged in user, with an offset specified
+     * @param start offset
+     * @return list of 10(or less, if no more present) user post objects as JSON
+     */
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/post", method = RequestMethod.GET)
+    @RequestMapping(value = "/posts", method = RequestMethod.GET)
     public ResponseEntity<List<UserPostDtoOut>> getPosts(@RequestParam(value = "start") int start) {
         if(start < 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -88,18 +89,46 @@ public class MeController {
         return new ResponseEntity<>(postsOut, HttpStatus.OK);
     }
 
-    /*
-     * Create a post
+    /**
+     * Creates a UserPost for the logged in user
+     * @param post UserPost represented as JSON
+     * @return the UserPost represented as JSON with ID
      */
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/post",method = RequestMethod.PUT)
-    public ResponseEntity<Status> post(@RequestBody UserPostDto post) throws IOException {
+    @RequestMapping(value = "/posts",method = RequestMethod.PUT)
+    public ResponseEntity<Status> post(@RequestBody UserPostDto post) {
 
         postDao.createUserPost(post.toPost(),
                 ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
 
         return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
+
+    /**
+     * Gets friendships of the logged in user.
+     * @return JSONArray with Friendship objects.
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/friendships", method = RequestMethod.GET)
+    public ResponseEntity<Set<FriendshipDtoOut>> getFriendships() {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+
+        List<Friendship> friendships = userDao.findFriendsAndRequests(userId);
+        for(int i = 0; i < friendships.size(); i++) {
+            System.out.printf(friendships.get(i).toString());
+        }
+
+        Set<FriendshipDtoOut> friendshipsOut = new HashSet<FriendshipDtoOut>();
+
+        Iterator<com.andreasogeirik.model.entities.Friendship> it = friendships.iterator();
+        while(it.hasNext()) {
+            friendshipsOut.add(new FriendshipDtoOut((Friendship)it.next(), userId));
+        }
+
+        return new ResponseEntity<Set<FriendshipDtoOut>>(friendshipsOut, HttpStatus.OK);
+    }
+
 
 
     /*
