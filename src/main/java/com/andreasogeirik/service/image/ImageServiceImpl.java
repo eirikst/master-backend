@@ -13,22 +13,17 @@ import java.io.*;
 public class ImageServiceImpl implements ImageService {
 
     @Override
-    public String saveImage(String image, String fileName) {
+    public String saveImage(String image) {
         if (image != null) {
-            String extension = FilenameUtils.getExtension(fileName);
-            if ("jpg".equals(extension) || "png".equals(extension)) ;
-            else {
-                return null;
-            }
             try {
                 byte[] imageByteArray = Base64.decodeBase64(image);
 
-                FileOutputStream imageOutFile = new FileOutputStream(RandomStringUtils.randomAlphanumeric(20) + "." + extension);
+                FileOutputStream imageOutFile = new FileOutputStream(RandomStringUtils.randomAlphanumeric(20) + "." + "jpg");
                 imageOutFile.write(imageByteArray);
                 imageOutFile.close();
 
                 System.out.println("Image Successfully Stored");
-                return fileName;
+                return "";
             } catch (FileNotFoundException fnfe) {
                 System.out.println("Image Path not found" + fnfe);
             } catch (IOException ioe) {
