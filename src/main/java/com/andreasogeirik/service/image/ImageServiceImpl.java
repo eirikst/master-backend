@@ -18,11 +18,11 @@ public class ImageServiceImpl implements ImageService {
             try {
                 byte[] imageByteArray = Base64.decodeBase64(imageDto.getEncodedImage());
                 String filePath = RandomStringUtils.randomAlphanumeric(20) + "." + "jpg";
-                FileOutputStream imageOutFile = new FileOutputStream(filePath);
+                FileOutputStream imageOutFile = new FileOutputStream("img/" + filePath);
                 imageOutFile.write(imageByteArray);
                 imageOutFile.close();
                 System.out.println("Image Successfully Stored");
-                return filePath;
+                return "img/" + filePath;
             } catch (FileNotFoundException fnfe) {
                 System.out.println("Image Path not found" + fnfe);
             } catch (IOException ioe) {
