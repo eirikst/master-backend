@@ -6,7 +6,6 @@ import com.andreasogeirik.model.entities.User;
  * Created by eirikstadheim on 04/02/16.
  */
 public class UserDto {
-    private int id;
     private String password = "";
     private String email = "";
     private String firstname = "";
@@ -17,14 +16,6 @@ public class UserDto {
     public User toUser() {
         return new User(email, password, true, firstname, lastname,
                 location, null);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getPassword() {

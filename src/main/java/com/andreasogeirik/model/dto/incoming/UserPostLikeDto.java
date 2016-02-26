@@ -1,14 +1,13 @@
 package com.andreasogeirik.model.dto.incoming;
 
+import com.andreasogeirik.model.entities.UserPostLike;
+
 /**
  * Created by eirikstadheim on 03/02/16.
  */
-public class LikeDto {
+public class UserPostLikeDto {
     int userId;
     int postId;
-
-    public LikeDto() {
-    }
 
     public int getUserId() {
         return userId;

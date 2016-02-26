@@ -12,7 +12,7 @@ public class UserPostDtoOut {
     private String message;
     private Date timeCreated;
     private String imageUri;
-    private Set<CommentDtoOut> comments;
+    private Set<UserPostCommentDtoOut> comments;
     private Set<UserDtoOut> likers;
 
 
@@ -26,7 +26,7 @@ public class UserPostDtoOut {
         this.imageUri = imageUri;
     }
 
-    public UserPostDtoOut(int id, String message, Date timeCreated, String imageUri, Set<CommentDtoOut> comments) {
+    public UserPostDtoOut(int id, String message, Date timeCreated, String imageUri, Set<UserPostCommentDtoOut> comments) {
         this.id = id;
         this.message = message;
         this.timeCreated = timeCreated;
@@ -74,11 +74,11 @@ public class UserPostDtoOut {
         this.imageUri = imageUri;
     }
 
-    public Set<CommentDtoOut> getComments() {
+    public Set<UserPostCommentDtoOut> getComments() {
         return comments;
     }
 
-    public void setComments(Set<CommentDtoOut> comments) {
+    public void setComments(Set<UserPostCommentDtoOut> comments) {
         this.comments = comments;
     }
 

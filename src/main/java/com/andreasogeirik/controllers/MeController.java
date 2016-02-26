@@ -67,10 +67,10 @@ public class MeController {
             UserPostDtoOut postOut = new UserPostDtoOut(posts.get(i));
 
             //iterate comments
-            Set<CommentDtoOut> comments = new HashSet<>();
+            Set<UserPostCommentDtoOut> comments = new HashSet<>();
             Iterator<UserPostComment> it = posts.get(i).getComments().iterator();
             while(it.hasNext()) {
-                comments.add(new CommentDtoOut(it.next()));
+                comments.add(new UserPostCommentDtoOut(it.next()));
             }
             postOut.setComments(comments);
 

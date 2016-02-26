@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Created by eirikstadheim on 08/02/16.
  */
-public class CommentDtoOut {
+public class UserPostCommentDtoOut {
     private int id;
     private String message;
     private Date timeCreated;
@@ -16,11 +16,11 @@ public class CommentDtoOut {
     //set med likes må inn en gang
 
 
-    public CommentDtoOut() {
+    public UserPostCommentDtoOut() {
     }
 
     //does not add user, use setter for that
-    public CommentDtoOut(UserPostComment comment) {
+    public UserPostCommentDtoOut(UserPostComment comment) {
         this.id = comment.getId();
         this.message = comment.getMessage();
         this.timeCreated = comment.getTimeCreated();

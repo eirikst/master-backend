@@ -1,15 +1,10 @@
 package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.UserDto;
-import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
-import com.andreasogeirik.model.dto.outgoing.FriendshipDtoOut;
-import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
-import com.andreasogeirik.model.dto.outgoing.UserPostDtoOut;
-import com.andreasogeirik.model.entities.Friendship;
-import com.andreasogeirik.model.entities.UserPost;
-import com.andreasogeirik.model.entities.UserPostComment;
-import com.andreasogeirik.model.entities.UserPostLike;
+import com.andreasogeirik.model.dto.outgoing.*;
+import com.andreasogeirik.model.entities.*;
 import com.andreasogeirik.security.User;
+import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.tools.*;
@@ -33,6 +28,9 @@ public class UserController {
 
     @Autowired
     private UserPostDao postDao;
+
+    @Autowired
+    private EventDao eventDao;
 
     /**
      * Creates a user with USER authorization
@@ -69,10 +67,10 @@ public class UserController {
             UserPostDtoOut postOut = new UserPostDtoOut(posts.get(i));
 
             //iterate comments
-            Set<CommentDtoOut> comments = new HashSet<>();
+            Set<UserPostCommentDtoOut> comments = new HashSet<>();
             Iterator<UserPostComment> it = posts.get(i).getComments().iterator();
             while(it.hasNext()) {
-                comments.add(new CommentDtoOut(it.next()));
+                comments.add(new UserPostCommentDtoOut(it.next()));
             }
             postOut.setComments(comments);
 
@@ -155,6 +153,31 @@ public class UserController {
         userDao.removeFriendship(friendshipId, userId);
 
         return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/{userId}/events/attending", method = RequestMethod.GET)
+    public ResponseEntity getAttendingEvents(@PathVariable(value = "userId") int userId) {
+
+        List<Event> events = eventDao.getAttendingEvents(userId);
+
+        List<EventDtoOut> eventsOut = new ArrayList<EventDtoOut>();
+        Iterator<Event> it = events.iterator();
+        while(it.hasNext()) {
+            Event event = it.next();
+            EventDtoOut eventOut = new EventDtoOut(event);
+            eventOut.setAdmin(new UserDtoOut(event.getAdmin()));
+            Set<UserDtoOut> eventUsersOut = new HashSet<>();
+            for(com.andreasogeirik.model.entities.User user: event.getUsers()) {
+                eventUsersOut.add(new UserDtoOut(user));
+            }
+            eventOut.setUsers(eventUsersOut);
+
+            eventsOut.add(eventOut);
+        }
+
+        return new ResponseEntity<>(eventsOut, HttpStatus.OK);
     }
 
 
