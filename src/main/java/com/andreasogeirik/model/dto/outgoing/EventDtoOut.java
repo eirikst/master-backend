@@ -1,8 +1,9 @@
 package com.andreasogeirik.model.dto.outgoing;
 
 import com.andreasogeirik.model.entities.Event;
+import com.andreasogeirik.model.entities.User;
 
-import java.util.Date;
+import java.util.*;
 
 /**
  * Created by Andreas on 12.02.2016.
@@ -15,9 +16,11 @@ public class EventDtoOut {
     private Date timeStart;
     private Date timeEnd;
     private String imageUri = "";
-    private int adminId;
+    private UserDtoOut admin;
+    private Set<UserDtoOut> users = new HashSet<>();
 
-    public EventDtoOut(int id, String name, String location, String description, Date timeCreated, Date timeStart, Date timeEnd, String imageUri, int adminId) {
+    public EventDtoOut(int id, String name, String location, String description, Date timeCreated, Date timeStart,
+                       Date timeEnd, String imageUri, UserDtoOut admin, Set<UserDtoOut> users) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -25,7 +28,8 @@ public class EventDtoOut {
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
         this.imageUri = imageUri;
-        this.adminId = adminId;
+        this.admin = admin;
+        this.users = users;
     }
 
     public EventDtoOut(Event event) {
@@ -36,7 +40,16 @@ public class EventDtoOut {
         this.timeStart = event.getTimeStart();
         this.timeEnd = event.getTimeEnd();
         this.imageUri = event.getImageURI();
-        this.adminId = event.getAdmin().getId();
+        if(event.getAdmin() != null) {
+            this.admin = new UserDtoOut(event.getAdmin());
+        }
+        this.admin = new UserDtoOut(event.getAdmin());
+        if(event.getUsers() != null) {
+            Iterator<User> it = event.getUsers().iterator();
+            while(it.hasNext()) {
+                users.add(new UserDtoOut(it.next()));
+            }
+        }
     }
 
     public int getId() {
@@ -95,11 +108,19 @@ public class EventDtoOut {
         this.imageUri = imageUri;
     }
 
-    public int getAdminId() {
-        return adminId;
+    public UserDtoOut getAdmin() {
+        return admin;
     }
 
-    public void setAdminId(int adminId) {
-        this.adminId = adminId;
+    public void setAdmin(UserDtoOut admin) {
+        this.admin = admin;
+    }
+
+    public Set<UserDtoOut> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<UserDtoOut> users) {
+        this.users = users;
     }
 }

@@ -1,15 +1,10 @@
 package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.UserDto;
-import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
-import com.andreasogeirik.model.dto.outgoing.FriendshipDtoOut;
-import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
-import com.andreasogeirik.model.dto.outgoing.UserPostDtoOut;
-import com.andreasogeirik.model.entities.Friendship;
-import com.andreasogeirik.model.entities.UserPost;
-import com.andreasogeirik.model.entities.UserPostComment;
-import com.andreasogeirik.model.entities.UserPostLike;
+import com.andreasogeirik.model.dto.outgoing.*;
+import com.andreasogeirik.model.entities.*;
 import com.andreasogeirik.security.User;
+import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.tools.*;
@@ -33,6 +28,9 @@ public class UserController {
 
     @Autowired
     private UserPostDao postDao;
+
+    @Autowired
+    private EventDao eventDao;
 
     /**
      * Creates a user with USER authorization
@@ -155,6 +153,22 @@ public class UserController {
         userDao.removeFriendship(friendshipId, userId);
 
         return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/{userId}/events/attending", method = RequestMethod.GET)
+    public ResponseEntity getAttendingEvents(@PathVariable(value = "userId") int userId) {
+
+        List<Event> events = eventDao.getAttendingEvents(userId);
+
+        List<EventDtoOut> eventsOut = new ArrayList<EventDtoOut>();
+        Iterator<Event> it = events.iterator();
+        while(it.hasNext()) {
+            eventsOut.add(new EventDtoOut(it.next()));
+        }
+
+        return new ResponseEntity<>(eventsOut, HttpStatus.OK);
     }
 
 
