@@ -85,4 +85,27 @@ public class EventDaoImpl implements EventDao {
         session.close();
         return events;
     }
+
+    @Override
+    public List<Event> getAdminEvents(int userId) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        User admin = session.get(User.class, userId);
+        String hql = "SELECT E FROM Event E WHERE E.admin = (:admin)";
+
+        Query query = session.createQuery(hql).setParameter("admin", admin);
+
+        List<Event> events = query.list();
+
+        if(events != null) {
+            for (int i = 0; i < events.size(); i++) {
+                Hibernate.initialize(events.get(i).getAdmin());
+                Hibernate.initialize(events.get(i).getUsers());
+            }
+        }
+
+        session.close();
+        return events;
+    }
 }

@@ -2,11 +2,9 @@ package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.UserPostDto;
 import com.andreasogeirik.model.dto.outgoing.*;
-import com.andreasogeirik.model.entities.Friendship;
-import com.andreasogeirik.model.entities.UserPost;
-import com.andreasogeirik.model.entities.UserPostComment;
-import com.andreasogeirik.model.entities.UserPostLike;
+import com.andreasogeirik.model.entities.*;
 import com.andreasogeirik.security.User;
+import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.tools.Constants;
@@ -32,6 +30,9 @@ public class MeController {
 
     @Autowired
     private UserPostDao postDao;
+
+    @Autowired
+    private EventDao eventDao;
 
     /**
      * Get the user entity of the logged in user
@@ -129,6 +130,30 @@ public class MeController {
         return new ResponseEntity<Set<FriendshipDtoOut>>(friendshipsOut, HttpStatus.OK);
     }
 
+    /**
+     * Finds the events where logged in user is admin
+     * @return list of events
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/events", method = RequestMethod.GET)
+    public ResponseEntity<Set<EventDtoOut>> findMyEvents() {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+
+        List<Event> events = eventDao.getAdminEvents(userId);
+
+        Set<EventDtoOut> eventsOut = new HashSet<>();
+        for(Event event: events) {
+            EventDtoOut eventOut = new EventDtoOut(event);
+            eventOut.setAdmin(new UserDtoOut(event.getAdmin()));
+            for(com.andreasogeirik.model.entities.User user: event.getUsers()) {
+                eventOut.getUsers().add(new UserDtoOut(user));
+            }
+            eventsOut.add(eventOut);
+        }
+
+        return new ResponseEntity<Set<EventDtoOut>>(eventsOut, HttpStatus.OK);
+    }
 
 
     /*
