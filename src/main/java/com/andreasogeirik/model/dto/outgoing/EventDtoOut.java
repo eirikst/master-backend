@@ -19,19 +19,6 @@ public class EventDtoOut {
     private UserDtoOut admin;
     private Set<UserDtoOut> users = new HashSet<>();
 
-    public EventDtoOut(int id, String name, String location, String description, Date timeCreated, Date timeStart,
-                       Date timeEnd, String imageUri, UserDtoOut admin, Set<UserDtoOut> users) {
-        this.id = id;
-        this.name = name;
-        this.location = location;
-        this.description = description;
-        this.timeStart = timeStart;
-        this.timeEnd = timeEnd;
-        this.imageUri = imageUri;
-        this.admin = admin;
-        this.users = users;
-    }
-
     public EventDtoOut(Event event) {
         this.id = event.getId();
         this.name = event.getName();
@@ -40,16 +27,6 @@ public class EventDtoOut {
         this.timeStart = event.getTimeStart();
         this.timeEnd = event.getTimeEnd();
         this.imageUri = event.getImageURI();
-        if(event.getAdmin() != null) {
-            this.admin = new UserDtoOut(event.getAdmin());
-        }
-        this.admin = new UserDtoOut(event.getAdmin());
-        if(event.getUsers() != null) {
-            Iterator<User> it = event.getUsers().iterator();
-            while(it.hasNext()) {
-                users.add(new UserDtoOut(it.next()));
-            }
-        }
     }
 
     public int getId() {

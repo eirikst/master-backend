@@ -1,15 +1,8 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.model.dto.incoming.CommentDto;
-import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
-import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
-import com.andreasogeirik.model.dto.outgoing.UserPostDtoOut;
-import com.andreasogeirik.model.entities.UserPost;
-import com.andreasogeirik.model.entities.UserPostComment;
-import com.andreasogeirik.model.entities.UserPostLike;
+import com.andreasogeirik.model.dto.incoming.UserPostCommentDto;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
-import com.andreasogeirik.tools.Constants;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import java.io.IOException;
-import java.util.*;
 
 @RestController
 @RequestMapping("users/posts")
@@ -36,7 +26,7 @@ public class UserPostController {
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{postId}/comments", method = RequestMethod.PUT)
-    public ResponseEntity<Status> comment(@RequestBody CommentDto comment,
+    public ResponseEntity<Status> comment(@RequestBody UserPostCommentDto comment,
                                           @PathVariable(value="postId") int postId) {
 
         postDao.comment(comment.toUserPostComment(), postId,

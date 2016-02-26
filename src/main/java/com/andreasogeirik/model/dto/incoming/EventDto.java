@@ -8,36 +8,15 @@ import java.util.Date;
  * Created by eirikstadheim on 03/02/16.
  */
 public class EventDto {
-    private int id;
     private String name = "";
     private String location = "";
     private String description = "";
     private Date timeStart;
     private Date timeEnd;
     private String imageUri = "";
-    private int adminId;
 
     public Event toEvent() {
-        Event event = new Event(name, location, description, timeStart);
-
-        if (timeEnd != null){
-            event.setTimeEnd(timeEnd);
-        }
-
         return new Event(name, location, description, timeStart, timeEnd, imageUri);
-    }
-
-    public Event toEventNoTimeEnd() {
-        return new Event(name, location, description, timeStart, imageUri);
-    }
-
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -86,13 +65,5 @@ public class EventDto {
 
     public void setImageUri(String encodedImage) {
         this.imageUri = encodedImage;
-    }
-
-    public int getAdminId() {
-        return adminId;
-    }
-
-    public void setAdminId(int adminId) {
-        this.adminId = adminId;
     }
 }

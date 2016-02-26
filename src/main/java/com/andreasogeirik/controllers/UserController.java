@@ -67,10 +67,10 @@ public class UserController {
             UserPostDtoOut postOut = new UserPostDtoOut(posts.get(i));
 
             //iterate comments
-            Set<CommentDtoOut> comments = new HashSet<>();
+            Set<UserPostCommentDtoOut> comments = new HashSet<>();
             Iterator<UserPostComment> it = posts.get(i).getComments().iterator();
             while(it.hasNext()) {
-                comments.add(new CommentDtoOut(it.next()));
+                comments.add(new UserPostCommentDtoOut(it.next()));
             }
             postOut.setComments(comments);
 
@@ -165,7 +165,16 @@ public class UserController {
         List<EventDtoOut> eventsOut = new ArrayList<EventDtoOut>();
         Iterator<Event> it = events.iterator();
         while(it.hasNext()) {
-            eventsOut.add(new EventDtoOut(it.next()));
+            Event event = it.next();
+            EventDtoOut eventOut = new EventDtoOut(event);
+            eventOut.setAdmin(new UserDtoOut(event.getAdmin()));
+            Set<UserDtoOut> eventUsersOut = new HashSet<>();
+            for(com.andreasogeirik.model.entities.User user: event.getUsers()) {
+                eventUsersOut.add(new UserDtoOut(user));
+            }
+            eventOut.setUsers(eventUsersOut);
+
+            eventsOut.add(eventOut);
         }
 
         return new ResponseEntity<>(eventsOut, HttpStatus.OK);

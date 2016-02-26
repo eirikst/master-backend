@@ -6,21 +6,11 @@ import com.andreasogeirik.model.entities.UserPost;
  * Created by eirikstadheim on 04/02/16.
  */
 public class UserPostDto {
-    private int id;
     private String message = "";
     private String imageUri = "";
 
     public UserPost toPost() {
-        return new UserPost(id, message, imageUri);
-    }
-
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        return new UserPost(message, imageUri);
     }
 
     public String getMessage() {

@@ -21,16 +21,6 @@ public class UserDtoOut {
 
     }
 
-    public UserDtoOut(int id, String email, boolean enabled, String firstname, String lastname, String location, String imageUri) {
-        this.id = id;
-        this.email = email;
-        this.enabled = enabled;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.location = location;
-        this.imageUri = imageUri;
-    }
-
     public UserDtoOut(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
