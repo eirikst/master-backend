@@ -182,7 +182,7 @@ public class User {
         this.eventCommentLikes = eventCommentLikes;
     }
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
     public Set<Event> getEvents() {
         return events;
     }

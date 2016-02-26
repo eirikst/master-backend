@@ -3,6 +3,7 @@ package com.andreasogeirik.service.dao;
 import com.andreasogeirik.model.entities.Event;
 import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
+import com.andreasogeirik.tools.EntityNotFoundException;
 import com.andreasogeirik.tools.InputManager;
 import com.andreasogeirik.tools.InvalidInputException;
 import org.hibernate.Hibernate;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 import java.util.List;
+import java.util.*;
 
 /**
  * Created by eirikstadheim on 01/02/16.
@@ -52,13 +54,37 @@ public class EventDaoImpl implements EventDao {
         session.beginTransaction();
 
         User admin = session.get(User.class, adminId);
-
-
         event.setTimeCreated(new Date());
         event.setAdmin(admin);
+
+
+        Set<User> users = new HashSet<>();
+        users.add(admin);
+
+        event.setUsers(users);
+
         session.save(event);
 
         session.getTransaction().commit();
+        session.close();
+        return event;
+    }
+
+    @Override
+    public Event getEvent(int eventId) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        Event event = session.get(Event.class, eventId);
+//
+//        for (int i = 0; i < event.getUsers().size(); i++) {
+//
+//        }
+
+        Hibernate.initialize(event.getUsers());
+
+        if (event == null){
+            throw new EntityNotFoundException();
+        }
         session.close();
         return event;
     }

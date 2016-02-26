@@ -3,7 +3,9 @@ package com.andreasogeirik.model.dto.outgoing;
 import com.andreasogeirik.model.entities.Event;
 import com.andreasogeirik.model.entities.User;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Andreas on 12.02.2016.
@@ -16,8 +18,8 @@ public class EventDtoOut {
     private Date timeStart;
     private Date timeEnd;
     private String imageUri = "";
-    private UserDtoOut admin;
     private Set<UserDtoOut> users = new HashSet<>();
+    private UserDtoOut admin;
 
     public EventDtoOut(Event event) {
         this.id = event.getId();
@@ -27,6 +29,11 @@ public class EventDtoOut {
         this.timeStart = event.getTimeStart();
         this.timeEnd = event.getTimeEnd();
         this.imageUri = event.getImageURI();
+
+        for (User user : event.getUsers()) {
+            users.add(new UserDtoOut(user));
+        }
+        this.admin = new UserDtoOut(event.getAdmin());
     }
 
     public int getId() {
@@ -85,19 +92,19 @@ public class EventDtoOut {
         this.imageUri = imageUri;
     }
 
-    public UserDtoOut getAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(UserDtoOut admin) {
-        this.admin = admin;
-    }
-
     public Set<UserDtoOut> getUsers() {
         return users;
     }
 
     public void setUsers(Set<UserDtoOut> users) {
         this.users = users;
+    }
+
+    public UserDtoOut getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(UserDtoOut admin) {
+        this.admin = admin;
     }
 }
