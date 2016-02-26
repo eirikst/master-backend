@@ -7,4 +7,5 @@ import com.andreasogeirik.model.entities.Event;
  */
 public interface EventDao {
     Event createEvent(Event event, int adminId);
+    Event getEvent(int eventId);
 }

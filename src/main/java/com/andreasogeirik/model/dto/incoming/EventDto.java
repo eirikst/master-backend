@@ -18,12 +18,6 @@ public class EventDto {
     private int adminId;
 
     public Event toEvent() {
-        Event event = new Event(name, location, description, timeStart);
-
-        if (timeEnd != null){
-            event.setTimeEnd(timeEnd);
-        }
-
         return new Event(name, location, description, timeStart, timeEnd, imageUri);
     }
 

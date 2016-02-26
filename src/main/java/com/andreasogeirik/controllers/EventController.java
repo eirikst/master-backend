@@ -4,6 +4,7 @@ import com.andreasogeirik.model.dto.incoming.EventDto;
 import com.andreasogeirik.model.dto.outgoing.EventDtoOut;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
+import com.andreasogeirik.tools.EntityNotFoundException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/events")
@@ -31,20 +30,24 @@ public class EventController {
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<EventDtoOut> createEvent(@RequestBody EventDto event) {
-        EventDtoOut eventOut;
-        if (event.getTimeEnd() == null){
-            eventOut = new EventDtoOut(eventDao.createEvent(event.toEvent(),
+        EventDtoOut eventOut = new EventDtoOut(eventDao.createEvent(event.toEvent(),
                     ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
-        }
-        else{
-            eventOut = new EventDtoOut(eventDao.createEvent(event.toEvent(),
-                    ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
-        }
+
 
         return new ResponseEntity(eventOut, HttpStatus.CREATED);
     }
 
+    /**
+     * Retrieves an event by id
+     * @param eventId
+     * @return JSON representation of the event with the ID
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/{eventId}", method = RequestMethod.GET)
+    public ResponseEntity<EventDtoOut> getEvent(@PathVariable(value="eventId") int eventId) {
 
+        return new ResponseEntity(new EventDtoOut(eventDao.getEvent(eventId)), HttpStatus.OK);
+    }
 
     /*
      * Exception handling
@@ -67,4 +70,8 @@ public class EventController {
         return new ResponseEntity<Status>(new Status(-1, "Input of wrong type(eg. string when expecting integer)"),
                 HttpStatus.BAD_REQUEST);
     }
+
+    @ResponseStatus(value=HttpStatus.NOT_FOUND, reason="Entity with the provided ID was not found")  // 409
+    @ExceptionHandler(EntityNotFoundException.class)
+    public void entityNotFound() {}
 }

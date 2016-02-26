@@ -1,8 +1,11 @@
 package com.andreasogeirik.model.dto.outgoing;
 
 import com.andreasogeirik.model.entities.Event;
+import com.andreasogeirik.model.entities.User;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Andreas on 12.02.2016.
@@ -15,18 +18,8 @@ public class EventDtoOut {
     private Date timeStart;
     private Date timeEnd;
     private String imageUri = "";
-    private int adminId;
-
-    public EventDtoOut(int id, String name, String location, String description, Date timeCreated, Date timeStart, Date timeEnd, String imageUri, int adminId) {
-        this.id = id;
-        this.name = name;
-        this.location = location;
-        this.description = description;
-        this.timeStart = timeStart;
-        this.timeEnd = timeEnd;
-        this.imageUri = imageUri;
-        this.adminId = adminId;
-    }
+    private Set<UserDtoOut> users = new HashSet<>();
+    private UserDtoOut admin;
 
     public EventDtoOut(Event event) {
         this.id = event.getId();
@@ -36,7 +29,11 @@ public class EventDtoOut {
         this.timeStart = event.getTimeStart();
         this.timeEnd = event.getTimeEnd();
         this.imageUri = event.getImageURI();
-        this.adminId = event.getAdmin().getId();
+
+        for (User user : event.getUsers()) {
+            users.add(new UserDtoOut(user));
+        }
+        this.admin = new UserDtoOut(event.getAdmin());
     }
 
     public int getId() {
@@ -95,11 +92,19 @@ public class EventDtoOut {
         this.imageUri = imageUri;
     }
 
-    public int getAdminId() {
-        return adminId;
+    public Set<UserDtoOut> getUsers() {
+        return users;
     }
 
-    public void setAdminId(int adminId) {
-        this.adminId = adminId;
+    public void setUsers(Set<UserDtoOut> users) {
+        this.users = users;
+    }
+
+    public UserDtoOut getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(UserDtoOut admin) {
+        this.admin = admin;
     }
 }
