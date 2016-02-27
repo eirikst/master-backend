@@ -11,5 +11,6 @@ public interface EventDao {
     Event createEvent(Event event, int adminId);
     Event getEvent(int eventId);
     List<Event> getAttendingEvents(int userId);
+    List<Event> getAttendedEvents(int userId, int start);
     List<Event> getAdminEvents(int userId);
 }
