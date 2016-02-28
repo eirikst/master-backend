@@ -180,6 +180,31 @@ public class UserController {
         return new ResponseEntity<>(eventsOut, HttpStatus.OK);
     }
 
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/{userId}/events/attended", method = RequestMethod.GET)
+    public ResponseEntity getAttendingEventsPast(@PathVariable(value = "userId") int userId,
+                                                 @RequestParam(value = "start") int start) {
+
+        List<Event> events = eventDao.getAttendedEvents(userId, start);
+
+        List<EventDtoOut> eventsOut = new ArrayList<EventDtoOut>();
+        Iterator<Event> it = events.iterator();
+        while(it.hasNext()) {
+            Event event = it.next();
+            EventDtoOut eventOut = new EventDtoOut(event);
+            eventOut.setAdmin(new UserDtoOut(event.getAdmin()));
+            Set<UserDtoOut> eventUsersOut = new HashSet<>();
+            for(com.andreasogeirik.model.entities.User user: event.getUsers()) {
+                eventUsersOut.add(new UserDtoOut(user));
+            }
+            eventOut.setUsers(eventUsersOut);
+
+            eventsOut.add(eventOut);
+        }
+
+        return new ResponseEntity<>(eventsOut, HttpStatus.OK);
+    }
+
 
 
     /*
