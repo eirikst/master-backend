@@ -42,7 +42,7 @@ public class EventController {
      * @param eventId
      * @return JSON representation of the event with the ID
      */
-    @PreAuthorize(value="hasAuthority('USER')")
+//    @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{eventId}", method = RequestMethod.GET)
     public ResponseEntity<EventDtoOut> getEvent(@PathVariable(value="eventId") int eventId) {
 

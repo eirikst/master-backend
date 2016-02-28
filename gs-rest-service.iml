@@ -77,5 +77,6 @@
     <orderEntry type="library" name="Maven: com.mchange:mchange-commons-java:0.2.3.4" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-ehcache:5.0.7.Final" level="project" />
     <orderEntry type="library" name="Maven: net.sf.ehcache:ehcache-core:2.4.3" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
   </component>
 </module>

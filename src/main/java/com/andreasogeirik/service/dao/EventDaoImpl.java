@@ -76,6 +76,10 @@ public class EventDaoImpl implements EventDao {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         Event event = session.get(Event.class, eventId);
+
+        if (event == null){
+            throw new EntityNotFoundException("The requested event does not exist");
+        }
 //
 //        for (int i = 0; i < event.getUsers().size(); i++) {
 //

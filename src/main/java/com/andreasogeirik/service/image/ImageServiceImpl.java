@@ -1,7 +1,6 @@
 package com.andreasogeirik.service.image;
 
 import com.andreasogeirik.service.image.interfaces.ImageService;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.RandomStringUtils;
 
 import java.io.*;
@@ -12,13 +11,12 @@ import java.io.*;
 public class ImageServiceImpl implements ImageService {
 
     @Override
-    public String saveImage(String encodedImage) {
-        if (encodedImage != null) {
+    public String saveImage(byte[] byteImage) {
+        if (byteImage != null) {
             try {
-                byte[] imageByteArray = Base64.decodeBase64(encodedImage);
                 String randomFileName = RandomStringUtils.randomAlphanumeric(20);
                 FileOutputStream imageOutFile = new FileOutputStream("img/" + randomFileName + ".jpg");
-                imageOutFile.write(imageByteArray);
+                imageOutFile.write(byteImage);
                 imageOutFile.close();
                 System.out.println("Image Successfully Stored");
                 return randomFileName;
@@ -32,7 +30,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public byte[] getEncodedImage(String imageUri) {
+    public byte[] getImage(String imageUri) {
         File file = new File("img/" + imageUri + ".jpg");
         byte[] b = new byte[(int) file.length()];
         try {
