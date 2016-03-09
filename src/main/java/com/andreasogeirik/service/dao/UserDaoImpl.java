@@ -41,6 +41,7 @@ public class UserDaoImpl implements UserDao {
         return createUser(user, ROLE_USER);
     }
 
+
     /*
    * Creates new user with role ADMIN
    */
@@ -96,6 +97,38 @@ public class UserDaoImpl implements UserDao {
 
         return user;
     }
+
+    /*
+ * Updates a user
+ */
+    public User updateUser(String firstname, String lastname, String location, String imageUri, int userId) {
+        if(!inputManager.isValidName(firstname)) {
+            throw new InvalidInputException("Invalid firstname format");
+        }
+        if(!inputManager.isValidName(lastname)) {
+            throw new InvalidInputException("Invalid lastname format");
+        }
+        if(!inputManager.isValidLocation(location)) {
+            throw new InvalidInputException("Invalid location format");
+        }
+
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        User user = session.get(User.class, userId);
+
+        user.setFirstname(firstname);
+        user.setLastname(lastname);
+        user.setLocation(location);
+        user.setImageUri(imageUri);
+
+        session.save(user);
+        session.getTransaction().commit();
+        session.close();
+
+        return user;
+    }
+
 
     /*
      * Checks if a user with given email exists. An open session must be provided, with an ongoing transaction
