@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.persistence.EntityNotFoundException;
+import java.nio.file.Path;
 import java.util.*;
 
 @RestController
@@ -218,6 +219,22 @@ public class UserController {
         return new ResponseEntity<>(eventsOut, HttpStatus.OK);
     }
 
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/search/{name}/{offset}", method = RequestMethod.GET)
+    public ResponseEntity searchUsers(@PathVariable(value = "name") String name,
+                                      @PathVariable(value = "offset") int offset) {
+        List<com.andreasogeirik.model.entities.User> users = userDao.searchUsers(name, offset);
+        List<UserDtoOut> usersOut = new ArrayList<>();
+
+        for(com.andreasogeirik.model.entities.User user: users) {
+            usersOut.add(new UserDtoOut(user));
+        }
+
+        return new ResponseEntity<>(usersOut, HttpStatus.OK);
+    }
+
+
+
 
 
     /*
@@ -226,7 +243,7 @@ public class UserController {
     @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
     @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
     public ResponseEntity<Status> constraintViolation() {
-        return new ResponseEntity<Status>(new Status(-2, "Some persistance constraint occured"),
+        return new ResponseEntity<Status>(new Status(-2, "Some persistence constraint occurred"),
                 HttpStatus.BAD_REQUEST);
     }
 

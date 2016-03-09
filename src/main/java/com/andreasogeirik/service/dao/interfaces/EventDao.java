@@ -13,4 +13,5 @@ public interface EventDao {
     List<Event> getAttendingEvents(int userId);
     List<Event> getAttendedEvents(int userId, int start);
     List<Event> getAdminEvents(int userId);
+    List<Event> getRecommendedEvents(int userId, int offset);
 }

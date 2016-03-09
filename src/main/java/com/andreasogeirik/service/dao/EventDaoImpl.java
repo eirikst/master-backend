@@ -153,7 +153,8 @@ public class EventDaoImpl implements EventDao {
 
         Query query = session.createQuery(hql).setParameter("admin", admin);
 
-        List<Event> events = query.list();
+        List<Event>
+                events = query.list();
 
         if(events != null) {
             for (int i = 0; i < events.size(); i++) {
@@ -165,4 +166,29 @@ public class EventDaoImpl implements EventDao {
         session.close();
         return events;
     }
+
+    /*
+     * TODO: does not really recommend, only returns all coming events
+     */
+    @Override
+    public List<Event> getRecommendedEvents(int userId, int offset) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        String hql = "SELECT E FROM Event E WHERE E.timeStart > (:date) ORDER BY E.timeStart ASC, E.id ASC";
+
+        Query query = session.createQuery(hql).setDate("date", new Date()).setFirstResult(offset).setMaxResults
+                (Constants.NUMBER_OF_EVENTS_RETURNED);
+
+        List<Event> events = query.list();
+
+        if(events != null) {
+            for (int i = 0; i < events.size(); i++) {
+                Hibernate.initialize(events.get(i).getAdmin());
+                Hibernate.initialize(events.get(i).getUsers());
+            }
+        }
+
+        session.close();
+        return events;    }
 }

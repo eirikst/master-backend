@@ -13,6 +13,7 @@ import java.util.Date;
 public class Friendship {
     public static final int FRIENDS = 1;
     public static final int FRIEND1_REQUEST_FRIEND2 = 2;
+    public static final int FRIEND2_REQUEST_FRIEND1 = 3;
 
     private int id;
     private Date friendsSince;
