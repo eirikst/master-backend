@@ -46,6 +46,19 @@ public class UserController {
     }
 
     /**
+     * Updates a user with USER authorization
+     * @param user the user object(JSON)
+     * @return the user object as JSON with ID
+     */
+
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity<UserDtoOut> updateUser(@RequestBody UserDto user) {
+        UserDtoOut userOut = new UserDtoOut(userDao.updateUser(user.getFirstname(), user.getLastname(), user.getLocation(), user.getImageUri(), ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
+
+        return new ResponseEntity<UserDtoOut>(userOut, HttpStatus.OK);
+    }
+
+    /**
      * Gets the a given number of posts(10 right now) of the user specified, with an offset specified
      * @param userId id of user as integer
      * @param start offset
