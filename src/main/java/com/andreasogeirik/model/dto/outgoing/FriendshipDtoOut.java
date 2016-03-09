@@ -40,7 +40,12 @@ public class FriendshipDtoOut {
                 status = FRIENDS;
             }
             else {
-                status = I_REQUESTED;//I requested because friend1 was me
+                if(friendship.getStatus() == Friendship.FRIEND1_REQUEST_FRIEND2) {
+                    status = I_REQUESTED;
+                }
+                else {
+                    status = FRIEND_REQUESTED;
+                }
             }
         } else if (friendship.getFriend2().getId() == userId) {
             friend = new UserDtoOut(friendship.getFriend1());//set friend
@@ -48,7 +53,12 @@ public class FriendshipDtoOut {
                 status = FRIENDS;
             }
             else {
-                status = FRIEND_REQUESTED;//Friend requested because friend2 was me
+                if(friendship.getStatus() == Friendship.FRIEND1_REQUEST_FRIEND2) {
+                    status = FRIEND_REQUESTED;
+                }
+                else {
+                    status = I_REQUESTED;
+                }
             }
         }
         else {

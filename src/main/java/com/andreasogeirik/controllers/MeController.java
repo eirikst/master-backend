@@ -155,6 +155,31 @@ public class MeController {
         return new ResponseEntity<Set<EventDtoOut>>(eventsOut, HttpStatus.OK);
     }
 
+    /**
+     * Retrieves the recommended events for the user
+     * @param offset start fetching after "offset" number of events
+     * @return JSON representation of the set of events
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/events/recommended", method = RequestMethod.GET)
+    public ResponseEntity<Set<EventDtoOut>> getRecommendedEvents(@RequestParam(value="offset") int offset) {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        List<Event> events = eventDao.getRecommendedEvents(userId, offset);
+
+        Set<EventDtoOut> eventsOut = new HashSet<>();
+        for(Event event: events) {
+            EventDtoOut eventOut = new EventDtoOut(event);
+            eventOut.setAdmin(new UserDtoOut(event.getAdmin()));
+            for(com.andreasogeirik.model.entities.User user: event.getUsers()) {
+                eventOut.getUsers().add(new UserDtoOut(user));
+            }
+            eventsOut.add(eventOut);
+        }
+
+        return new ResponseEntity(eventsOut, HttpStatus.OK);
+    }
+
 
     /*
      * Exception handling

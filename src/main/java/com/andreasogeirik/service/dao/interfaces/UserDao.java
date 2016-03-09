@@ -21,4 +21,6 @@ public interface UserDao {
     Friendship addFriendRequest(int friendshipId, int userId);
     void acceptFriendRequest(int friendshipId, int userId);
     void removeFriendship(int friendshipId, int userId);
+
+    List<User> searchUsers(String name, int offset);
 }
