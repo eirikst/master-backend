@@ -156,6 +156,32 @@ public class MeController {
     }
 
     /**
+     * Finds the past events where logged in user is admin
+     * @param offset number of events to skip from the start
+     * @return list of past events
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/events/past", method = RequestMethod.GET)
+    public ResponseEntity<Set<EventDtoOut>> findMyEventsPast(@RequestParam(value = "offset") int offset) {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+
+        List<Event> events = eventDao.getAdminEventsPast(userId, offset);
+
+        Set<EventDtoOut> eventsOut = new HashSet<>();
+        for(Event event: events) {
+            EventDtoOut eventOut = new EventDtoOut(event);
+            eventOut.setAdmin(new UserDtoOut(event.getAdmin()));
+            for(com.andreasogeirik.model.entities.User user: event.getUsers()) {
+                eventOut.getUsers().add(new UserDtoOut(user));
+            }
+            eventsOut.add(eventOut);
+        }
+
+        return new ResponseEntity<Set<EventDtoOut>>(eventsOut, HttpStatus.OK);
+    }
+
+    /**
      * Retrieves the recommended events for the user
      * @param offset start fetching after "offset" number of events
      * @return JSON representation of the set of events

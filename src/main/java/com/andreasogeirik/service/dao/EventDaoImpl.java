@@ -124,7 +124,7 @@ public class EventDaoImpl implements EventDao {
 
         User user = session.get(User.class, userId);
         String hql = "SELECT E FROM Event E JOIN E.users U WHERE (:user) = U AND E.timeStart < (:timeStart) ORDER BY " +
-                "E.timeStart DESC";
+                "E.timeStart DESC, E.id";
 
         Query query = session.createQuery(hql).setParameter("user", user).setParameter("timeStart", new Date());
         query.setFirstResult(start);
@@ -149,9 +149,34 @@ public class EventDaoImpl implements EventDao {
         session.beginTransaction();
 
         User admin = session.get(User.class, userId);
-        String hql = "SELECT E FROM Event E WHERE E.admin = (:admin)";
+        String hql = "SELECT E FROM Event E WHERE E.admin = (:admin) AND timeStart > (:now)";
 
-        Query query = session.createQuery(hql).setParameter("admin", admin);
+        Query query = session.createQuery(hql).setParameter("admin", admin).setDate("now", new Date());
+
+        List<Event>
+                events = query.list();
+
+        if(events != null) {
+            for (int i = 0; i < events.size(); i++) {
+                Hibernate.initialize(events.get(i).getAdmin());
+                Hibernate.initialize(events.get(i).getUsers());
+            }
+        }
+
+        session.close();
+        return events;
+    }
+
+    @Override
+    public List<Event> getAdminEventsPast(int userId, int offset) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        User admin = session.get(User.class, userId);
+        String hql = "SELECT E FROM Event E WHERE E.admin = (:admin) AND timeStart < (:now) ORDER BY E.timeStart DESC, E.id";
+
+        Query query = session.createQuery(hql).setParameter("admin", admin).setDate("now", new Date()).setFirstResult(offset).setMaxResults
+                (Constants.NUMBER_OF_EVENTS_RETURNED);
 
         List<Event>
                 events = query.list();
