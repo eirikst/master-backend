@@ -106,7 +106,7 @@ public class MeController {
     }
 
     /**
-     * Gets friendships of the logged in user.
+     * Gets friendships of the logged in user(including requests).
      * @return JSONArray with Friendship objects.
      */
     @PreAuthorize(value="hasAuthority('USER')")

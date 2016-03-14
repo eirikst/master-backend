@@ -25,6 +25,8 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
         int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
         com.andreasogeirik.model.entities.User user = userDao.findById(userId);
 
+        httpServletRequest.getSession().setMaxInactiveInterval(5184000);//session expires two months after last request
+
         httpServletResponse.getWriter().write(new UserDtoOut(user).toJson().toString());
         httpServletResponse.getWriter().flush();
         httpServletResponse.getWriter().close();
