@@ -106,7 +106,7 @@ public class MeController {
     }
 
     /**
-     * Gets friendships of the logged in user.
+     * Gets friendships of the logged in user(including requests).
      * @return JSONArray with Friendship objects.
      */
     @PreAuthorize(value="hasAuthority('USER')")
@@ -141,6 +141,32 @@ public class MeController {
 
 
         List<Event> events = eventDao.getAdminEvents(userId);
+
+        Set<EventDtoOut> eventsOut = new HashSet<>();
+        for(Event event: events) {
+            EventDtoOut eventOut = new EventDtoOut(event);
+            eventOut.setAdmin(new UserDtoOut(event.getAdmin()));
+            for(com.andreasogeirik.model.entities.User user: event.getUsers()) {
+                eventOut.getUsers().add(new UserDtoOut(user));
+            }
+            eventsOut.add(eventOut);
+        }
+
+        return new ResponseEntity<Set<EventDtoOut>>(eventsOut, HttpStatus.OK);
+    }
+
+    /**
+     * Finds the past events where logged in user is admin
+     * @param offset number of events to skip from the start
+     * @return list of past events
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/events/past", method = RequestMethod.GET)
+    public ResponseEntity<Set<EventDtoOut>> findMyEventsPast(@RequestParam(value = "offset") int offset) {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+
+        List<Event> events = eventDao.getAdminEventsPast(userId, offset);
 
         Set<EventDtoOut> eventsOut = new HashSet<>();
         for(Event event: events) {
