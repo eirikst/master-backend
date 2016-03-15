@@ -51,6 +51,28 @@ public class EventController {
         return new ResponseEntity(new EventDtoOut(eventDao.getEvent(eventId)), HttpStatus.OK);
     }
 
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/{eventId}/attend", method = RequestMethod.POST)
+    public ResponseEntity<EventDtoOut> attendEvent(@PathVariable(value = "eventId") int eventId) {
+
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        EventDtoOut eventDtoOut = new EventDtoOut(eventDao.attendEvent(eventId, userId));
+
+        return new ResponseEntity(eventDtoOut, HttpStatus.OK);
+    }
+
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/{eventId}/unattend", method = RequestMethod.POST)
+    public ResponseEntity<EventDtoOut> unAttendEvent(@PathVariable(value = "eventId") int eventId) {
+
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        EventDtoOut eventDtoOut = new EventDtoOut(eventDao.unAttendEvent(eventId, userId));
+
+        return new ResponseEntity(eventDtoOut, HttpStatus.OK);
+    }
+
     /*
      * Exception handling
      */

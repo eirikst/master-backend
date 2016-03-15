@@ -4,6 +4,7 @@ import com.andreasogeirik.service.image.interfaces.ImageService;
 import org.apache.commons.lang.RandomStringUtils;
 
 import java.io.*;
+import java.nio.file.Files;
 
 /**
  * Created by Andreas on 18.02.2016.
@@ -13,8 +14,12 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public String saveImage(byte[] byteImage) {
         if (byteImage != null) {
+            String randomFileName = RandomStringUtils.randomAlphanumeric(20);
+            File file = new File("img/");
+            if(file.mkdir()){
+                System.out.println("The img folder didn't exist. A new was created");
+            }
             try {
-                String randomFileName = RandomStringUtils.randomAlphanumeric(20);
                 FileOutputStream imageOutFile = new FileOutputStream("img/" + randomFileName + ".jpg");
                 imageOutFile.write(byteImage);
                 imageOutFile.close();

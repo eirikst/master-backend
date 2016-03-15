@@ -3,10 +3,7 @@ package com.andreasogeirik.service.dao;
 import com.andreasogeirik.model.entities.Event;
 import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
-import com.andreasogeirik.tools.Constants;
-import com.andreasogeirik.tools.EntityNotFoundException;
-import com.andreasogeirik.tools.InputManager;
-import com.andreasogeirik.tools.InvalidInputException;
+import com.andreasogeirik.tools.*;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -80,16 +77,58 @@ public class EventDaoImpl implements EventDao {
         if (event == null){
             throw new EntityNotFoundException("The requested event does not exist");
         }
-//
-//        for (int i = 0; i < event.getUsers().size(); i++) {
-//
-//        }
 
         Hibernate.initialize(event.getUsers());
 
         if (event == null){
             throw new EntityNotFoundException();
         }
+        session.close();
+        return event;
+    }
+
+    @Override
+    public Event attendEvent(int eventId, int userId) {
+
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        User user = session.get(User.class, userId);
+        Event event = session.get(Event.class, eventId);
+
+        if (event == null){
+            throw new EntityNotFoundException("The requested event does not exist");
+        }
+        Hibernate.initialize(event.getUsers());
+        Set<User> users = event.getUsers();
+
+        users.add(user);
+        session.save(event);
+
+        session.getTransaction().commit();
+        session.close();
+        return event;
+    }
+
+    @Override
+    public Event unAttendEvent(int eventId, int userId) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        User user = session.get(User.class, userId);
+        Event event = session.get(Event.class, eventId);
+
+        if (event == null){
+            throw new EntityNotFoundException("The requested event does not exist");
+        }
+        Hibernate.initialize(event.getUsers());
+        Set<User> users = event.getUsers();
+
+        users.remove(user);
+
+        session.save(event);
+
+        session.getTransaction().commit();
         session.close();
         return event;
     }
