@@ -4,6 +4,7 @@ import com.andreasogeirik.model.dto.incoming.EventDto;
 import com.andreasogeirik.model.dto.outgoing.EventDtoOut;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
+import com.andreasogeirik.tools.EntityConflictException;
 import com.andreasogeirik.tools.EntityNotFoundException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
@@ -40,6 +41,32 @@ public class EventController {
     }
 
     /**
+     * Updates an event
+     * @param event JSON representation of the event to update
+     * @return JSON representation of the event with the ID
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/{eventId}", method = RequestMethod.POST)
+    public ResponseEntity<EventDtoOut> updateEvent(@PathVariable(value = "eventId") int eventId, @RequestBody EventDto event) {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+        EventDtoOut eventOut = new EventDtoOut(eventDao.updateEvent(userId, eventId, event.toEvent()));
+        return new ResponseEntity(eventOut, HttpStatus.OK);
+    }
+
+    /**
+     * Deletes an event
+     * @param eventId, the ID of the event to be deleted
+     * @return HttpStatus
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/{eventId}", method = RequestMethod.DELETE)
+    public ResponseEntity<HttpStatus> deleteEvent(@PathVariable(value = "eventId") int eventId) {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+        eventDao.deleteEvent(userId, eventId);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    /**
      * Retrieves an event by id
      * @param eventId
      * @return JSON representation of the event with the ID
@@ -51,6 +78,11 @@ public class EventController {
         return new ResponseEntity(new EventDtoOut(eventDao.getEvent(eventId)), HttpStatus.OK);
     }
 
+    /**
+     * Adds a user to an event
+     * @param eventId
+     * @return JSON representation of the attended event
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{eventId}/attend", method = RequestMethod.POST)
     public ResponseEntity<EventDtoOut> attendEvent(@PathVariable(value = "eventId") int eventId) {
@@ -62,6 +94,11 @@ public class EventController {
         return new ResponseEntity(eventDtoOut, HttpStatus.OK);
     }
 
+    /**
+     * Removes a user from an event
+     * @param eventId
+     * @return JSON representation of the attended event
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{eventId}/unattend", method = RequestMethod.POST)
     public ResponseEntity<EventDtoOut> unAttendEvent(@PathVariable(value = "eventId") int eventId) {
@@ -87,6 +124,11 @@ public class EventController {
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<Status> violation(InvalidInputException e) {
         return new ResponseEntity<Status>(new Status(0, e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EntityConflictException.class)
+    public ResponseEntity<Status> entityConflict(InvalidInputException e) {
+        return new ResponseEntity<Status>(new Status(0, e.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

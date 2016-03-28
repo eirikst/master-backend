@@ -8,7 +8,9 @@ import java.util.List;
  * Created by eirikstadheim on 01/02/16.
  */
 public interface EventDao {
-    Event createEvent(Event event, int adminId);
+    Event createEvent(Event event, int userId);
+    Event updateEvent(int userId, int eventId, Event event);
+    Event deleteEvent(int userId, int eventId);
     Event getEvent(int eventId);
     Event attendEvent(int eventId, int userId);
     Event unAttendEvent(int eventId, int userId);
