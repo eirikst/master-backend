@@ -7,6 +7,11 @@
     <session-factory>
 
         <!-- Connection settings -->
+        <!--property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+        <property name="hibernate.connection.url">jdbc:sqlserver://andreasogeirik.database.windows.net:1433;database=sportydul_db;</property>
+        <property name="hibernate.connection.username">andreasogeirik@andreasogeirik</property>
+        <property name="hibernate.connection.password">Arif1234</property-->
+
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
         <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/postgres</property>
         <property name="hibernate.connection.username">postgres</property>
