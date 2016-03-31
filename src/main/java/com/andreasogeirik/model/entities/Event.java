@@ -135,4 +135,13 @@ public class Event {
     public void setPosts(Set<EventPost> posts) {
         this.posts = posts;
     }
+
+    public void updateAttributes(Event event){
+        this.name = event.getName();
+        this.location = event.getLocation();
+        this.description = event.getDescription();
+        this.timeStart = event.getTimeStart();
+        this.timeEnd = event.getTimeEnd();
+        this.imageURI = event.getImageURI();
+    }
 }

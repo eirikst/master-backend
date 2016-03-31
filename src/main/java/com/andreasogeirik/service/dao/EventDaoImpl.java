@@ -26,7 +26,7 @@ public class EventDaoImpl implements EventDao {
     InputManager inputManager;
 
     @Override
-    public Event createEvent(Event event, int adminId) {
+    public Event createEvent(Event event, int userId) {
         if(!inputManager.isValidEventName(event.getName())) {
             throw new InvalidInputException("Invalid name format");
         }
@@ -51,7 +51,7 @@ public class EventDaoImpl implements EventDao {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        User admin = session.get(User.class, adminId);
+        User admin = session.get(User.class, userId);
         event.setTimeCreated(new Date());
         event.setAdmin(admin);
 
@@ -66,6 +66,69 @@ public class EventDaoImpl implements EventDao {
         session.getTransaction().commit();
         session.close();
         return event;
+    }
+
+    @Override
+    public Event updateEvent(int userId, int eventId, Event event) {
+
+        if(!inputManager.isValidEventName(event.getName())) {
+            throw new InvalidInputException("Invalid name format");
+        }
+        if(!inputManager.isValidEventDescription(event.getDescription())) {
+            throw new InvalidInputException("Invalid description format");
+        }
+        if(!inputManager.isValidLocation(event.getLocation())) {
+            throw new InvalidInputException("Invalid location format");
+        }
+        if(event.getTimeStart().before(new Date())) {
+            throw new InvalidInputException("Invalid start time");
+        }
+        if (event.getTimeEnd() != null){
+            if(event.getTimeEnd().before(new Date())) {
+                throw new InvalidInputException("Invalid end time");
+            }
+            if(event.getTimeEnd().before(event.getTimeStart())) {
+                throw new InvalidInputException("End time cannot be before start time");
+            }
+        }
+
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        Event contextEvent = session.get(Event.class, eventId);
+
+        // Check if user is the admin of the event
+        if (contextEvent.getAdmin().getId() != userId){
+            session.close();
+            throw new EntityConflictException("The user is not allowed to update this event");
+        }
+        Hibernate.initialize(contextEvent.getUsers());
+        contextEvent.updateAttributes(event);
+
+        session.update(contextEvent);
+        session.getTransaction().commit();
+        session.close();
+
+        return contextEvent;
+    }
+
+    @Override
+    public Event deleteEvent(int userId, int eventId) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        Event event = session.get(Event.class, eventId);
+        if (event.getAdmin().getId() != userId){
+            session.close();
+            throw new EntityConflictException("The user is not allowed to update this event");
+        }
+
+        session.delete(event);
+
+        session.getTransaction().commit();
+        session.close();
+
+        return null;
     }
 
     @Override
