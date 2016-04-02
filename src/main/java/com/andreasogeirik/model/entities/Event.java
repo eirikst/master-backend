@@ -21,6 +21,7 @@ public class Event {
     private Date timeEnd;
     private String imageURI;
     private User admin;
+    private int difficulty = 1;
     private Set<User> users = new HashSet<User>(0);
     private Set<EventPost> posts = new HashSet<EventPost>(0);
 
@@ -28,13 +29,14 @@ public class Event {
     }
 
     public Event(String name, String location, String description, Date timeStart,
-                 Date timeEnd, String imageURI) {
+                 Date timeEnd, String imageURI, int difficulty) {
         this.name = name;
         this.location = location;
         this.description = description;
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
         this.imageURI = imageURI;
+        this.difficulty = difficulty;
     }
 
     @Id
@@ -116,6 +118,15 @@ public class Event {
 
     public void setAdmin(User admin) {
         this.admin = admin;
+    }
+
+    @Column(nullable = false)
+    public int getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
     }
 
     @ManyToMany(fetch = FetchType.LAZY)

@@ -47,7 +47,7 @@ public class BeanConfig {
                 .buildSessionFactory();
     }
 
-    //Create a transaction manager
+    //Create a transaction manager. Du tror du ikke trenger denne, men det gjør du bror
     @Bean
     public HibernateTransactionManager txManager() {
         return new HibernateTransactionManager(sessionFactory());

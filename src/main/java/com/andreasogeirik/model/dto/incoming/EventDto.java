@@ -14,9 +14,10 @@ public class EventDto {
     private Date timeStart;
     private Date timeEnd;
     private String imageUri = "";
+    private int difficulty = 1;
 
     public Event toEvent() {
-        return new Event(name, location, description, timeStart, timeEnd, imageUri);
+        return new Event(name, location, description, timeStart, timeEnd, imageUri, difficulty);
     }
 
     public String getName() {
@@ -65,5 +66,13 @@ public class EventDto {
 
     public void setImageUri(String encodedImage) {
         this.imageUri = encodedImage;
+    }
+
+    public int getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
     }
 }
