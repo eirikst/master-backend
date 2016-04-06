@@ -10,6 +10,15 @@ public class Constants {
     public static final int EVENT_DIFFICULTY_EASY = 1;
     public static final int EVENT_DIFFICULTY_MEDIUM = 2;
     public static final int EVENT_DIFFICULTY_HARD = 3;
-    //public static final String BACKEND_URL = "http://sportydul.azurewebsites.net/";
-    public static final String BACKEND_URL = "http://78.91.3.136:8080/";
+
+    public static final String GCM_API_KEY = "AIzaSyAzGkBvA_kYil5hLdPSv-26MdezrXJZfqo";
+
+    //Azure
+    public static final String BACKEND_URL = "http://sportydul.azurewebsites.net/";
+
+    //Eirik NTNU
+    //public static final String BACKEND_URL = "http://78.91.3.136:8080/";
+
+    //Eirik hjemme
+    //public static final String BACKEND_URL = "http://10.0.0.99:8080/";
 }

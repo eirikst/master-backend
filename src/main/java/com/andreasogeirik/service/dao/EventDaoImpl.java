@@ -374,7 +374,11 @@ public class EventDaoImpl implements EventDao {
 
         String hql = "SELECT E FROM Event E WHERE E.timeStart > (:date) ORDER BY E.timeStart ASC, E.id ASC";
 
-        Query query = session.createQuery(hql).setDate("date", new Date()).setFirstResult(offset).setMaxResults
+        //TODO REMOVE
+        Date now = new Date();
+        System.out.println(now);
+
+        Query query = session.createQuery(hql).setDate("date", now).setFirstResult(offset).setMaxResults
                 (Constants.NUMBER_OF_EVENTS_RETURNED);
 
         List<Event> events = query.list();

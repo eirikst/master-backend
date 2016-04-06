@@ -4,6 +4,7 @@ import com.andreasogeirik.model.entities.Friendship;
 import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.model.entities.UserRole;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
+import com.andreasogeirik.service.gcm.GcmService;
 import com.andreasogeirik.tools.*;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
@@ -29,6 +30,9 @@ public class UserDaoImpl implements UserDao {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private GcmService gcmService;
 
     /*
      * Creates new user with role USER
@@ -260,8 +264,15 @@ public class UserDaoImpl implements UserDao {
 
         session.save(friendship);
 
+        String nameOfRequester = friend1.getFirstname() + " " + friend1.getLastname();
+
         session.getTransaction().commit();
         session.close();
+
+        //call gcm service to notify user
+
+        gcmService.notifyFriendRequest(nameOfRequester, userId2);
+
         return friendship;
     }
 
@@ -270,6 +281,10 @@ public class UserDaoImpl implements UserDao {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
+
+        int userIdToNotify;
+        String nameToNotify;
+
         Friendship friendship = session.get(Friendship.class, friendshipId);
 
         if(friendship == null) {
@@ -277,9 +292,17 @@ public class UserDaoImpl implements UserDao {
             session.close();
             throw new EntityNotFoundException("Friendship with id " + friendshipId + " not found");
         }
-        else if(friendship.getFriend2().getId() == userId || friendship.getFriend1().getId() == userId) {
+        else if(friendship.getFriend2().getId() == userId) {
             friendship.setStatus(Friendship.FRIENDS);
             session.save(friendship);
+            userIdToNotify = friendship.getFriend1().getId();
+            nameToNotify = friendship.getFriend1().getFirstname();
+        }
+        else if(friendship.getFriend1().getId() == userId) {
+            friendship.setStatus(Friendship.FRIENDS);
+            session.save(friendship);
+            userIdToNotify = friendship.getFriend2().getId();
+            nameToNotify = friendship.getFriend2().getFirstname();
         }
         else {
             session.getTransaction().commit();
@@ -289,6 +312,9 @@ public class UserDaoImpl implements UserDao {
 
         session.getTransaction().commit();
         session.close();
+
+        //notify user
+        gcmService.notifyFriendAccepted(nameToNotify, userIdToNotify);
     }
 
     /*
@@ -337,5 +363,47 @@ public class UserDaoImpl implements UserDao {
         session.getTransaction().commit();
         session.close();
         return users;
+    }
+
+    @Override
+    public Set<String> getGcmTokensByUserId(int userId) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        User user = session.get(User.class, userId);
+        Set<String> gcmTokens = new HashSet<String>(0);
+
+        for(String token: user.getGcmTokens()) {
+            gcmTokens.add(token);
+        }
+
+        session.getTransaction().commit();
+        session.close();
+
+        return gcmTokens;
+    }
+
+    @Override
+    public void registerGcmToken(int userId, String gcmToken) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        User user = session.get(User.class, userId);
+        user.getGcmTokens().add(gcmToken);
+
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    @Override
+    public void removeGcmToken(int userId, String gcmToken) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        User user = session.get(User.class, userId);
+        user.getGcmTokens().remove(gcmToken);
+
+        session.getTransaction().commit();
+        session.close();
     }
 }
