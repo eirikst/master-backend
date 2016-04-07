@@ -123,9 +123,6 @@ public class MeController {
 
 
         List<Friendship> friendships = userDao.findFriendsAndRequests(userId);
-        for(int i = 0; i < friendships.size(); i++) {
-            System.out.printf(friendships.get(i).toString());
-        }
 
         Set<FriendshipDtoOut> friendshipsOut = new HashSet<FriendshipDtoOut>();
 

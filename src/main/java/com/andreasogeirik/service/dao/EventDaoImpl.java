@@ -6,15 +6,18 @@ import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.tools.*;
 import org.hibernate.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created by eirikstadheim on 01/02/16.
  */
 public class EventDaoImpl implements EventDao {
+    private Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -23,6 +26,7 @@ public class EventDaoImpl implements EventDao {
     InputManager inputManager;
 
     @Override
+    @Transactional
     public Event createEvent(Event event, int userId) {
         if (!inputManager.isValidEventName(event.getName())) {
             throw new InvalidInputException("Invalid name format");
@@ -46,33 +50,28 @@ public class EventDaoImpl implements EventDao {
         }
 
         Session session = sessionFactory.openSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            User admin = session.get(User.class, userId);
-            event.setTimeCreated(new Date());
-            event.setAdmin(admin);
+        session.beginTransaction();
+        User admin = session.get(User.class, userId);
 
-            Set<User> users = new HashSet<>();
-            users.add(admin);
+        event.setTimeCreated(new Date());
+        event.setAdmin(admin);
 
-            event.setUsers(users);
+        Set<User> users = new HashSet<>();
+        users.add(admin);
 
-            session.save(event);
-            transaction.commit();
-        } catch (HibernateException e) {
-            if (transaction != null) {
-                transaction.rollback();
-                throw e;
-            }
-        } finally {
-            session.close();
-        }
+        event.setUsers(users);
+
+        session.save(event);
+
+        session.getTransaction().commit();
+        session.close();
 
         return event;
     }
 
+
     @Override
+    @Transactional
     public Event updateEvent(int userId, int eventId, Event event) {
 
         if (!inputManager.isValidEventName(event.getName())) {
@@ -97,178 +96,143 @@ public class EventDaoImpl implements EventDao {
         }
 
         Session session = sessionFactory.openSession();
-        Transaction transaction = null;
-        Event contextEvent = null;
-        try {
-            transaction = session.beginTransaction();
 
-            contextEvent = session.get(Event.class, eventId);
+        session.beginTransaction();
 
-            // Check if user is the admin of the event
-            if (contextEvent.getAdmin().getId() != userId) {
-                session.close();
-                throw new EntityConflictException("The user is not allowed to update this event");
-            }
-            Hibernate.initialize(contextEvent.getUsers());
-            contextEvent.updateAttributes(event);
+        Event contextEvent = session.get(Event.class, eventId);
 
-            session.update(contextEvent);
-            transaction.commit();
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            if (transaction != null) {
-                transaction.rollback();
-                throw e;
-            }
-        } finally {
+        // Check if user is the admin of the event
+        if (contextEvent.getAdmin().getId() != userId) {
+            session.getTransaction().commit();
             session.close();
+            throw new EntityConflictException("The user is not allowed to update this event");
         }
+        Hibernate.initialize(contextEvent.getUsers());
+        contextEvent.updateAttributes(event);
+
+        session.update(contextEvent);
+
+        session.getTransaction().commit();
+        session.close();
 
         return contextEvent;
     }
 
     @Override
-    public Event deleteEvent(int userId, int eventId) {
+    @Transactional
+    public void deleteEvent(int userId, int eventId) {
         Session session = sessionFactory.openSession();
-        Transaction transaction = null;
 
-        try {
-            transaction = session.beginTransaction();
+        session.beginTransaction();
 
-            Event event = session.get(Event.class, eventId);
-            if (event.getAdmin().getId() != userId || event.getTimeStart().before(new Date())) {
-                session.close();
-                throw new EntityConflictException("The user is not allowed to delete this event");
-            }
-
-            session.delete(event);
-            transaction.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (transaction != null) {
-                transaction.rollback();
-                throw e;
-            }
-        } finally {
+        Event event = session.get(Event.class, eventId);
+        if (event.getAdmin().getId() != userId || event.getTimeStart().before(new Date())) {
+            session.getTransaction().commit();
             session.close();
+            throw new EntityConflictException("The user is not allowed to delete this event");
         }
 
-        return null;
+        session.delete(event);
+
+        session.getTransaction().commit();
+        session.close();
     }
 
     @Override
+    @Transactional
     public Event getEvent(int eventId) {
         Session session = sessionFactory.openSession();
-        Transaction transaction = null;
-        Event event = null;
-        try {
-            transaction = session.beginTransaction();
-            event = session.get(Event.class, eventId);
+        session.beginTransaction();
 
-            if (event == null) {
-                session.close();
-                throw new EntityNotFoundException("The requested event does not exist");
-            }
+        Event event = session.get(Event.class, eventId);
 
-            Hibernate.initialize(event.getUsers());
-            transaction.commit();
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            if (transaction != null) {
-                transaction.rollback();
-                throw e;
-            }
-        } catch (EntityNotFoundException e) {
-            e.printStackTrace();
-        } finally {
+        if (event == null) {
+            session.getTransaction().commit();
             session.close();
+            throw new EntityNotFoundException("The requested event does not exist");
         }
+
+        Hibernate.initialize(event.getUsers());
+
+        session.getTransaction().commit();
+        session.close();
+
         return event;
     }
 
     @Override
+    @Transactional
     public Event attendEvent(int eventId, int userId) {
 
         Session session = sessionFactory.openSession();
-        Transaction transaction = null;
+        session.beginTransaction();
 
-        Event event = null;
-        try {
-            transaction = session.beginTransaction();
+        User user = session.get(User.class, userId);
+        Event event = session.get(Event.class, eventId);
 
-            User user = session.get(User.class, userId);
-            event = session.get(Event.class, eventId);
-
-            if (event == null) {
-                session.close();
-                throw new EntityNotFoundException("The requested event does not exist");
-            }
-
-            if (event.getTimeStart().before(new Date())) {
-                session.close();
-                throw new EntityConflictException("The user is not allowed to delete this event");
-            }
-
-            Hibernate.initialize(event.getUsers());
-            Set<User> users = event.getUsers();
-
-            users.add(user);
-            session.save(event);
-            transaction.commit();
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            if (transaction != null) {
-                transaction.rollback();
-                throw e;
-            }
-        } catch (EntityNotFoundException e) {
-            e.printStackTrace();
-        } finally {
+        if (event == null) {
+            session.getTransaction().commit();
             session.close();
+            throw new EntityNotFoundException("The requested event does not exist");
         }
+
+        if (event.getTimeStart().before(new Date())) {
+            session.getTransaction().commit();
+            session.close();
+            throw new EntityConflictException("The user is not allowed to delete this event");
+        }
+
+        Hibernate.initialize(event.getUsers());
+        Set<User> users = event.getUsers();
+
+        users.add(user);
+        session.save(event);
+
+        session.getTransaction().commit();
+        session.close();
+
         return event;
     }
 
     @Override
+    @Transactional
     public Event unAttendEvent(int eventId, int userId) {
         Session session = sessionFactory.openSession();
 
-        Transaction transaction = null;
-        Event event = null;
-        try {
-            transaction = session.beginTransaction();
+        session.beginTransaction();
 
-            User user = session.get(User.class, userId);
-            event = session.get(Event.class, eventId);
+        User user = session.get(User.class, userId);
+        Event event = session.get(Event.class, eventId);
 
-            if (event == null) {
-                session.close();
-                throw new EntityNotFoundException("The requested event does not exist");
-            }
-            if (event.getTimeStart().before(new Date())) {
-                session.close();
-                throw new EntityConflictException("The user is not allowed to delete this event");
-            }
-
-            Hibernate.initialize(event.getUsers());
-            Set<User> users = event.getUsers();
-
-            users.remove(user);
-            session.save(event);
-            transaction.commit();
-        } catch (EntityNotFoundException e) {
-            e.printStackTrace();
-        } catch (HibernateException e) {
-            e.printStackTrace();
-        } finally {
+        if (event == null) {
+            session.getTransaction().commit();
             session.close();
+            throw new EntityNotFoundException("The requested event does not exist");
         }
+        if (event.getTimeStart().before(new Date())) {
+            session.getTransaction().commit();
+            session.close();
+            throw new EntityConflictException("The user is not allowed to delete this event");
+        }
+
+        Hibernate.initialize(event.getUsers());
+        Set<User> users = event.getUsers();
+
+        users.remove(user);
+        session.save(event);
+
+        session.getTransaction().commit();
+        session.close();
+
         return event;
     }
 
     @Override
+    @Transactional
     public List<Event> getAttendingEvents(int userId) {
         Session session = sessionFactory.openSession();
+
+
         session.beginTransaction();
 
         User user = session.get(User.class, userId);
@@ -285,13 +249,17 @@ public class EventDaoImpl implements EventDao {
             }
         }
 
+        session.getTransaction().commit();
         session.close();
+
         return events;
     }
 
     @Override
+    @Transactional
     public List<Event> getAttendedEvents(int userId, int start) {
         Session session = sessionFactory.openSession();
+
         session.beginTransaction();
 
         User user = session.get(User.class, userId);
@@ -311,13 +279,17 @@ public class EventDaoImpl implements EventDao {
             }
         }
 
+        session.getTransaction().commit();
         session.close();
+
         return events;
     }
 
     @Override
+    @Transactional
     public List<Event> getAdminEvents(int userId) {
         Session session = sessionFactory.openSession();
+
         session.beginTransaction();
 
         User admin = session.get(User.class, userId);
@@ -325,8 +297,7 @@ public class EventDaoImpl implements EventDao {
 
         Query query = session.createQuery(hql).setParameter("admin", admin).setDate("now", new Date());
 
-        List<Event>
-                events = query.list();
+        List<Event> events = query.list();
 
         if (events != null) {
             for (int i = 0; i < events.size(); i++) {
@@ -335,13 +306,17 @@ public class EventDaoImpl implements EventDao {
             }
         }
 
+        session.getTransaction().commit();
         session.close();
+
         return events;
     }
 
     @Override
+    @Transactional
     public List<Event> getAdminEventsPast(int userId, int offset) {
         Session session = sessionFactory.openSession();
+
         session.beginTransaction();
 
         User admin = session.get(User.class, userId);
@@ -350,8 +325,7 @@ public class EventDaoImpl implements EventDao {
         Query query = session.createQuery(hql).setParameter("admin", admin).setDate("now", new Date()).setFirstResult(offset).setMaxResults
                 (Constants.NUMBER_OF_EVENTS_RETURNED);
 
-        List<Event>
-                events = query.list();
+        List<Event> events = query.list();
 
         if (events != null) {
             for (int i = 0; i < events.size(); i++) {
@@ -360,7 +334,9 @@ public class EventDaoImpl implements EventDao {
             }
         }
 
+        session.getTransaction().commit();
         session.close();
+
         return events;
     }
 
@@ -368,6 +344,7 @@ public class EventDaoImpl implements EventDao {
      * TODO: does not really recommend, only returns all coming events
      */
     @Override
+    @Transactional
     public List<Event> getRecommendedEvents(int userId, int offset) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
@@ -376,7 +353,6 @@ public class EventDaoImpl implements EventDao {
 
         //TODO REMOVE
         Date now = new Date();
-        System.out.println(now);
 
         Query query = session.createQuery(hql).setDate("date", now).setFirstResult(offset).setMaxResults
                 (Constants.NUMBER_OF_EVENTS_RETURNED);
@@ -390,7 +366,9 @@ public class EventDaoImpl implements EventDao {
             }
         }
 
+        session.getTransaction().commit();
         session.close();
+
         return events;
     }
 }

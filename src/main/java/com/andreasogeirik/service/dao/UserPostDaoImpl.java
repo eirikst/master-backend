@@ -31,6 +31,7 @@ public class UserPostDaoImpl implements UserPostDao {
     private InputManager inputManager;
 
     @Override
+    @Transactional
     public void createUserPost(UserPost post, int userId) {
         if(!inputManager.isValidPost(post.getMessage())) {
             throw new InvalidInputException("Invalid post message format");
@@ -49,6 +50,7 @@ public class UserPostDaoImpl implements UserPostDao {
     }
 
     @Override
+    @Transactional
     public void comment(UserPostComment comment, int postId, int userId) {
         if(!inputManager.isValidComment(comment.getMessage())) {
             throw new InvalidInputException("Invalid comment message format");
@@ -85,9 +87,11 @@ public class UserPostDaoImpl implements UserPostDao {
         return post;
     }
 
+    @Transactional
     @Override
     public List<UserPost> findPosts(int userId, int start, int quantity) {
         Session session = sessionFactory.openSession();
+        session.beginTransaction();
 
         String hql = "FROM UserPost P WHERE P.user.id = " + userId + " ORDER BY P.timeCreated desc";
         Query query = session.createQuery(hql);
@@ -104,11 +108,13 @@ public class UserPostDaoImpl implements UserPostDao {
             }
         }
 
+        session.getTransaction().commit();
         session.close();
 
         return posts;
     }
 
+    @Transactional
     @Override
     public void like(int postId, int userId) {
         Session session = sessionFactory.openSession();

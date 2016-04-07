@@ -5,11 +5,13 @@ import org.apache.commons.lang.RandomStringUtils;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.logging.Logger;
 
 /**
  * Created by Andreas on 18.02.2016.
  */
 public class ImageServiceImpl implements ImageService {
+    private Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     @Override
     public String saveImage(byte[] byteImage) {
@@ -17,18 +19,18 @@ public class ImageServiceImpl implements ImageService {
             String randomFileName = RandomStringUtils.randomAlphanumeric(20);
             File file = new File("img/");
             if(file.mkdir()){
-                System.out.println("The img folder didn't exist. A new was created");
+                logger.warning("The img folder didn't exist. A new was created");
             }
             try {
                 FileOutputStream imageOutFile = new FileOutputStream("img/" + randomFileName + ".jpg");
                 imageOutFile.write(byteImage);
                 imageOutFile.close();
-                System.out.println("Image Successfully Stored");
+                logger.info("Image Successfully Stored");
                 return randomFileName;
             } catch (FileNotFoundException fnfe) {
-                System.out.println("Image Path not found" + fnfe);
+                logger.warning("Image Path not found" + fnfe);
             } catch (IOException ioe) {
-                System.out.println("Exception while converting the Image " + ioe);
+                logger.warning("Exception while converting the Image " + ioe);
             }
         }
         return null;

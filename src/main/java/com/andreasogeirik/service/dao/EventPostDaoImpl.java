@@ -26,6 +26,7 @@ public class EventPostDaoImpl implements EventPostDao {
     @Autowired
     private InputManager inputManager;
 
+    @Transactional
     @Override
     public void createEventPost(EventPost post, int userId) {
         if(!inputManager.isValidPost(post.getMessage())) {
@@ -44,6 +45,7 @@ public class EventPostDaoImpl implements EventPostDao {
         session.close();
     }
 
+    @Transactional
     @Override
     public void comment(EventPostComment comment, int postId, int userId) {
         if(!inputManager.isValidComment(comment.getMessage())) {
@@ -81,6 +83,7 @@ public class EventPostDaoImpl implements EventPostDao {
         return post;
     }
 
+    @Transactional
     @Override
     public void like(int postId, int userId) {
         Session session = sessionFactory.openSession();

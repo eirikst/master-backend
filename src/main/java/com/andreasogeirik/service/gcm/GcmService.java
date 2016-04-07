@@ -58,7 +58,7 @@ public class GcmService {
                     RestTemplate template = new RestTemplate();
                     ((SimpleClientHttpRequestFactory) template.getRequestFactory()).setConnectTimeout(1000 * 10);
                     HttpHeaders headers = new HttpHeaders();
-                    headers.add("Content-Type", "application/json");
+                    headers.set("Content-Type", "application/json; charset=utf-8");
                     headers.add("Authorization", "key=" + "AIzaSyAzGkBvA_kYil5hLdPSv-26MdezrXJZfqo");
 
                     HttpEntity<String> entity = new HttpEntity(data + ",\"to\" : \"" + token + "\"}", headers);

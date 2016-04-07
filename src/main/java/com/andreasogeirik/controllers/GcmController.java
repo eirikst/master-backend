@@ -41,10 +41,8 @@ public class GcmController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity sendMeGCM(@RequestParam(value = "msg") String msg) {
-        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+    public ResponseEntity sendGCM(@RequestParam(value = "msg") String msg, @RequestParam(value = "userId") int userId) {
         gcmService.notifyTest(msg, userId);
         return new ResponseEntity(HttpStatus.OK);
     }

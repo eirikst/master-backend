@@ -27,8 +27,6 @@ public class PingController {
      */
     @Scheduled(fixedDelay = 300000)
     private void pingSelf () {
-        System.out.println("Ping self");
-
         new Thread() {
             public void run() {
                 ResponseEntity<String> response;
@@ -38,9 +36,9 @@ public class PingController {
                 HttpEntity<String> entity = new HttpEntity(null, headers);
                 try {
                     response = template.exchange(Constants.BACKEND_URL + "ping", HttpMethod.GET, entity, String.class);
-                    logger.info("Ping returned OK at " + new Date());
+                    logger.info("Ping self returned OK at " + new Date());
                 } catch (Exception e) {
-                    logger.warning("Ping failed at " + new Date());
+                    logger.warning("Ping self failed at " + new Date());
                 }
             }
         }.start();
