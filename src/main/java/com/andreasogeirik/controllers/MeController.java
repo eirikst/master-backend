@@ -114,14 +114,14 @@ public class MeController {
 
     /**
      * Updates a user's password with USER authorization
-     * @param prevPassword the previous password
+     * @param currentPassword the previous password
      * @param newPassword the new password
      * @return HttpStatus
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/password", method = RequestMethod.POST)
-    public ResponseEntity<HttpStatus> updatePassword(@RequestParam(value = "prevPassword") String prevPassword, @RequestParam(value = "newPassword") String newPassword) {
-        userDao.updatePassword(prevPassword, newPassword, ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
+    public ResponseEntity<HttpStatus> updatePassword(@RequestParam(value = "currentPassword") String currentPassword, @RequestParam(value = "newPassword") String newPassword) {
+        userDao.updatePassword(currentPassword, newPassword, ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
