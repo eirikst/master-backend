@@ -4,7 +4,6 @@ import com.andreasogeirik.model.dto.incoming.UserDto;
 import com.andreasogeirik.model.dto.outgoing.*;
 import com.andreasogeirik.model.entities.*;
 import com.andreasogeirik.security.User;
-import com.andreasogeirik.service.EmailNotifier;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.persistence.EntityNotFoundException;
-import java.nio.file.Path;
 import java.util.*;
 
 @RestController
@@ -33,6 +31,18 @@ public class UserController {
 
     @Autowired
     private EventDao eventDao;
+
+
+    /**
+     * Gets a user with given id
+     * @param userId
+     * @return user
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
+    public ResponseEntity<UserDtoOut> getUser(@PathVariable(value = "userId") int userId) {
+        return new ResponseEntity<UserDtoOut>(new UserDtoOut(userDao.findById(userId)), HttpStatus.OK);
+    }
 
     /**
      * Creates a user with USER authorization
