@@ -170,6 +170,26 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
+    @Transactional
+    @Override
+    public void updatePassword(String prevPass, String newPass, int userId) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        User user = session.get(User.class, userId);
+
+        if (prevPass != user.getPassword()){
+            session.getTransaction().commit();
+            session.close();
+            throw new InvalidInputException("The previous password is not correct");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPass));
+        session.save(user);
+        session.getTransaction().commit();
+        session.close();
+    }
+
 
     /*
      * Finds all friends and requests to/from the user(as friendships)

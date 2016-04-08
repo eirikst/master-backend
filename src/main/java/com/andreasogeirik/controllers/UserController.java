@@ -50,7 +50,7 @@ public class UserController {
      * @param user the user object(JSON)
      * @return the user object as JSON with ID
      */
-
+    @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<UserDtoOut> updateUser(@RequestBody UserDto user) {
         UserDtoOut userOut = new UserDtoOut(userDao.updateUser(user.getFirstname(), user.getLastname(), user.getLocation(), user.getImageUri(), ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
