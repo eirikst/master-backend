@@ -16,6 +16,8 @@ public interface UserDao {
     User findByEmail(String email);
     User findById(int id);
 
+    void updatePassword(String currentPass, String newPass, int userId);
+
     List<Friendship> findFriendsAndRequests(int userId);
     List<Friendship> findFriends(int userId);
 

@@ -64,19 +64,19 @@ public class UserDaoImpl implements UserDao {
      */
     @Transactional
     private User createUser(User user, int role) {
-        if(!inputManager.isValidEmail(user.getEmail())) {
+        if (!inputManager.isValidEmail(user.getEmail())) {
             throw new InvalidInputException("Invalid email format");
         }
-        if(!inputManager.isValidPassword(user.getPassword())) {
+        if (!inputManager.isValidPassword(user.getPassword())) {
             throw new InvalidInputException("Invalid password format");
         }
-        if(!inputManager.isValidName(user.getFirstname())) {
+        if (!inputManager.isValidName(user.getFirstname())) {
             throw new InvalidInputException("Invalid firstname format");
         }
-        if(!inputManager.isValidName(user.getLastname())) {
+        if (!inputManager.isValidName(user.getLastname())) {
             throw new InvalidInputException("Invalid lastname format");
         }
-        if(!inputManager.isValidLocation(user.getLocation())) {
+        if (!inputManager.isValidLocation(user.getLocation())) {
             throw new InvalidInputException("Invalid location format");
         }
 
@@ -115,13 +115,13 @@ public class UserDaoImpl implements UserDao {
      */
     @Transactional
     public User updateUser(String firstname, String lastname, String location, String imageUri, int userId) {
-        if(!inputManager.isValidName(firstname)) {
+        if (!inputManager.isValidName(firstname)) {
             throw new InvalidInputException("Invalid firstname format");
         }
-        if(!inputManager.isValidName(lastname)) {
+        if (!inputManager.isValidName(lastname)) {
             throw new InvalidInputException("Invalid lastname format");
         }
-        if(!inputManager.isValidLocation(location)) {
+        if (!inputManager.isValidLocation(location)) {
             throw new InvalidInputException("Invalid location format");
         }
 
@@ -149,7 +149,7 @@ public class UserDaoImpl implements UserDao {
     @Transactional
     private boolean emailExists(String email, Session session) {
         Criteria criteria = session.createCriteria(User.class);
-        User user = (User)criteria.add(Restrictions.eq("email", email))
+        User user = (User) criteria.add(Restrictions.eq("email", email))
                 .uniqueResult();
 
         return user != null;
@@ -164,9 +164,9 @@ public class UserDaoImpl implements UserDao {
         Session session = sessionFactory.openSession();
 
         Criteria criteria = session.createCriteria(User.class);
-        User user = (User)criteria.add(Restrictions.eq("email", email))
+        User user = (User) criteria.add(Restrictions.eq("email", email))
                 .uniqueResult();
-        if(user != null) {
+        if (user != null) {
             Hibernate.initialize(user.getUserRole());
         }
 
@@ -201,6 +201,26 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
+    @Transactional
+    @Override
+    public void updatePassword(String currentPass, String newPass, int userId) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        User user = session.get(User.class, userId);
+
+        if (!passwordEncoder.matches(currentPass, user.getPassword())) {
+            session.getTransaction().commit();
+            session.close();
+            throw new InvalidInputException("The previous password is not correct");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPass));
+        session.save(user);
+        session.getTransaction().commit();
+        session.close();
+    }
+
 
     /*
      * Finds all friends and requests to/from the user(as friendships)
@@ -212,10 +232,10 @@ public class UserDaoImpl implements UserDao {
         //the given user can be set on both friend1 and friend2, needs two queries
         String hql = "FROM Friendship F WHERE  F.friend1.id = " + userId + " OR F.friend2.id = " + userId;
         Query query = session.createQuery(hql);
-        List<Friendship> friendships = (List<Friendship>)query.list();
+        List<Friendship> friendships = (List<Friendship>) query.list();
 
         Iterator<Friendship> it = friendships.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             Friendship friendship = it.next();
             Hibernate.initialize(friendship.getFriend1());
             Hibernate.initialize(friendship.getFriend2());
@@ -239,10 +259,10 @@ public class UserDaoImpl implements UserDao {
         String hql = "FROM Friendship F WHERE F.status = " + Friendship.FRIENDS + " AND (F.friend1.id = " + userId +
                 " OR F.friend2.id = " + userId + ")";
         Query query = session.createQuery(hql);
-        List<Friendship> friendships = (List<Friendship>)query.list();
+        List<Friendship> friendships = (List<Friendship>) query.list();
 
         Iterator<Friendship> it = friendships.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             Friendship friendship = it.next();
             Hibernate.initialize(friendship.getFriend1());
             Hibernate.initialize(friendship.getFriend2());
@@ -260,7 +280,7 @@ public class UserDaoImpl implements UserDao {
     @Transactional
     @Override
     public Friendship addFriendRequest(int userId1, int userId2) {
-        if(userId1 == userId2) {
+        if (userId1 == userId2) {
             throw new EntityConflictException("Id 1 and Id 2 is both " + userId1);
         }
 
@@ -270,7 +290,7 @@ public class UserDaoImpl implements UserDao {
         User friend1 = session.get(User.class, userId1);
         User friend2 = session.get(User.class, userId2);
 
-        if(friend1 == null || friend2 == null) {
+        if (friend1 == null || friend2 == null) {
             session.getTransaction().commit();
             session.close();
             throw new EntityNotFoundException("Entity not found");
@@ -281,13 +301,12 @@ public class UserDaoImpl implements UserDao {
 
 
         //set the lowest id first, so that mutual friend requests is avoided(both cannot request each other)
-        if(userId1 < userId2) {
+        if (userId1 < userId2) {
             friendship.setFriend1(friend1);
             friendship.setFriend2(friend2);
             friendship.setStatus(Friendship.FRIEND1_REQUEST_FRIEND2);
 
-        }
-        else {
+        } else {
             friendship.setFriend1(friend2);
             friendship.setFriend2(friend1);
             friendship.setStatus(Friendship.FRIEND2_REQUEST_FRIEND1);
@@ -319,24 +338,21 @@ public class UserDaoImpl implements UserDao {
 
         Friendship friendship = session.get(Friendship.class, friendshipId);
 
-        if(friendship == null) {
+        if (friendship == null) {
             session.getTransaction().commit();
             session.close();
             throw new EntityNotFoundException("Friendship with id " + friendshipId + " not found");
-        }
-        else if(friendship.getFriend2().getId() == userId) {
+        } else if (friendship.getFriend2().getId() == userId) {
             friendship.setStatus(Friendship.FRIENDS);
             session.save(friendship);
             userIdToNotify = friendship.getFriend1().getId();
             nameToNotify = friendship.getFriend1().getFirstname();
-        }
-        else if(friendship.getFriend1().getId() == userId) {
+        } else if (friendship.getFriend1().getId() == userId) {
             friendship.setStatus(Friendship.FRIENDS);
             session.save(friendship);
             userIdToNotify = friendship.getFriend2().getId();
             nameToNotify = friendship.getFriend2().getFirstname();
-        }
-        else {
+        } else {
             session.getTransaction().commit();
             session.close();
             throw new EntityConflictException("The user with user id " + userId + " is not part of the friendship");
@@ -360,15 +376,13 @@ public class UserDaoImpl implements UserDao {
 
         Friendship friendship = session.get(Friendship.class, friendshipId);
 
-        if(friendship == null) {
+        if (friendship == null) {
             session.getTransaction().commit();
             session.close();
             throw new EntityNotFoundException("Friendship with id " + friendshipId + " not found");
-        }
-        else if(friendship.getFriend1().getId() == userId || friendship.getFriend2().getId() == userId) {
+        } else if (friendship.getFriend1().getId() == userId || friendship.getFriend2().getId() == userId) {
             session.delete(friendship);
-        }
-        else {
+        } else {
             session.getTransaction().commit();
             session.close();
             throw new EntityConflictException("The user with user id " + userId + " is not part of the friendship");
@@ -392,7 +406,7 @@ public class UserDaoImpl implements UserDao {
         query.setMaxResults(Constants.NUMBER_OF_USERS_RETURNED_SEARCH);
 
 
-        List<User> users = (List<User>)query.list();
+        List<User> users = (List<User>) query.list();
 
         session.getTransaction().commit();
         session.close();
@@ -408,7 +422,7 @@ public class UserDaoImpl implements UserDao {
         User user = session.get(User.class, userId);
         Set<String> gcmTokens = new HashSet<String>(0);
 
-        for(String token: user.getGcmTokens()) {
+        for (String token : user.getGcmTokens()) {
             gcmTokens.add(token);
         }
 
