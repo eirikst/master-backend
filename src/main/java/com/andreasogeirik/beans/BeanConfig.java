@@ -5,6 +5,7 @@ import com.andreasogeirik.service.dao.*;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
+import com.andreasogeirik.service.gcm.GcmService;
 import com.andreasogeirik.service.image.ImageServiceImpl;
 import com.andreasogeirik.service.image.interfaces.ImageService;
 import com.andreasogeirik.tools.InputManager;
@@ -73,5 +74,10 @@ public class BeanConfig {
     @Bean
     public AuthenticationSuccessHandlerImpl successHandler() {
         return new AuthenticationSuccessHandlerImpl();
+    }
+
+    @Bean
+    public GcmService gcmService() {
+        return new GcmService();
     }
 }

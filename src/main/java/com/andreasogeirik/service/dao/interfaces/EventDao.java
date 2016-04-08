@@ -10,7 +10,7 @@ import java.util.List;
 public interface EventDao {
     Event createEvent(Event event, int userId);
     Event updateEvent(int userId, int eventId, Event event);
-    Event deleteEvent(int userId, int eventId);
+    void deleteEvent(int userId, int eventId);
     Event getEvent(int eventId);
     Event attendEvent(int eventId, int userId);
     Event unAttendEvent(int eventId, int userId);

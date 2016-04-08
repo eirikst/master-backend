@@ -4,6 +4,7 @@ import com.andreasogeirik.model.dto.incoming.UserDto;
 import com.andreasogeirik.model.dto.outgoing.*;
 import com.andreasogeirik.model.entities.*;
 import com.andreasogeirik.security.User;
+import com.andreasogeirik.service.EmailNotifier;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.dao.interfaces.UserPostDao;
@@ -41,6 +42,8 @@ public class UserController {
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<UserDtoOut> createUser(@RequestBody UserDto user) {
         UserDtoOut userOut = new UserDtoOut(userDao.createUser(user.toUser()));
+
+
 
         return new ResponseEntity<UserDtoOut>(userOut, HttpStatus.CREATED);
     }

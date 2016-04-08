@@ -26,6 +26,7 @@ public class User {
     private Set<Friendship> friends = new HashSet<Friendship>(0);
     private Set<UserPostLike> userPostLikes = new HashSet<UserPostLike>(0);
     private Set<EventCommentLike> eventCommentLikes = new HashSet<EventCommentLike>(0);
+    private Set<String> gcmTokens = new HashSet<String>(0);
 
     public User() {
     }
@@ -190,6 +191,16 @@ public class User {
     public void setEvents(Set<Event> events) {
         this.events = events;
     }
+
+    @ElementCollection
+    public Set<String> getGcmTokens() {
+        return gcmTokens;
+    }
+
+    public void setGcmTokens(Set<String> gcmTokens) {
+        this.gcmTokens = gcmTokens;
+    }
+
 
     @Override
     public String toString() {

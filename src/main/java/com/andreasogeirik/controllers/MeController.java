@@ -11,19 +11,26 @@ import com.andreasogeirik.tools.Constants;
 import com.andreasogeirik.tools.EmailExistsException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/me")
 public class MeController {
+    private Logger logger = Logger.getLogger(getClass().getName());
 
     @Autowired
     private UserDao userDao;
@@ -129,9 +136,6 @@ public class MeController {
 
 
         List<Friendship> friendships = userDao.findFriendsAndRequests(userId);
-        for(int i = 0; i < friendships.size(); i++) {
-            System.out.printf(friendships.get(i).toString());
-        }
 
         Set<FriendshipDtoOut> friendshipsOut = new HashSet<FriendshipDtoOut>();
 

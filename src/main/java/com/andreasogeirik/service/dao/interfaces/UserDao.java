@@ -21,9 +21,13 @@ public interface UserDao {
     List<Friendship> findFriendsAndRequests(int userId);
     List<Friendship> findFriends(int userId);
 
-    Friendship addFriendRequest(int friendshipId, int userId);
+    Friendship addFriendRequest(int userId1, int userId2);
     void acceptFriendRequest(int friendshipId, int userId);
     void removeFriendship(int friendshipId, int userId);
 
     List<User> searchUsers(String name, int offset);
+
+    Set<String> getGcmTokensByUserId(int userId);
+    void registerGcmToken(int userId, String gcmToken);
+    void removeGcmToken(int userId, String gcmToken);
 }
