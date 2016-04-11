@@ -40,7 +40,7 @@ public class Event {
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id", unique = true, nullable = false)
     public int getId() {
         return id;
@@ -147,12 +147,13 @@ public class Event {
         this.posts = posts;
     }
 
-    public void updateAttributes(Event event){
-        this.name = event.getName();
-        this.location = event.getLocation();
-        this.description = event.getDescription();
-        this.timeStart = event.getTimeStart();
-        this.timeEnd = event.getTimeEnd();
-        this.imageURI = event.getImageURI();
+    public void updateAttributes(Event event) {
+        this.name = event.name;
+        this.location = event.location;
+        this.description = event.description;
+        this.timeStart = event.timeStart;
+        this.timeEnd = event.timeEnd;
+        this.imageURI = event.imageURI;
+        this.difficulty = event.difficulty;
     }
 }
