@@ -1,14 +1,13 @@
 package com.andreasogeirik.model.dto.outgoing;
 
-import com.andreasogeirik.model.entities.UserPostComment;
-import org.hibernate.Hibernate;
+import com.andreasogeirik.model.entities.Comment;
 
 import java.util.Date;
 
 /**
  * Created by eirikstadheim on 08/02/16.
  */
-public class UserPostCommentDtoOut {
+public class CommentDtoOut {
     private int id;
     private String message;
     private Date timeCreated;
@@ -16,11 +15,11 @@ public class UserPostCommentDtoOut {
     //set med likes må inn en gang
 
 
-    public UserPostCommentDtoOut() {
+    public CommentDtoOut() {
     }
 
     //does not add user, use setter for that
-    public UserPostCommentDtoOut(UserPostComment comment) {
+    public CommentDtoOut(Comment comment) {
         this.id = comment.getId();
         this.message = comment.getMessage();
         this.timeCreated = comment.getTimeCreated();

@@ -9,20 +9,24 @@ import java.util.Set;
  * Created by eirikstadheim on 01/02/16.
  */
 @Entity
-@Table(name = "event_post_comments")
-public class EventPostComment {
+@Table(name = "comments")
+public class Comment {
 
     private int id;
     private String message;
     private Date timeCreated;
     private User user;
-    private EventPost post;
-    private Set<EventCommentLike> likes = new HashSet<EventCommentLike>(0);
+    private Post post;
+    private Set<CommentLike> likes = new HashSet<CommentLike>(0);
 
-    public EventPostComment() {
+    public Comment() {
     }
 
-    public EventPostComment(String message, Date timeCreated, User user, EventPost post) {
+    public Comment(String message) {
+        this.message = message;
+    }
+
+    public Comment(String message, Date timeCreated, User user, Post post) {
         this.message = message;
         this.timeCreated = timeCreated;
         this.user = user;
@@ -70,20 +74,20 @@ public class EventPostComment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
-    public EventPost getPost() {
+    public Post getPost() {
         return post;
     }
 
-    public void setPost(EventPost post) {
+    public void setPost(Post post) {
         this.post = post;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment")
-    public Set<EventCommentLike> getLikes() {
+    public Set<CommentLike> getLikes() {
         return likes;
     }
 
-    public void setLikes(Set<EventCommentLike> likes) {
+    public void setLikes(Set<CommentLike> likes) {
         this.likes = likes;
     }
 }
