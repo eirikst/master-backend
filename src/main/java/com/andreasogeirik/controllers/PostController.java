@@ -1,8 +1,16 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.model.dto.incoming.UserPostCommentDto;
+import com.andreasogeirik.model.dto.incoming.PostCommentDto;
+import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
+import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
+import com.andreasogeirik.model.dto.outgoing.PostDtoOut;
+import com.andreasogeirik.model.entities.Comment;
+import com.andreasogeirik.model.entities.Post;
+import com.andreasogeirik.model.entities.PostLike;
 import com.andreasogeirik.security.User;
-import com.andreasogeirik.service.dao.interfaces.UserPostDao;
+import com.andreasogeirik.service.dao.interfaces.PostDao;
+import com.andreasogeirik.tools.Constants;
+import com.andreasogeirik.tools.EntityConflictException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +21,26 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.*;
+
 @RestController
-@RequestMapping("users/posts")
-public class UserPostController {
+@RequestMapping("posts")
+public class PostController {
 
     @Autowired
-    private UserPostDao postDao;
+    private PostDao postDao;
+
+
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/{postId}", method = RequestMethod.DELETE)
+    public ResponseEntity remove(@PathVariable(value="postId") int postId) {
+        postDao.removePost(postId,
+                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+
 
 
     /*
@@ -26,13 +48,13 @@ public class UserPostController {
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{postId}/comments", method = RequestMethod.PUT)
-    public ResponseEntity<Status> comment(@RequestBody UserPostCommentDto comment,
+    public ResponseEntity<CommentDtoOut> comment(@RequestBody PostCommentDto comment,
                                           @PathVariable(value="postId") int postId) {
 
-        postDao.comment(comment.toUserPostComment(), postId,
-                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
+        CommentDtoOut commentOut = new CommentDtoOut(postDao.comment(comment.toUserPostComment(), postId,
+                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
 
-        return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
+        return new ResponseEntity<CommentDtoOut>(commentOut, HttpStatus.CREATED);
     }
 
     /*
@@ -40,18 +62,23 @@ public class UserPostController {
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{postId}/likes", method = RequestMethod.PUT)
-    public ResponseEntity<Status> like(@PathVariable(value = "postId") int postId) {
+    public ResponseEntity like(@PathVariable(value = "postId") int postId) {
 
-        postDao.like(postId,
+        postDao.likePost(postId,
                 ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
 
-        return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 
 
     /*
      * Exception handling
      */
+    @ExceptionHandler(EntityConflictException.class)
+    public ResponseEntity<String> entityConflict(InvalidInputException e) {
+        return new ResponseEntity<String>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
     @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
     @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
     public void constraintViolation() {

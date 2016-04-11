@@ -7,17 +7,17 @@
     <session-factory>
 
         <!-- Connection settings -->
-        <property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+        <!--property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
         <property name="hibernate.connection.url">jdbc:sqlserver://andreasogeirik.database.windows.net:1433;database=sportydul_db;</property>
         <property name="hibernate.connection.username">andreasogeirik@andreasogeirik</property>
         <property name="hibernate.connection.password">Arif1234</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.SQLServer2012Dialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.SQLServer2012Dialect</property-->
 
-        <!--property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
         <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/postgres</property>
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.connection.password">pwd</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL82Dialect</property-->
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL82Dialect</property>
 
         <!-- Print executed SQL to stdout -->
         <property name="show_sql">true</property>
@@ -34,20 +34,15 @@
 
         <!-- Annotated entity classes -->
         <mapping class="com.andreasogeirik.model.entities.Event"/>
-        <mapping class="com.andreasogeirik.model.entities.EventCommentLike"/>
-        <mapping class="com.andreasogeirik.model.entities.EventPost"/>
-        <mapping class="com.andreasogeirik.model.entities.EventPostComment"/>
-        <mapping class="com.andreasogeirik.model.entities.EventPostLike"/>
-
-        <mapping class="com.andreasogeirik.model.entities.Friendship"/>
 
         <mapping class="com.andreasogeirik.model.entities.User"/>
-        <mapping class="com.andreasogeirik.model.entities.UserCommentLike"/>
-        <mapping class="com.andreasogeirik.model.entities.UserPost"/>
-        <mapping class="com.andreasogeirik.model.entities.UserPostComment"/>
-        <mapping class="com.andreasogeirik.model.entities.UserPostLike"/>
-
         <mapping class="com.andreasogeirik.model.entities.UserRole"/>
+        <mapping class="com.andreasogeirik.model.entities.Friendship"/>
+
+        <mapping class="com.andreasogeirik.model.entities.Post"/>
+        <mapping class="com.andreasogeirik.model.entities.PostLike"/>
+        <mapping class="com.andreasogeirik.model.entities.Comment"/>
+        <mapping class="com.andreasogeirik.model.entities.CommentLike"/>
 
 
     </session-factory>

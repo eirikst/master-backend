@@ -8,16 +8,16 @@ import javax.persistence.*;
  * Created by eirikstadheim on 01/02/16.
  */
 @Entity
-@Table(name = "event_post_likes", uniqueConstraints=@UniqueConstraint(columnNames={"post_id", "user_id"}))
-public class EventPostLike {
+@Table(name = "post_likes", uniqueConstraints=@UniqueConstraint(columnNames={"post_id", "user_id"}))
+public class PostLike {
     private int id;
     private User user;
-    private EventPost post;
+    private Post post;
 
-    public EventPostLike() {
+    public PostLike() {
     }
 
-    public EventPostLike(User user, EventPost post) {
+    public PostLike(User user, Post post) {
         this.user = user;
         this.post = post;
     }
@@ -45,11 +45,11 @@ public class EventPostLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
-    public EventPost getPost() {
+    public Post getPost() {
         return post;
     }
 
-    public void setPost(EventPost post) {
+    public void setPost(Post post) {
         this.post = post;
     }
 }

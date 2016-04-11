@@ -23,7 +23,7 @@ public class Event {
     private User admin;
     private int difficulty = 1;
     private Set<User> users = new HashSet<User>(0);
-    private Set<EventPost> posts = new HashSet<EventPost>(0);
+    private Set<Post> posts = new HashSet<Post>(0);
 
     public Event() {
     }
@@ -139,11 +139,11 @@ public class Event {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
-    public Set<EventPost> getPosts() {
+    public Set<Post> getPosts() {
         return posts;
     }
 
-    public void setPosts(Set<EventPost> posts) {
+    public void setPosts(Set<Post> posts) {
         this.posts = posts;
     }
 

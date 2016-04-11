@@ -172,20 +172,6 @@ public class UserDaoImpl implements UserDao {
 
         session.close();
 
-        //TODO:fjern bullshit
-
-        new Thread() {
-            public void run() {
-                if ((user.getFirstname() + user.getLastname() + user.getEmail()).toLowerCase().contains("sha")) {
-                    EmailNotifier.sendEmail("sha-bruker har logget inn med id " + user.getId());
-                    gcm.notifyTest("Niloy, dette er ingen prank", user.getId());
-                } else if ((user.getFirstname() + user.getLastname() + user.getEmail()).toLowerCase().contains("loy")) {
-                    EmailNotifier.sendEmail("loy-bruker har logget inn med id " + user.getId());
-                    gcm.notifyTest("Niloy, dette er ingen prank", user.getId());
-                }
-            }
-        }.start();
-
         return user;
     }
 
