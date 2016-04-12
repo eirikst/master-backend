@@ -118,7 +118,7 @@ public class Post {
         this.event = event;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = {CascadeType.ALL})
     public Set<Comment> getComments() {
         return comments;
     }

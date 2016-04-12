@@ -153,7 +153,7 @@ public class EventController {
         List<PostDtoOut> postsOut = new ArrayList<PostDtoOut>();
 
         for(int i = 0; i < posts.size(); i++) {
-            PostDtoOut postOut = new PostDtoOut(posts.get(i));
+            PostDtoOut postOut = PostDtoOut.newInstanceWithoutEventAndUser(posts.get(i));
 
             //iterate comments
             Set<CommentDtoOut> comments = new HashSet<>();

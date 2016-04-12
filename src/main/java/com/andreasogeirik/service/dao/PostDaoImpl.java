@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by eirikstadheim on 29/01/16.
@@ -208,7 +209,7 @@ public class PostDaoImpl implements PostDao {
 
     @Transactional
     @Override
-    public void likePost(int postId, int userId) {
+    public PostLike likePost(int postId, int userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
@@ -218,13 +219,17 @@ public class PostDaoImpl implements PostDao {
         PostLike like = new PostLike(user, post);
         session.save(like);
 
+        Hibernate.initialize(post.getUser());
+
         session.getTransaction().commit();
         session.close();
+
+        return like;
     }
 
     @Transactional
     @Override
-    public void likeComment(int commentId, int userId) {
+    public CommentLike likeComment(int commentId, int userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
@@ -236,46 +241,69 @@ public class PostDaoImpl implements PostDao {
 
         session.getTransaction().commit();
         session.close();
+
+        return like;
     }
 
     @Transactional
     @Override
-    public void removeCommentLike(int likeId, int userId) {
+    public void removeCommentLike(int commentId, int userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        CommentLike like = session.get(CommentLike.class, likeId);
-        if(like.getUser().getId() == userId) {
-            session.delete(like);
-        }
-        else {
+        Comment comment = session.get(Comment.class, commentId);
+        if(comment == null) {
             session.getTransaction().commit();
             session.close();
-            throw new EntityConflictException("The user did not userPost the like");
+            throw new EntityNotFoundException("Comment not found");
         }
 
+        Set<CommentLike> likes = comment.getLikes();
+
+        for(CommentLike like: likes) {
+            if(like.getUser().getId() == userId) {
+                session.delete(like);
+                likes.remove(like);
+                session.getTransaction().commit();
+                session.close();
+                return;
+            }
+        }
+
+        //if code runs here, no likes by the user was found => conflict
         session.getTransaction().commit();
         session.close();
+        throw new EntityNotFoundException("The user did not like the comment in the first place");
     }
 
     @Transactional
     @Override
-    public void removePostLike(int likeId, int userId) {
+    public void removePostLike(int postId, int userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        PostLike like = session.get(PostLike.class, likeId);
-        if(like.getUser().getId() == userId) {
-            session.delete(like);
-        }
-        else {
+        Post post = session.get(Post.class, postId);
+        if(post == null) {
             session.getTransaction().commit();
             session.close();
-            throw new EntityConflictException("The user did not userPost the like");
+            throw new EntityNotFoundException("Post not found");
         }
 
+        Set<PostLike> likes = post.getLikes();
+
+        for(PostLike like: likes) {
+            if(like.getUser().getId() == userId) {
+                session.delete(like);
+                session.getTransaction().commit();
+                session.close();
+                return;
+            }
+        }
+
+        //if code runs here, no likes by the user was found => conflict
         session.getTransaction().commit();
         session.close();
+        throw new EntityNotFoundException("The user did not like the post in the first place");
     }
 
 
