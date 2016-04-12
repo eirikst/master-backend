@@ -1,7 +1,9 @@
 package com.andreasogeirik.service.dao.interfaces;
 
+import com.andreasogeirik.model.entities.CommentLike;
 import com.andreasogeirik.model.entities.Post;
 import com.andreasogeirik.model.entities.Comment;
+import com.andreasogeirik.model.entities.PostLike;
 
 import java.util.List;
 
@@ -15,10 +17,10 @@ public interface PostDao {
     void removePost(int id, int userId);
     Comment comment(Comment comment, int postId, int userId);
     void removeComment(int id, int userId);
-    void likePost(int postId, int userId);
-    void likeComment(int postId, int userId);
-    void removeCommentLike(int likeId, int userId);
-    void removePostLike(int likeId, int userId);
+    PostLike likePost(int postId, int userId);
+    CommentLike likeComment(int postId, int userId);
+    void removeCommentLike(int commentId, int userId);
+    void removePostLike(int postId, int userId);
 
     List<Post> findPostsUser(int userId, int start, int quantity);
     List<Post> findPostsEvent(int eventId, int start, int quantity);

@@ -138,7 +138,7 @@ public class Event {
         this.users = users;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", cascade = {CascadeType.ALL})
     public Set<Post> getPosts() {
         return posts;
     }

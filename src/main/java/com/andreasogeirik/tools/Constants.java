@@ -14,11 +14,13 @@ public class Constants {
     public static final String GCM_API_KEY = "AIzaSyAzGkBvA_kYil5hLdPSv-26MdezrXJZfqo";
 
     //Azure
-    public static final String BACKEND_URL = "http://sportydul.azurewebsites.net/";
+    //public static final String BACKEND_URL = "http://sportydul.azurewebsites.net/";
 
     //Eirik NTNU
     //public static final String BACKEND_URL = "http://78.91.3.136:8080/";
 
     //Eirik hjemme
     //public static final String BACKEND_URL = "http://10.0.0.99:8080/";
+
+    //
 }

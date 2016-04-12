@@ -1,15 +1,11 @@
 package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.PostCommentDto;
-import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
 import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
-import com.andreasogeirik.model.dto.outgoing.PostDtoOut;
-import com.andreasogeirik.model.entities.Comment;
-import com.andreasogeirik.model.entities.Post;
-import com.andreasogeirik.model.entities.PostLike;
+import com.andreasogeirik.model.dto.outgoing.CommentLikeDtoOut;
+import com.andreasogeirik.model.dto.outgoing.PostLikeDtoOut;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.PostDao;
-import com.andreasogeirik.tools.Constants;
 import com.andreasogeirik.tools.EntityConflictException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
@@ -21,7 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.*;
 
 @RestController
 @RequestMapping("posts")
@@ -31,6 +26,11 @@ public class PostController {
     private PostDao postDao;
 
 
+    /**
+     * Removes the post with specified id
+     * @param postId
+     * @return httpstatus
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{postId}", method = RequestMethod.DELETE)
     public ResponseEntity remove(@PathVariable(value="postId") int postId) {
@@ -40,11 +40,11 @@ public class PostController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-
-
-
-    /*
-     *  TODO: Så plutselig at denne må oppdateres til å sende tilbake den nye commenten med ID. Men det gidder jeg ikke gjøre nå...
+    /**
+     * Adds a comment to the post
+     * @param comment comment object as json
+     * @param postId id of post to comment on
+     * @return the comment with id
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{postId}/comments", method = RequestMethod.PUT)
@@ -57,17 +57,75 @@ public class PostController {
         return new ResponseEntity<CommentDtoOut>(commentOut, HttpStatus.CREATED);
     }
 
-    /*
-     * TODO: Må også oppdateres og sende tilbake liken med id
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/comments/{commentId}", method = RequestMethod.DELETE)
+    public ResponseEntity removeComment(@PathVariable(value="commentId") int commentId) {
+        postDao.removeComment(commentId,
+                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    /**
+     * Adds a like to the specified post by the logged in user
+     * @param postId id of post to like
+     * @return the like with id
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{postId}/likes", method = RequestMethod.PUT)
-    public ResponseEntity like(@PathVariable(value = "postId") int postId) {
+    public ResponseEntity likePost(@PathVariable(value = "postId") int postId) {
 
-        postDao.likePost(postId,
+        PostLikeDtoOut like = new PostLikeDtoOut(postDao.likePost(postId,
+                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
+
+        return new ResponseEntity(like, HttpStatus.CREATED);
+    }
+
+
+    /**
+     * Deletes the like
+     * @param postId id of the comment to unlike
+     * @return httpstatus
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/{postId}/likes", method = RequestMethod.DELETE)
+    public ResponseEntity unlikePost(@PathVariable(value = "postId") int postId) {
+
+        postDao.removePostLike(postId,
                 ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
 
-        return new ResponseEntity(HttpStatus.CREATED);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+
+    /**
+     * Adds a like to the specified post by the logged in user
+     * @param commentId id of post to like
+     * @return the like with id
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/comments/{commentId}/likes", method = RequestMethod.PUT)
+    public ResponseEntity likeComment(@PathVariable(value = "commentId") int commentId) {
+
+        CommentLikeDtoOut like = new CommentLikeDtoOut(postDao.likeComment(commentId,
+                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
+
+        return new ResponseEntity(like, HttpStatus.CREATED);
+    }
+
+    /**
+     * Deletes the like
+     * @param postId id of the comment to unlike
+     * @return httpstatus
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/comments/{postId}/likes", method = RequestMethod.DELETE)
+    public ResponseEntity unlikeComment(@PathVariable(value = "postId") int postId) {
+
+        postDao.removeCommentLike(postId,
+                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 

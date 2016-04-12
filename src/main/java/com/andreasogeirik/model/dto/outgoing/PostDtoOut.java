@@ -1,5 +1,6 @@
 package com.andreasogeirik.model.dto.outgoing;
 
+import com.andreasogeirik.model.entities.Event;
 import com.andreasogeirik.model.entities.Post;
 
 import java.util.*;
@@ -37,11 +38,29 @@ public class PostDtoOut {
             user = new UserDtoOut(post.getUser());
         }
         if(post.getEvent() != null) {
-            event = new EventDtoOut(post.getEvent());
+            event = EventDtoOut.newInstanceWithoutUsersOrAdmin(post.getEvent());
         }
     }
 
     public static PostDtoOut newInstanceWithoutEvent(Post post) {
+        PostDtoOut postOut = new PostDtoOut();
+        postOut.id = post.getId();
+        postOut.message = post.getMessage();
+        postOut.timeCreated = post.getTimeCreated();
+        postOut.imageUri = post.getImageUri();
+
+        if(post.getWriter() != null) {
+            postOut.writer = new UserDtoOut(post.getWriter());
+        }
+
+        if(post.getUser() != null) {
+            postOut.user = new UserDtoOut(post.getUser());
+        }
+
+        return postOut;
+    }
+
+    public static PostDtoOut newInstanceWithoutEventAndUser(Post post) {
         PostDtoOut postOut = new PostDtoOut();
         postOut.id = post.getId();
         postOut.message = post.getMessage();

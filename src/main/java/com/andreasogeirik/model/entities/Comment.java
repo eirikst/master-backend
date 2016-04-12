@@ -1,5 +1,6 @@
 package com.andreasogeirik.model.entities;
 
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
@@ -82,7 +83,7 @@ public class Comment {
         this.post = post;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = {CascadeType.ALL})
     public Set<CommentLike> getLikes() {
         return likes;
     }
