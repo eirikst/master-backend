@@ -22,5 +22,5 @@ public class Constants {
     //Eirik hjemme
     //public static final String BACKEND_URL = "http://10.0.0.99:8080/";
 
-    //
+    public static final String BACKEND_URL = "http://129.241.102.163:8080/";
 }

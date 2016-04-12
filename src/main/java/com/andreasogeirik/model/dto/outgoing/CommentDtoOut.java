@@ -23,6 +23,7 @@ public class CommentDtoOut {
         this.id = comment.getId();
         this.message = comment.getMessage();
         this.timeCreated = comment.getTimeCreated();
+        this.user = new UserDtoOut(comment.getUser());
     }
 
     public int getId() {
