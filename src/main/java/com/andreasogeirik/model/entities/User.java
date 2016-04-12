@@ -18,6 +18,7 @@ public class User {
     private String lastname;
     private String location;
     private String imageUri;
+    private String thumbUri;
     private Date timeCreated;
     private Set<UserRole> userRole = new HashSet<UserRole>(0);
     private Set<UserPost> posts = new HashSet<UserPost>(0);
@@ -118,6 +119,14 @@ public class User {
 
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
+    }
+
+    public String getThumbUri() {
+        return thumbUri;
+    }
+
+    public void setThumbUri(String thumbUri) {
+        this.thumbUri = thumbUri;
     }
 
     @Column(nullable = false)

@@ -66,7 +66,7 @@ public class UserController {
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<UserDtoOut> updateUser(@RequestBody UserDto user) {
-        UserDtoOut userOut = new UserDtoOut(userDao.updateUser(user.getFirstname(), user.getLastname(), user.getLocation(), user.getImageUri(), ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
+        UserDtoOut userOut = new UserDtoOut(userDao.updateUser(user.getFirstname(), user.getLastname(), user.getLocation(), user.getImageUri(), user.getThumbUri(), ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
 
         return new ResponseEntity<UserDtoOut>(userOut, HttpStatus.OK);
     }

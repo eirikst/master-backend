@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public interface UserDao {
     User createUser(User user);
-    User updateUser(String firstname, String lastname, String location, String imageUri, int userId);
+    User updateUser(String firstname, String lastname, String location, String imageUri, String thumbUri, int userId);
     User createAdminUser(User user);
     User findByEmail(String email);
     User findById(int id);

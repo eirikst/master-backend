@@ -2,7 +2,12 @@ package com.andreasogeirik.service.image;
 
 import com.andreasogeirik.service.image.interfaces.ImageService;
 import org.apache.commons.lang.RandomStringUtils;
+import org.imgscalr.Scalr;
+import org.omg.CORBA.portable.ApplicationException;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.logging.Logger;
@@ -31,6 +36,32 @@ public class ImageServiceImpl implements ImageService {
                 logger.warning("Image Path not found" + fnfe);
             } catch (IOException ioe) {
                 logger.warning("Exception while converting the Image " + ioe);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String saveThumb(byte[] byteImage, int targetSize) {
+        if (byteImage != null) {
+            // Creates a stream from byteImage
+            ByteArrayInputStream in = new ByteArrayInputStream(byteImage);
+            try {
+                // Creates a buffered image from stream
+                BufferedImage img = ImageIO.read(in);
+                // Scales the image
+                BufferedImage scaledImg = Scalr.resize(img, 216);
+                String randomFileName = RandomStringUtils.randomAlphanumeric(20);
+
+                // Write buffer to file
+                FileOutputStream imageOutFile = new FileOutputStream("img/" + randomFileName + ".jpg");
+                ImageIO.write(scaledImg, "jpg", imageOutFile);
+                imageOutFile.close();
+                logger.info("Image Successfully Stored");
+                in.close();
+                return randomFileName;
+            } catch (IOException e) {
+                return null;
             }
         }
         return null;

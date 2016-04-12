@@ -5,5 +5,6 @@ package com.andreasogeirik.service.image.interfaces;
  */
 public interface ImageService {
     String saveImage(byte[] byteImage);
+    String saveThumb(byte[] byteImage, int targetSize);
     byte[] getImage(String imageUri);
 }

@@ -18,6 +18,7 @@ public class EventDtoOut {
     private Date timeStart;
     private Date timeEnd;
     private String imageUri = "";
+    private String thumbUri = "";
     private int difficulty = 1;
     private Set<UserDtoOut> users = new HashSet<>();
     private UserDtoOut admin;
@@ -30,6 +31,7 @@ public class EventDtoOut {
         this.timeStart = event.getTimeStart();
         this.timeEnd = event.getTimeEnd();
         this.imageUri = event.getImageURI();
+        this.thumbUri = event.getThumbURI();
         this.difficulty = event.getDifficulty();
 
         for (User user : event.getUsers()) {
@@ -92,6 +94,14 @@ public class EventDtoOut {
 
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
+    }
+
+    public String getThumbUri() {
+        return thumbUri;
+    }
+
+    public void setThumbUri(String thumbUri) {
+        this.thumbUri = thumbUri;
     }
 
     public int getDifficulty() {

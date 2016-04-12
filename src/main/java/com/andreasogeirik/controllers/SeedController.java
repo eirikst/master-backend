@@ -36,19 +36,19 @@ public class SeedController {
     public ResponseEntity<String> seedThisShit() {
         userDao.createAdminUser(new com.andreasogeirik.model.entities.User("admin", "pwd", true, "Eirik", "Stadheim",
                 "Trondheim", new Date()));
-        userDao.updateUser("Eirik", "Stadheim", "Trondheim", "http://sportydul.azurewebsites.net/image/0-eirik", 1);
+        userDao.updateUser("Eirik", "Stadheim", "Trondheim", "http://sportydul.azurewebsites.net/image/0-eirik", "http://sportydul.azurewebsites.net/image/0-eirik", 1);
         userDao.createUser(new com.andreasogeirik.model.entities.User("andreas", "pwd", true, "Andreas", "Næss",
                 "Trondheim", new Date()));
-        userDao.updateUser("Andreas", "Næss", "Trondheim", "http://sportydul.azurewebsites.net/image/0-andreas", 2);
+        userDao.updateUser("Andreas", "Næss", "Trondheim", "http://sportydul.azurewebsites.net/image/0-andreas", "http://sportydul.azurewebsites.net/image/0-andreas", 2);
         userDao.createUser(new com.andreasogeirik.model.entities.User("mikael", "pwd", true, "Mikael", "Reiersølmoen",
                 "Trondheim", new Date()));
-        userDao.updateUser("Mikael", "Reiersølmoen", "Trondheim", "http://sportydul.azurewebsites.net/image/0-mikael", 3);
+        userDao.updateUser("Mikael", "Reiersølmoen", "Trondheim", "http://sportydul.azurewebsites.net/image/0-mikael", "http://sportydul.azurewebsites.net/image/0-mikael", 3);
         userDao.createUser(new com.andreasogeirik.model.entities.User("shari", "pwd", true, "Shahariar", "Kabir Bhuiyan",
                 "Trondheim", new Date()));
-        userDao.updateUser("Shahariar", "Kabir Bhuiyan", "Trondheim", "http://sportydul.azurewebsites.net/image/0-shari", 4);
+        userDao.updateUser("Shahariar", "Kabir Bhuiyan", "Trondheim", "http://sportydul.azurewebsites.net/image/0-shari", "http://sportydul.azurewebsites.net/image/0-shari", 4);
         userDao.createUser(new com.andreasogeirik.model.entities.User("hamadul", "pwd", true, "Rakib", "Hamadul",
                 "Trondheim", new Date()));
-        userDao.updateUser("Rakib", "Hamadul", "Trondheim", "http://sportydul.azurewebsites.net/image/0-hamadul", 5);
+        userDao.updateUser("Rakib", "Hamadul", "Trondheim", "http://sportydul.azurewebsites.net/image/0-hamadul", "http://sportydul.azurewebsites.net/image/0-hamadul", 5);
 
         userDao.addFriendRequest(1, 2);
         userDao.acceptFriendRequest(1, 2);
@@ -89,14 +89,22 @@ public class SeedController {
         aWeek.add(Calendar.HOUR, 7);
 
 
-        eventDao.createEvent(new Event("Tur til Geitfjellet", "Trondheim", "Vi møtes i Ilaparken", twoDays.getTime(), null, "http://sportydul.azurewebsites.net/image/01-geitfjellet", 3), 1);
-        eventDao.createEvent(new Event("Tur til Våttakammen", "Trondheim", "Vi møtes i Ilaparken", twoDays.getTime(), null, "http://sportydul.azurewebsites.net/image/01-vattakammen", 2), 2);
-        eventDao.createEvent(new Event("Skitur på Gautefall", "Gautefall", "Vi møtes ved skiheisen", fourDays.getTime(), null, "http://sportydul.azurewebsites.net/image/01-gautefall", 3), 3);
-        eventDao.createEvent(new Event("Skitur i Heidal", "Heidal", "Vi møtes i Ilaparken", fourDays.getTime(), null, "http://sportydul.azurewebsites.net/image/01-hytta", 3), 4);
-        eventDao.createEvent(new Event("Tur til Glittertind", "Jotunheimen", "Vi møtes på Glitterheim", twoDays.getTime(), null, "http://sportydul.azurewebsites.net/image/01-jotunheimen", 3), 5);
-        eventDao.createEvent(new Event("Svømming i Russvatnet", "Jotunheimen", "Vi på møtes Bessheim", aWeek.getTime(), null, "http://sportydul.azurewebsites.net/image/01-russvatnet", 2), 1);
-        eventDao.createEvent(new Event("Spasere til Nidarosdomen", "Trondheim", "Vi møtes i på Torget", aWeek.getTime(), null, "http://sportydul.azurewebsites.net/image/01-nidarosdomen", 1), 2);
-        eventDao.createEvent(new Event("Sykle til Estenstadhytta", "Trondheim", "Vi møtes på Dragvoll", aWeek.getTime(), null, "http://sportydul.azurewebsites.net/image/01-estenstadhytta", 3), 3);
+        eventDao.createEvent(new Event("Tur til Geitfjellet", "Trondheim", "Vi møtes i Ilaparken", twoDays.getTime(),
+                null, "http://sportydul.azurewebsites.net/image/01-geitfjellet", "http://sportydul.azurewebsites.net/image/01-geitfjellet", 3), 1);
+        eventDao.createEvent(new Event("Tur til Våttakammen", "Trondheim", "Vi møtes i Ilaparken", twoDays.getTime(),
+                null, "http://sportydul.azurewebsites.net/image/01-vattakammen", "http://sportydul.azurewebsites.net/image/01-vattakammen", 2), 2);
+        eventDao.createEvent(new Event("Skitur på Gautefall", "Gautefall", "Vi møtes ved skiheisen", fourDays.getTime(),
+                null, "http://sportydul.azurewebsites.net/image/01-gautefall", "http://sportydul.azurewebsites.net/image/01-gautefall", 3), 3);
+        eventDao.createEvent(new Event("Skitur i Heidal", "Heidal", "Vi møtes i Ilaparken", fourDays.getTime(),
+                null, "http://sportydul.azurewebsites.net/image/01-hytta", "http://sportydul.azurewebsites.net/image/01-hytta", 3), 4);
+        eventDao.createEvent(new Event("Tur til Glittertind", "Jotunheimen", "Vi møtes på Glitterheim",
+                twoDays.getTime(), null, "http://sportydul.azurewebsites.net/image/01-jotunheimen", "http://sportydul.azurewebsites.net/image/01-jotunheimen", 3), 5);
+        eventDao.createEvent(new Event("Svømming i Russvatnet", "Jotunheimen", "Vi på møtes Bessheim", aWeek.getTime(),
+                null, "http://sportydul.azurewebsites.net/image/01-russvatnet", "http://sportydul.azurewebsites.net/image/01-russvatnet",  2), 1);
+        eventDao.createEvent(new Event("Spasere til Nidarosdomen", "Trondheim", "Vi møtes i på Torget", aWeek.getTime(),
+                null, "http://sportydul.azurewebsites.net/image/01-nidarosdomen", "http://sportydul.azurewebsites.net/image/01-nidarosdomen",  1), 2);
+        eventDao.createEvent(new Event("Sykle til Estenstadhytta", "Trondheim", "Vi møtes på Dragvoll", aWeek.getTime(),
+                null, "http://sportydul.azurewebsites.net/image/01-estenstadhytta", "http://sportydul.azurewebsites.net/image/01-estenstadhytta", 3), 3);
 
         eventDao.attendEvent(1, 1);
         eventDao.attendEvent(2, 1);
