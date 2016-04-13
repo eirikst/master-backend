@@ -127,8 +127,8 @@ public class EventController {
     }
 
     @ExceptionHandler(EntityConflictException.class)
-    public ResponseEntity<Status> entityConflict(InvalidInputException e) {
-        return new ResponseEntity<Status>(new Status(0, e.getMessage()), HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Status> entityConflict(EntityConflictException e) {
+        return new ResponseEntity<Status>(new Status(0, e.getMessage()), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
