@@ -16,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import javax.persistence.EntityNotFoundException;
+import com.andreasogeirik.tools.EntityNotFoundException;
 import java.util.*;
 
 @RestController
@@ -97,15 +97,19 @@ public class UserController {
             Set<CommentDtoOut> comments = new HashSet<>();
             Iterator<Comment> it = posts.get(i).getComments().iterator();
             while(it.hasNext()) {
-                comments.add(new CommentDtoOut(it.next()));
+                Comment commentEntity = it.next();
+                CommentDtoOut comment = new CommentDtoOut(commentEntity);
+                comment.setUser(new UserDtoOut(commentEntity.getUser()));
+                comments.add(comment);
+                comment.setLikersFromEntity(commentEntity.getLikes());
             }
             postOut.setComments(comments);
 
             //iterate likes
-            Set<UserDtoOut> likers = new HashSet<>();
+            Set<UserDtoOutSmall> likers = new HashSet<>();
             Iterator<PostLike> likeIt = posts.get(i).getLikes().iterator();
             while(likeIt.hasNext()) {
-                likers.add(new UserDtoOut(likeIt.next().getUser()));
+                likers.add(new UserDtoOutSmall(likeIt.next().getUser()));
             }
 
 

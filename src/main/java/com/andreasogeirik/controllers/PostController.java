@@ -2,11 +2,10 @@ package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.PostCommentDto;
 import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
-import com.andreasogeirik.model.dto.outgoing.CommentLikeDtoOut;
-import com.andreasogeirik.model.dto.outgoing.PostLikeDtoOut;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.PostDao;
 import com.andreasogeirik.tools.EntityConflictException;
+import com.andreasogeirik.tools.EntityNotFoundException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,10 +74,10 @@ public class PostController {
     @RequestMapping(value = "/{postId}/likes", method = RequestMethod.PUT)
     public ResponseEntity likePost(@PathVariable(value = "postId") int postId) {
 
-        PostLikeDtoOut like = new PostLikeDtoOut(postDao.likePost(postId,
-                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
+        postDao.likePost(postId,
+                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
 
-        return new ResponseEntity(like, HttpStatus.CREATED);
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 
 
@@ -107,22 +106,22 @@ public class PostController {
     @RequestMapping(value = "/comments/{commentId}/likes", method = RequestMethod.PUT)
     public ResponseEntity likeComment(@PathVariable(value = "commentId") int commentId) {
 
-        CommentLikeDtoOut like = new CommentLikeDtoOut(postDao.likeComment(commentId,
-                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
+        postDao.likeComment(commentId,
+                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
 
-        return new ResponseEntity(like, HttpStatus.CREATED);
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 
     /**
      * Deletes the like
-     * @param postId id of the comment to unlike
+     * @param commentId id of the comment to unlike
      * @return httpstatus
      */
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/comments/{postId}/likes", method = RequestMethod.DELETE)
-    public ResponseEntity unlikeComment(@PathVariable(value = "postId") int postId) {
+    @RequestMapping(value = "/comments/{commentId}/likes", method = RequestMethod.DELETE)
+    public ResponseEntity unlikeComment(@PathVariable(value = "commentId") int commentId) {
 
-        postDao.removeCommentLike(postId,
+        postDao.removeCommentLike(commentId,
                 ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
 
         return new ResponseEntity(HttpStatus.OK);
@@ -135,6 +134,11 @@ public class PostController {
     @ExceptionHandler(EntityConflictException.class)
     public ResponseEntity<String> entityConflict(InvalidInputException e) {
         return new ResponseEntity<String>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> entityNotFound(EntityNotFoundException e) {
+        return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409

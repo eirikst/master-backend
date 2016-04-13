@@ -209,7 +209,7 @@ public class PostDaoImpl implements PostDao {
 
     @Transactional
     @Override
-    public PostLike likePost(int postId, int userId) {
+    public void likePost(int postId, int userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
@@ -223,13 +223,11 @@ public class PostDaoImpl implements PostDao {
 
         session.getTransaction().commit();
         session.close();
-
-        return like;
     }
 
     @Transactional
     @Override
-    public CommentLike likeComment(int commentId, int userId) {
+    public void likeComment(int commentId, int userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
@@ -241,8 +239,6 @@ public class PostDaoImpl implements PostDao {
 
         session.getTransaction().commit();
         session.close();
-
-        return like;
     }
 
     @Transactional
@@ -329,7 +325,12 @@ public class PostDaoImpl implements PostDao {
 
             Iterator<Comment> itComments = posts.get(i).getComments().iterator();
             while(itComments.hasNext()) {
-                Hibernate.initialize(itComments.next());
+                Comment comment = itComments.next();
+                Hibernate.initialize(comment);
+
+                for(CommentLike like: comment.getLikes()) {
+                    Hibernate.initialize(like);
+                }
             }
 
             Hibernate.initialize(posts.get(i).getWriter());
@@ -365,7 +366,12 @@ public class PostDaoImpl implements PostDao {
 
             Iterator<Comment> itComments = posts.get(i).getComments().iterator();
             while(itComments.hasNext()) {
-                Hibernate.initialize(itComments.next());
+                Comment comment = itComments.next();
+                Hibernate.initialize(comment);
+
+                for(CommentLike like: comment.getLikes()) {
+                    Hibernate.initialize(like);
+                }
             }
 
             Hibernate.initialize(posts.get(i).getWriter());

@@ -2,10 +2,7 @@ package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.dto.incoming.EventDto;
 import com.andreasogeirik.model.dto.incoming.PostDto;
-import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
-import com.andreasogeirik.model.dto.outgoing.EventDtoOut;
-import com.andreasogeirik.model.dto.outgoing.PostDtoOut;
-import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
+import com.andreasogeirik.model.dto.outgoing.*;
 import com.andreasogeirik.model.entities.Comment;
 import com.andreasogeirik.model.entities.Post;
 import com.andreasogeirik.model.entities.PostLike;
@@ -163,14 +160,15 @@ public class EventController {
                 CommentDtoOut comment = new CommentDtoOut(commentEntity);
                 comment.setUser(new UserDtoOut(commentEntity.getUser()));
                 comments.add(comment);
+                comment.setLikersFromEntity(commentEntity.getLikes());
             }
             postOut.setComments(comments);
 
             //iterate likes
-            Set<UserDtoOut> likers = new HashSet<>();
+            Set<UserDtoOutSmall> likers = new HashSet<>();
             Iterator<PostLike> likeIt = posts.get(i).getLikes().iterator();
             while(likeIt.hasNext()) {
-                likers.add(new UserDtoOut(likeIt.next().getUser()));
+                likers.add(new UserDtoOutSmall(likeIt.next().getUser()));
             }
 
 

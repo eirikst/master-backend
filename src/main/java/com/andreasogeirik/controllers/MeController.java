@@ -93,14 +93,15 @@ public class MeController {
                 CommentDtoOut comment = new CommentDtoOut(commentEntity);
                 comment.setUser(new UserDtoOut(commentEntity.getUser()));
                 comments.add(comment);
+                comment.setLikersFromEntity(commentEntity.getLikes());
             }
             postOut.setComments(comments);
 
             //iterate likes
-            Set<UserDtoOut> likers = new HashSet<>();
+            Set<UserDtoOutSmall> likers = new HashSet<>();
             Iterator<PostLike> likeIt = posts.get(i).getLikes().iterator();
             while(likeIt.hasNext()) {
-                likers.add(new UserDtoOut(likeIt.next().getUser()));
+                likers.add(new UserDtoOutSmall(likeIt.next().getUser()));
             }
 
 
