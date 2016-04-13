@@ -16,6 +16,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.*;
 
+import static com.andreasogeirik.tools.Constants.BACKEND_URL;
+
 @RestController
 @RequestMapping("/seed")
 public class SeedController {
@@ -36,19 +38,19 @@ public class SeedController {
     public ResponseEntity<String> seedThisShit() {
         userDao.createAdminUser(new com.andreasogeirik.model.entities.User("admin", "pwd", true, "Eirik", "Stadheim",
                 "Trondheim", new Date()));
-        userDao.updateUser("Eirik", "Stadheim", "Trondheim", "http://sportydul.azurewebsites.net/image/0-eirik", "http://sportydul.azurewebsites.net/image/0-eirik", 1);
+        userDao.updateUser("Eirik", "Stadheim", "Trondheim", BACKEND_URL + "image/0-eirik", BACKEND_URL + "image/0S-eirik", 1);
         userDao.createUser(new com.andreasogeirik.model.entities.User("andreas", "pwd", true, "Andreas", "Næss",
                 "Trondheim", new Date()));
-        userDao.updateUser("Andreas", "Næss", "Trondheim", "http://sportydul.azurewebsites.net/image/0-andreas", "http://sportydul.azurewebsites.net/image/0-andreas", 2);
+        userDao.updateUser("Andreas", "Næss", "Trondheim", BACKEND_URL + "image/0-andreas", BACKEND_URL + "image/0S-andreas", 2);
         userDao.createUser(new com.andreasogeirik.model.entities.User("mikael", "pwd", true, "Mikael", "Reiersølmoen",
                 "Trondheim", new Date()));
-        userDao.updateUser("Mikael", "Reiersølmoen", "Trondheim", "http://sportydul.azurewebsites.net/image/0-mikael", "http://sportydul.azurewebsites.net/image/0-mikael", 3);
+        userDao.updateUser("Mikael", "Reiersølmoen", "Trondheim", BACKEND_URL + "image/0-mikael", BACKEND_URL + "image/0S-mikael", 3);
         userDao.createUser(new com.andreasogeirik.model.entities.User("shari", "pwd", true, "Shahariar", "Kabir Bhuiyan",
                 "Trondheim", new Date()));
-        userDao.updateUser("Shahariar", "Kabir Bhuiyan", "Trondheim", "http://sportydul.azurewebsites.net/image/0-shari", "http://sportydul.azurewebsites.net/image/0-shari", 4);
+        userDao.updateUser("Shahariar", "Kabir Bhuiyan", "Trondheim", BACKEND_URL + "image/0-shari", BACKEND_URL + "image/0S-shari", 4);
         userDao.createUser(new com.andreasogeirik.model.entities.User("hamadul", "pwd", true, "Rakib", "Hamadul",
                 "Trondheim", new Date()));
-        userDao.updateUser("Rakib", "Hamadul", "Trondheim", "http://sportydul.azurewebsites.net/image/0-hamadul", "http://sportydul.azurewebsites.net/image/0-hamadul", 5);
+        userDao.updateUser("Rakib", "Hamadul", "Trondheim", BACKEND_URL + "image/0-hamadul", BACKEND_URL + "image/0S-hamadul", 5);
 
         userDao.addFriendRequest(1, 2);
         userDao.acceptFriendRequest(1, 2);
@@ -90,21 +92,21 @@ public class SeedController {
 
 
         eventDao.createEvent(new Event("Tur til Geitfjellet", "Trondheim", "Vi møtes i Ilaparken", twoDays.getTime(),
-                null, "http://sportydul.azurewebsites.net/image/01-geitfjellet", "http://sportydul.azurewebsites.net/image/01-geitfjellet", 3), 1);
+                null, BACKEND_URL + "image/01-geitfjellet", BACKEND_URL + "image/01S-geitfjellet", 3), 1);
         eventDao.createEvent(new Event("Tur til Våttakammen", "Trondheim", "Vi møtes i Ilaparken", twoDays.getTime(),
-                null, "http://sportydul.azurewebsites.net/image/01-vattakammen", "http://sportydul.azurewebsites.net/image/01-vattakammen", 2), 2);
+                null, BACKEND_URL + "image/01-vattakammen", BACKEND_URL + "image/01S-vattakammen", 2), 2);
         eventDao.createEvent(new Event("Skitur på Gautefall", "Gautefall", "Vi møtes ved skiheisen", fourDays.getTime(),
-                null, "http://sportydul.azurewebsites.net/image/01-gautefall", "http://sportydul.azurewebsites.net/image/01-gautefall", 3), 3);
+                null, BACKEND_URL + "image/01-gautefall", BACKEND_URL + "image/01S-gautefall", 3), 3);
         eventDao.createEvent(new Event("Skitur i Heidal", "Heidal", "Vi møtes i Ilaparken", fourDays.getTime(),
-                null, "http://sportydul.azurewebsites.net/image/01-hytta", "http://sportydul.azurewebsites.net/image/01-hytta", 3), 4);
+                null, BACKEND_URL + "image/01-hytta", BACKEND_URL + "image/01S-hytta", 3), 4);
         eventDao.createEvent(new Event("Tur til Glittertind", "Jotunheimen", "Vi møtes på Glitterheim",
-                twoDays.getTime(), null, "http://sportydul.azurewebsites.net/image/01-jotunheimen", "http://sportydul.azurewebsites.net/image/01-jotunheimen", 3), 5);
+                twoDays.getTime(), null, BACKEND_URL + "image/01-jotunheimen", BACKEND_URL + "image/01S-jotunheimen", 3), 5);
         eventDao.createEvent(new Event("Svømming i Russvatnet", "Jotunheimen", "Vi på møtes Bessheim", aWeek.getTime(),
-                null, "http://sportydul.azurewebsites.net/image/01-russvatnet", "http://sportydul.azurewebsites.net/image/01-russvatnet",  2), 1);
+                null, BACKEND_URL + "image/01-russvatnet", BACKEND_URL + "image/01S-russvatnet",  2), 1);
         eventDao.createEvent(new Event("Spasere til Nidarosdomen", "Trondheim", "Vi møtes i på Torget", aWeek.getTime(),
-                null, "http://sportydul.azurewebsites.net/image/01-nidarosdomen", "http://sportydul.azurewebsites.net/image/01-nidarosdomen",  1), 2);
+                null, BACKEND_URL + "image/01-nidarosdomen", BACKEND_URL + "image/01S-nidarosdomen",  1), 2);
         eventDao.createEvent(new Event("Sykle til Estenstadhytta", "Trondheim", "Vi møtes på Dragvoll", aWeek.getTime(),
-                null, "http://sportydul.azurewebsites.net/image/01-estenstadhytta", "http://sportydul.azurewebsites.net/image/01-estenstadhytta", 3), 3);
+                null, BACKEND_URL + "image/01-estenstadhytta", BACKEND_URL + "image/01S-estenstadhytta", 3), 3);
 
         eventDao.attendEvent(1, 1);
         eventDao.attendEvent(2, 1);

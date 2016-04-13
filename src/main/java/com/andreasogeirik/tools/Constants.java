@@ -17,10 +17,10 @@ public class Constants {
 //    public static final String BACKEND_URL = "http://sportydul.azurewebsites.net/";
 
     // Andreas NTNU
-//    public static final String BACKEND_URL = "http://129.241.102.250:8080/";
+    public static final String BACKEND_URL = "http://129.241.102.250:8080/";
 
     //Eirik NTNU
-    public static final String BACKEND_URL = "http://78.91.3.136:8080/";
+//    public static final String BACKEND_URL = "http://78.91.3.136:8080/";
 
     //Eirik hjemme
     //public static final String BACKEND_URL = "http://10.0.0.99:8080/";
