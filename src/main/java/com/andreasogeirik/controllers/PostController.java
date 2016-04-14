@@ -1,6 +1,6 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.model.dto.incoming.PostCommentDto;
+import com.andreasogeirik.model.dto.incoming.CommentDto;
 import com.andreasogeirik.model.dto.outgoing.CommentDtoOut;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.PostDao;
@@ -47,7 +47,7 @@ public class PostController {
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{postId}/comments", method = RequestMethod.PUT)
-    public ResponseEntity<CommentDtoOut> comment(@RequestBody PostCommentDto comment,
+    public ResponseEntity<CommentDtoOut> comment(@RequestBody CommentDto comment,
                                           @PathVariable(value="postId") int postId) {
 
         CommentDtoOut commentOut = new CommentDtoOut(postDao.comment(comment.toUserPostComment(), postId,

@@ -5,8 +5,7 @@ import com.andreasogeirik.model.entities.Comment;
 /**
  * Created by eirikstadheim on 04/02/16.
  */
-public class PostCommentDto {
-    private int userId;
+public class CommentDto {
     private String message = "";
 
     public Comment toUserPostComment() {

@@ -327,6 +327,7 @@ public class PostDaoImpl implements PostDao {
             while(itComments.hasNext()) {
                 Comment comment = itComments.next();
                 Hibernate.initialize(comment);
+                Hibernate.initialize(comment.getUser());
 
                 for(CommentLike like: comment.getLikes()) {
                     Hibernate.initialize(like);
