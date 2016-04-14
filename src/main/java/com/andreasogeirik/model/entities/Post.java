@@ -9,36 +9,46 @@ import java.util.Set;
  * Created by eirikstadheim on 01/02/16.
  */
 @Entity
-@Table(name = "user_posts")
+@Table(name = "posts")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-public class UserPost {
+public class Post {
     private int id;
     private String message;
     private Date timeCreated;
     private String imageUri;
+    private User writer;
     private User user;
-    private Set<UserPostComment> comments = new HashSet<UserPostComment>(0);
-    private Set<UserPostLike> likes = new HashSet<UserPostLike>(0);
+    private Event event;
+    private Set<Comment> comments = new HashSet<Comment>(0);
+    private Set<PostLike> likes = new HashSet<PostLike>(0);
 
-    public UserPost() {
+    public Post() {
     }
 
-    public UserPost(String message, String imageUri) {
+    public Post(String message, String imageUri) {
         this.message = message;
         this.imageUri = imageUri;
     }
 
-    public UserPost(int id, String message, String imageUri) {
+    public Post(int id, String message, String imageUri) {
         this.id = id;
         this.message = message;
         this.imageUri = imageUri;
     }
 
-    public UserPost(String message, Date timeCreated, String imageUri, User user) {
+    public Post(String message, String imageUri, User writer, User user) {
         this.message = message;
         this.imageUri = imageUri;
-        this.timeCreated = timeCreated;
+        this.writer = writer;
         this.user = user;
+    }
+
+
+    public Post(String message, String imageUri, User writer, Event event) {
+        this.message = message;
+        this.imageUri = imageUri;
+        this.writer = writer;
+        this.event = event;
     }
 
     @Id
@@ -79,7 +89,17 @@ public class UserPost {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "writer_id", nullable = false)
+    public User getWriter() {
+        return writer;
+    }
+
+    public void setWriter(User writer) {
+        this.writer = writer;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     public User getUser() {
         return this.user;
     }
@@ -88,21 +108,31 @@ public class UserPost {
         this.user = user;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
-    public Set<UserPostComment> getComments() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = {CascadeType.ALL})
+    public Set<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(Set<UserPostComment> comments) {
+    public void setComments(Set<Comment> comments) {
         this.comments = comments;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
-    public Set<UserPostLike> getLikes() {
+    public Set<PostLike> getLikes() {
         return likes;
     }
 
-    public void setLikes(Set<UserPostLike> likes) {
+    public void setLikes(Set<PostLike> likes) {
         this.likes = likes;
     }
 
@@ -113,7 +143,11 @@ public class UserPost {
                 ", message='" + message + '\'' +
                 ", timeCreated=" + timeCreated +
                 ", imageUri='" + imageUri + '\'' +
+                ", writer=" + writer +
                 ", user=" + user +
+                ", event=" + event +
+                ", comments=" + comments +
+                ", likes=" + likes +
                 '}';
     }
 }

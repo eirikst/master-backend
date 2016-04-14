@@ -8,17 +8,17 @@ import javax.persistence.*;
  * Created by eirikstadheim on 01/02/16.
  */
 @Entity
-@Table(name = "event_comment_likes", uniqueConstraints=@UniqueConstraint(columnNames={"comment_id", "user_id"}))
-public class EventCommentLike {
+@Table(name = "comment_likes", uniqueConstraints=@UniqueConstraint(columnNames={"comment_id", "user_id"}))
+public class CommentLike {
 
     private int id;
     private User user;
-    private EventPostComment comment;
+    private Comment comment;
 
-    public EventCommentLike() {
+    public CommentLike() {
     }
 
-    public EventCommentLike(User user, EventPostComment comment) {
+    public CommentLike(User user, Comment comment) {
         this.user = user;
         this.comment = comment;
     }
@@ -46,11 +46,11 @@ public class EventCommentLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
-    public EventPostComment getComment() {
+    public Comment getComment() {
         return comment;
     }
 
-    public void setComment(EventPostComment comment) {
+    public void setComment(Comment comment) {
         this.comment = comment;
     }
 }

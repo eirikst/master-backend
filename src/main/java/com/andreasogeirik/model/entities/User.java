@@ -21,12 +21,13 @@ public class User {
     private String thumbUri;
     private Date timeCreated;
     private Set<UserRole> userRole = new HashSet<UserRole>(0);
-    private Set<UserPost> posts = new HashSet<UserPost>(0);
-    private Set<UserPostComment> comments = new HashSet<UserPostComment>(0);
+    private Set<Post> postsOnPage = new HashSet<Post>(0);
+    private Set<Post> postsIWrote = new HashSet<Post>(0);
+    private Set<Comment> comments = new HashSet<Comment>(0);
     private Set<Event> events = new HashSet<Event>(0);
     private Set<Friendship> friends = new HashSet<Friendship>(0);
-    private Set<UserPostLike> userPostLikes = new HashSet<UserPostLike>(0);
-    private Set<EventCommentLike> eventCommentLikes = new HashSet<EventCommentLike>(0);
+    private Set<PostLike> userPostLikes = new HashSet<PostLike>(0);
+    private Set<CommentLike> commentLikes = new HashSet<CommentLike>(0);
     private Set<String> gcmTokens = new HashSet<String>(0);
 
     public User() {
@@ -148,20 +149,29 @@ public class User {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    public Set<UserPost> getPosts() {
-        return posts;
+    public Set<Post> getPostsOnPage() {
+        return postsOnPage;
     }
 
-    public void setPosts(Set<UserPost> posts) {
-        this.posts = posts;
+    public void setPostsOnPage(Set<Post> postsOnPage) {
+        this.postsOnPage = postsOnPage;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "writer")
+    public Set<Post> getPostsIWrote() {
+        return postsIWrote;
+    }
+
+    public void setPostsIWrote(Set<Post> postsIWrote) {
+        this.postsIWrote = postsIWrote;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    public Set<UserPostComment> getComments() {
+    public Set<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(Set<UserPostComment> comments) {
+    public void setComments(Set<Comment> comments) {
         this.comments = comments;
     }
 
@@ -175,21 +185,21 @@ public class User {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    public Set<UserPostLike> getUserPostLikes() {
+    public Set<PostLike> getUserPostLikes() {
         return userPostLikes;
     }
 
-    public void setUserPostLikes(Set<UserPostLike> likes) {
+    public void setUserPostLikes(Set<PostLike> likes) {
         this.userPostLikes = likes;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    public Set<EventCommentLike> getEventCommentLikes() {
-        return eventCommentLikes;
+    public Set<CommentLike> getCommentLikes() {
+        return commentLikes;
     }
 
-    public void setEventCommentLikes(Set<EventCommentLike> eventCommentLikes) {
-        this.eventCommentLikes = eventCommentLikes;
+    public void setCommentLikes(Set<CommentLike> commentLikes) {
+        this.commentLikes = commentLikes;
     }
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")

@@ -1,9 +1,7 @@
 package com.andreasogeirik.security;
 
 import com.andreasogeirik.model.dto.outgoing.UserDtoOut;
-import com.andreasogeirik.service.EmailNotifier;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
-import com.andreasogeirik.service.gcm.GcmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,7 +11,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 /**
  * Created by eirikstadheim on 07/02/16.

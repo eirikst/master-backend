@@ -1,27 +1,21 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.model.dto.incoming.UserPostDto;
+import com.andreasogeirik.model.dto.incoming.PostDto;
 import com.andreasogeirik.model.dto.outgoing.*;
 import com.andreasogeirik.model.entities.*;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
-import com.andreasogeirik.service.dao.interfaces.UserPostDao;
+import com.andreasogeirik.service.dao.interfaces.PostDao;
 import com.andreasogeirik.tools.Constants;
 import com.andreasogeirik.tools.EmailExistsException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.*;
@@ -36,7 +30,7 @@ public class MeController {
     private UserDao userDao;
 
     @Autowired
-    private UserPostDao postDao;
+    private PostDao postDao;
 
     @Autowired
     private EventDao eventDao;
@@ -53,40 +47,61 @@ public class MeController {
         return new ResponseEntity<UserDtoOut>(new UserDtoOut(userDao.findById(userId)), HttpStatus.OK);
     }
 
+
     /**
-     * Gets the a given number of UserPosts(10 right now) for the logged in user, with an offset specified
+     * Creates a Post for the logged in user
+     * @param post Post represented as JSON
+     * @return the Post represented as JSON with ID
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/posts",method = RequestMethod.PUT)
+    public ResponseEntity<PostDtoOut> post(@RequestBody PostDto post) {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        Post postEntityOut = postDao.userPost(post.getMessage(), post.getImageUri(), userId, userId);
+        PostDtoOut postOut = new PostDtoOut(postEntityOut);
+
+        return new ResponseEntity<PostDtoOut>(postOut, HttpStatus.CREATED);
+    }
+
+    /**
+     * Gets the a given number of Posts(10 right now) for the logged in user, with an offset specified
      * @param start offset
-     * @return list of 10(or less, if no more present) user post objects as JSON
+     * @return list of 10(or less, if no more present) user userPost objects as JSON
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/posts", method = RequestMethod.GET)
-    public ResponseEntity<List<UserPostDtoOut>> getPosts(@RequestParam(value = "start") int start) {
+    public ResponseEntity<List<PostDtoOut>> getPosts(@RequestParam(value = "start") int start) {
         if(start < 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         }
         int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
 
-        List<UserPost> posts = postDao.findPosts(userId, start, Constants.NUMBER_OF_POSTS_RETURNED);
+        List<Post> posts = postDao.findPostsUser(userId, start, Constants.NUMBER_OF_POSTS_RETURNED);
 
-        List<UserPostDtoOut> postsOut = new ArrayList<UserPostDtoOut>();
+        List<PostDtoOut> postsOut = new ArrayList<PostDtoOut>();
 
         for(int i = 0; i < posts.size(); i++) {
-            UserPostDtoOut postOut = new UserPostDtoOut(posts.get(i));
+            PostDtoOut postOut = new PostDtoOut(posts.get(i));
 
             //iterate comments
-            Set<UserPostCommentDtoOut> comments = new HashSet<>();
-            Iterator<UserPostComment> it = posts.get(i).getComments().iterator();
+            Set<CommentDtoOut> comments = new HashSet<>();
+            Iterator<Comment> it = posts.get(i).getComments().iterator();
             while(it.hasNext()) {
-                comments.add(new UserPostCommentDtoOut(it.next()));
+                Comment commentEntity = it.next();
+                CommentDtoOut comment = new CommentDtoOut(commentEntity);
+                comment.setUser(new UserDtoOut(commentEntity.getUser()));
+                comments.add(comment);
+                comment.setLikersFromEntity(commentEntity.getLikes());
             }
             postOut.setComments(comments);
 
             //iterate likes
-            Set<UserDtoOut> likers = new HashSet<>();
-            Iterator<UserPostLike> likeIt = posts.get(i).getLikes().iterator();
+            Set<UserDtoOutSmall> likers = new HashSet<>();
+            Iterator<PostLike> likeIt = posts.get(i).getLikes().iterator();
             while(likeIt.hasNext()) {
-                likers.add(new UserDtoOut(likeIt.next().getUser()));
+                likers.add(new UserDtoOutSmall(likeIt.next().getUser()));
             }
 
 
@@ -95,21 +110,6 @@ public class MeController {
         }
 
         return new ResponseEntity<>(postsOut, HttpStatus.OK);
-    }
-
-    /**
-     * Creates a UserPost for the logged in user
-     * @param post UserPost represented as JSON
-     * @return the UserPost represented as JSON with ID
-     */
-    @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/posts",method = RequestMethod.PUT)
-    public ResponseEntity<Status> post(@RequestBody UserPostDto post) {
-
-        postDao.createUserPost(post.toPost(),
-                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
-
-        return new ResponseEntity<Status>(new Status(1, "Created"), HttpStatus.CREATED);
     }
 
     /**

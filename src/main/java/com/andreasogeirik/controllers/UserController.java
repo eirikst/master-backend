@@ -6,7 +6,7 @@ import com.andreasogeirik.model.entities.*;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
-import com.andreasogeirik.service.dao.interfaces.UserPostDao;
+import com.andreasogeirik.service.dao.interfaces.PostDao;
 import com.andreasogeirik.tools.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import javax.persistence.EntityNotFoundException;
+import com.andreasogeirik.tools.EntityNotFoundException;
 import java.util.*;
 
 @RestController
@@ -27,7 +27,7 @@ public class UserController {
     private UserDao userDao;
 
     @Autowired
-    private UserPostDao postDao;
+    private PostDao postDao;
 
     @Autowired
     private EventDao eventDao;
@@ -75,37 +75,41 @@ public class UserController {
      * Gets the a given number of posts(10 right now) of the user specified, with an offset specified
      * @param userId id of user as integer
      * @param start offset
-     * @return list of 10(or less, if no more present) user post objects as JSON
+     * @return list of 10(or less, if no more present) user userPost objects as JSON
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{userId}/posts", method = RequestMethod.GET)
-    public ResponseEntity<List<UserPostDtoOut>> getPosts(@PathVariable(value = "userId") int userId,
+    public ResponseEntity<List<PostDtoOut>> getPosts(@PathVariable(value = "userId") int userId,
                                                          @RequestParam(value = "start") int start) {
         if(start < 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         }
 
-        List<UserPost> posts = postDao.findPosts(userId, start, Constants.NUMBER_OF_POSTS_RETURNED);
+        List<Post> posts = postDao.findPostsUser(userId, start, Constants.NUMBER_OF_POSTS_RETURNED);
 
-        List<UserPostDtoOut> postsOut = new ArrayList<UserPostDtoOut>();
+        List<PostDtoOut> postsOut = new ArrayList<PostDtoOut>();
 
         for(int i = 0; i < posts.size(); i++) {
-            UserPostDtoOut postOut = new UserPostDtoOut(posts.get(i));
+            PostDtoOut postOut = new PostDtoOut(posts.get(i));
 
             //iterate comments
-            Set<UserPostCommentDtoOut> comments = new HashSet<>();
-            Iterator<UserPostComment> it = posts.get(i).getComments().iterator();
+            Set<CommentDtoOut> comments = new HashSet<>();
+            Iterator<Comment> it = posts.get(i).getComments().iterator();
             while(it.hasNext()) {
-                comments.add(new UserPostCommentDtoOut(it.next()));
+                Comment commentEntity = it.next();
+                CommentDtoOut comment = new CommentDtoOut(commentEntity);
+                comment.setUser(new UserDtoOut(commentEntity.getUser()));
+                comments.add(comment);
+                comment.setLikersFromEntity(commentEntity.getLikes());
             }
             postOut.setComments(comments);
 
             //iterate likes
-            Set<UserDtoOut> likers = new HashSet<>();
-            Iterator<UserPostLike> likeIt = posts.get(i).getLikes().iterator();
+            Set<UserDtoOutSmall> likers = new HashSet<>();
+            Iterator<PostLike> likeIt = posts.get(i).getLikes().iterator();
             while(likeIt.hasNext()) {
-                likers.add(new UserDtoOut(likeIt.next().getUser()));
+                likers.add(new UserDtoOutSmall(likeIt.next().getUser()));
             }
 
 

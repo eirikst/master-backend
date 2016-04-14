@@ -3,14 +3,13 @@ package com.andreasogeirik.controllers;
 import com.andreasogeirik.model.entities.*;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
-import com.andreasogeirik.service.dao.interfaces.UserPostDao;
+import com.andreasogeirik.service.dao.interfaces.PostDao;
 import com.andreasogeirik.tools.EmailExistsException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -26,7 +25,7 @@ public class SeedController {
     private UserDao userDao;
 
     @Autowired
-    private UserPostDao postDao;
+    private PostDao postDao;
 
     @Autowired
     private EventDao eventDao;

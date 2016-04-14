@@ -3,18 +3,15 @@ package com.andreasogeirik.service.dao;
 import com.andreasogeirik.model.entities.Friendship;
 import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.model.entities.UserRole;
-import com.andreasogeirik.service.EmailNotifier;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.gcm.GcmService;
 import com.andreasogeirik.tools.*;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.stat.Statistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -173,20 +170,6 @@ public class UserDaoImpl implements UserDao {
 
         session.close();
 
-        //TODO:fjern bullshit
-
-        new Thread() {
-            public void run() {
-                if ((user.getFirstname() + user.getLastname() + user.getEmail()).toLowerCase().contains("sha")) {
-                    EmailNotifier.sendEmail("sha-bruker har logget inn med id " + user.getId());
-                    gcm.notifyTest("Niloy, dette er ingen prank", user.getId());
-                } else if ((user.getFirstname() + user.getLastname() + user.getEmail()).toLowerCase().contains("loy")) {
-                    EmailNotifier.sendEmail("loy-bruker har logget inn med id " + user.getId());
-                    gcm.notifyTest("Niloy, dette er ingen prank", user.getId());
-                }
-            }
-        }.start();
-
         return user;
     }
 
@@ -198,6 +181,12 @@ public class UserDaoImpl implements UserDao {
     public User findById(int id) {
         Session session = sessionFactory.openSession();
         User user = session.get(User.class, id);
+
+        if(user == null) {
+            session.close();
+            throw new EntityNotFoundException("User not found");
+        }
+
         session.close();
         return user;
     }

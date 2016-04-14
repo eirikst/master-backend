@@ -23,6 +23,9 @@ public class EventDtoOut {
     private Set<UserDtoOut> users = new HashSet<>();
     private UserDtoOut admin;
 
+    public EventDtoOut() {
+    }
+
     public EventDtoOut(Event event) {
         this.id = event.getId();
         this.name = event.getName();
@@ -38,6 +41,19 @@ public class EventDtoOut {
             users.add(new UserDtoOut(user));
         }
         this.admin = new UserDtoOut(event.getAdmin());
+    }
+
+    public static EventDtoOut newInstanceWithoutUsersOrAdmin(Event event) {
+        EventDtoOut instance = new EventDtoOut();
+        instance.id = event.getId();
+        instance.name = event.getName();
+        instance.location = event.getLocation();
+        instance.description = event.getDescription();
+        instance.timeStart = event.getTimeStart();
+        instance.timeEnd = event.getTimeEnd();
+        instance.imageUri = event.getImageURI();
+        instance.difficulty = event.getDifficulty();
+        return instance;
     }
 
     public int getId() {

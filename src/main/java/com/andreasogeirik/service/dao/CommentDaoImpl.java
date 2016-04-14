@@ -1,8 +1,8 @@
 package com.andreasogeirik.service.dao;
 
 import com.andreasogeirik.model.entities.User;
-import com.andreasogeirik.model.entities.UserCommentLike;
-import com.andreasogeirik.model.entities.UserPostComment;
+import com.andreasogeirik.model.entities.CommentLike;
+import com.andreasogeirik.model.entities.Comment;
 import com.andreasogeirik.service.dao.interfaces.CommentDao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -26,11 +26,11 @@ public class CommentDaoImpl implements CommentDao {
 
         session.beginTransaction();
 
-        UserPostComment comment = session.get(UserPostComment.class, commentId);
+        Comment comment = session.get(Comment.class, commentId);
 
         User user = session.get(User.class, userId);
 
-        UserCommentLike like = new UserCommentLike(user, comment);
+        CommentLike like = new CommentLike(user, comment);
         session.save(like);
 
         session.getTransaction().commit();

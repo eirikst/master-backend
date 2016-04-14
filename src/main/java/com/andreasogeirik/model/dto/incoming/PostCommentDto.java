@@ -1,16 +1,16 @@
 package com.andreasogeirik.model.dto.incoming;
 
-import com.andreasogeirik.model.entities.UserPostComment;
+import com.andreasogeirik.model.entities.Comment;
 
 /**
  * Created by eirikstadheim on 04/02/16.
  */
-public class UserPostCommentDto {
+public class PostCommentDto {
     private int userId;
     private String message = "";
 
-    public UserPostComment toUserPostComment() {
-        return new UserPostComment(message);
+    public Comment toUserPostComment() {
+        return new Comment(message);
     }
 
 
