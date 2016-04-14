@@ -16,6 +16,7 @@ public class UserDtoOut {
     private String lastname = "";
     private String location = "";
     private String imageUri = "";
+    private String thumbUri = "";
 
     public UserDtoOut() {
 
@@ -29,6 +30,7 @@ public class UserDtoOut {
         this.lastname = user.getLastname();
         this.location = user.getLocation();
         this.imageUri = user.getImageUri();
+        this.thumbUri = user.getThumbUri();
     }
 
     public int getId() {
@@ -88,6 +90,14 @@ public class UserDtoOut {
         this.imageUri = imageUri;
     }
 
+    public String getThumbUri() {
+        return thumbUri;
+    }
+
+    public void setThumbUri(String thumbUri) {
+        this.thumbUri = thumbUri;
+    }
+
     public JsonNode toJson() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
@@ -98,6 +108,7 @@ public class UserDtoOut {
         node.put("firstname", firstname);
         node.put("lastname", lastname);
         node.put("imageUri", imageUri);
+        node.put("thumbUri", thumbUri);
         return node;
     }
 }

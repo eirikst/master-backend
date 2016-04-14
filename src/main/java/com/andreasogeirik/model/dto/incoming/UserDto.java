@@ -12,6 +12,7 @@ public class UserDto {
     private String lastname = "";
     private String location = "";
     private String imageUri = "";
+    private String thumbUri = "";
 
     public User toUser() {
         return new User(email, password, true, firstname, lastname,
@@ -64,5 +65,13 @@ public class UserDto {
 
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
+    }
+
+    public String getThumbUri() {
+        return thumbUri;
+    }
+
+    public void setThumbUri(String thumbUri) {
+        this.thumbUri = thumbUri;
     }
 }

@@ -111,7 +111,7 @@ public class UserDaoImpl implements UserDao {
      * Updates a user
      */
     @Transactional
-    public User updateUser(String firstname, String lastname, String location, String imageUri, int userId) {
+    public User updateUser(String firstname, String lastname, String location, String imageUri, String thumbUri, int userId) {
         if (!inputManager.isValidName(firstname)) {
             throw new InvalidInputException("Invalid firstname format");
         }
@@ -131,6 +131,7 @@ public class UserDaoImpl implements UserDao {
         user.setLastname(lastname);
         user.setLocation(location);
         user.setImageUri(imageUri);
+        user.setThumbUri(thumbUri);
 
         session.save(user);
         session.getTransaction().commit();

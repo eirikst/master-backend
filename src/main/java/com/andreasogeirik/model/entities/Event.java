@@ -20,6 +20,7 @@ public class Event {
     private Date timeStart;
     private Date timeEnd;
     private String imageURI;
+    private String thumbURI;
     private User admin;
     private int difficulty = 1;
     private Set<User> users = new HashSet<User>(0);
@@ -29,13 +30,14 @@ public class Event {
     }
 
     public Event(String name, String location, String description, Date timeStart,
-                 Date timeEnd, String imageURI, int difficulty) {
+                 Date timeEnd, String imageURI, String thumbURI, int difficulty) {
         this.name = name;
         this.location = location;
         this.description = description;
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
         this.imageURI = imageURI;
+        this.thumbURI = thumbURI;
         this.difficulty = difficulty;
     }
 
@@ -111,6 +113,14 @@ public class Event {
         this.imageURI = imageURI;
     }
 
+    public String getThumbURI() {
+        return thumbURI;
+    }
+
+    public void setThumbURI(String thumbURI) {
+        this.thumbURI = thumbURI;
+    }
+
     @OneToOne(fetch = FetchType.EAGER)
     public User getAdmin() {
         return admin;
@@ -154,6 +164,7 @@ public class Event {
         this.timeStart = event.timeStart;
         this.timeEnd = event.timeEnd;
         this.imageURI = event.imageURI;
+        this.thumbURI = event.thumbURI;
         this.difficulty = event.difficulty;
     }
 }
