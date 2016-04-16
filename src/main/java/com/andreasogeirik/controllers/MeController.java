@@ -58,7 +58,7 @@ public class MeController {
     public ResponseEntity<PostDtoOut> post(@RequestBody PostDto post) {
         int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
 
-        Post postEntityOut = postDao.userPost(post.getMessage(), post.getImageUri(), userId, userId);
+        Post postEntityOut = postDao.userPost(post.getMessage(), "", userId, userId);
         PostDtoOut postOut = new PostDtoOut(postEntityOut);
 
         return new ResponseEntity<PostDtoOut>(postOut, HttpStatus.CREATED);

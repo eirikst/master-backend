@@ -124,7 +124,7 @@ public class EventController {
     public ResponseEntity<PostDtoOut> post(@RequestBody PostDto post, @PathVariable(value = "eventId") int eventId) {
         int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
 
-        Post postEntityOut = postDao.eventPost(post.getMessage(), post.getImageUri(), userId, eventId);
+        Post postEntityOut = postDao.eventPost(post.getMessage(), "", userId, eventId);
         PostDtoOut postOut = PostDtoOut.newInstanceWithoutEvent(postEntityOut);
 
         return new ResponseEntity<PostDtoOut>(postOut, HttpStatus.CREATED);

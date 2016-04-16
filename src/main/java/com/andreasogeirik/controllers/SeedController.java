@@ -77,6 +77,15 @@ public class SeedController {
         userDao.addFriendRequest(3, 4);
         userDao.acceptFriendRequest(9, 4);
 
+        postDao.userPost("Hadde en flotters tur idag med gode folk!", null, 1, 1);
+        postDao.comment(new Comment("Ja, dette må gjentas :)", new Date(), null, null), 1, 2);
+        postDao.comment(new Comment("Dere er så sporty gutta!", new Date(), null, null), 1, 5);
+        postDao.likePost(1, 2);
+        postDao.likePost(1, 3);
+        postDao.likePost(1, 4);
+        postDao.likeComment(1, 1);
+        postDao.likeComment(1, 5);
+
 
         Calendar twoDays = new GregorianCalendar();
         twoDays.add(Calendar.DAY_OF_MONTH, 2);
@@ -141,6 +150,20 @@ public class SeedController {
         eventDao.attendEvent(2, 5);
         eventDao.attendEvent(3, 5);
         eventDao.attendEvent(4, 5);
+
+
+        postDao.eventPost("Meld dere på folkens. Været er meldt strålende, det blir fantastisk utsikt fra toppen :D", null, 2, 1);
+        postDao.comment(new Comment("Jeg kommer hvis det blir grillings på toppen...", null, null, null), 2, 4);
+        postDao.comment(new Comment("Det blir det vet du! ;)", null, null, null), 2, 2);
+        postDao.likePost(2, 1);
+        postDao.likePost(2, 2);
+        postDao.likePost(2, 4);
+        postDao.likePost(2, 5);
+        postDao.likeComment(3, 1);
+        postDao.likeComment(4, 1);
+
+
+
 
 
         return new ResponseEntity<String>("ok", HttpStatus.OK);
