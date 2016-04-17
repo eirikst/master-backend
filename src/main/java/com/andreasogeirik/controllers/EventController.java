@@ -10,6 +10,7 @@ import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
 import com.andreasogeirik.service.dao.interfaces.PostDao;
 import com.andreasogeirik.tools.*;
+import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/events")
@@ -179,34 +181,53 @@ public class EventController {
         return new ResponseEntity<>(postsOut, HttpStatus.OK);
     }
 
-    /*
-     * Exception handling
-     */
-    @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
-    @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
-    public void constraintViolation() {}
 
-    @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Input length violation")  // 400
-    @ExceptionHandler(org.hibernate.exception.DataException.class)
-    public void inputLengthViolation() {}
+    /*
+ * Exception handling
+ */
+    @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
+    public ResponseEntity<Status> constraintViolation(org.hibernate.exception.ConstraintViolationException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
+
+        return new ResponseEntity<Status>(new Status(-2, "Some persistence constraint occurred"),
+                HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DataException.class)
+    public ResponseEntity inputLengthViolation(DataException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
+        return new ResponseEntity("Input length violation", HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<Status> violation(InvalidInputException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
         return new ResponseEntity<Status>(new Status(0, e.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(EntityConflictException.class)
-    public ResponseEntity<Status> entityConflict(EntityConflictException e) {
-        return new ResponseEntity<Status>(new Status(0, e.getMessage()), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Status> formatViolation(MethodArgumentTypeMismatchException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
         return new ResponseEntity<Status>(new Status(-1, "Input of wrong type(eg. string when expecting integer)"),
                 HttpStatus.BAD_REQUEST);
     }
 
-    @ResponseStatus(value=HttpStatus.NOT_FOUND, reason="Entity with the provided ID was not found")  // 409
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Status> formatViolation(IllegalArgumentException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
+        return new ResponseEntity<Status>(new Status(-3, "Entity not found."), HttpStatus.NOT_FOUND);
+    }
+
+
     @ExceptionHandler(EntityNotFoundException.class)
-    public void entityNotFound() {}
+    public ResponseEntity<Status> formatViolation(EntityNotFoundException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
+        return new ResponseEntity<Status>(new Status(-5, "Entity not found."), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EntityConflictException.class)
+    public ResponseEntity<Status> formatViolation(EntityConflictException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
+        return new ResponseEntity<Status>(new Status(-5, "Conflicting entities."), HttpStatus.CONFLICT);
+    }
 }

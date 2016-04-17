@@ -295,7 +295,7 @@ public class EventDaoImpl implements EventDao {
         User admin = session.get(User.class, userId);
         String hql = "SELECT E FROM Event E WHERE E.admin = (:admin) AND timeStart > (:now)";
 
-        Query query = session.createQuery(hql).setParameter("admin", admin).setDate("now", new Date());
+        Query query = session.createQuery(hql).setParameter("admin", admin).setTimestamp("now", new Date());
 
         List<Event> events = query.list();
 
@@ -322,13 +322,14 @@ public class EventDaoImpl implements EventDao {
         User admin = session.get(User.class, userId);
         String hql = "SELECT E FROM Event E WHERE E.admin = (:admin) AND timeStart < (:now) ORDER BY E.timeStart DESC, E.id";
 
-        Query query = session.createQuery(hql).setParameter("admin", admin).setDate("now", new Date()).setFirstResult(offset).setMaxResults
+        Query query = session.createQuery(hql).setParameter("admin", admin).setTimestamp("now", new Date()).setFirstResult(offset).setMaxResults
                 (Constants.NUMBER_OF_EVENTS_RETURNED);
 
         List<Event> events = query.list();
 
         if (events != null) {
             for (int i = 0; i < events.size(); i++) {
+
                 Hibernate.initialize(events.get(i).getAdmin());
                 Hibernate.initialize(events.get(i).getUsers());
             }
@@ -351,10 +352,7 @@ public class EventDaoImpl implements EventDao {
 
         String hql = "SELECT E FROM Event E WHERE E.timeStart > (:date) ORDER BY E.timeStart ASC, E.id ASC";
 
-        //TODO REMOVE
-        Date now = new Date();
-
-        Query query = session.createQuery(hql).setDate("date", now).setFirstResult(offset).setMaxResults
+        Query query = session.createQuery(hql).setTimestamp("date", new Date()).setFirstResult(offset).setMaxResults
                 (Constants.NUMBER_OF_EVENTS_RETURNED);
 
         List<Event> events = query.list();

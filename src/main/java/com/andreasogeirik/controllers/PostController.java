@@ -8,6 +8,7 @@ import com.andreasogeirik.tools.EntityConflictException;
 import com.andreasogeirik.tools.EntityNotFoundException;
 import com.andreasogeirik.tools.InvalidInputException;
 import com.andreasogeirik.tools.Status;
+import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.util.logging.Logger;
 
 
 @RestController
@@ -131,34 +134,49 @@ public class PostController {
     /*
      * Exception handling
      */
-    @ExceptionHandler(EntityConflictException.class)
-    public ResponseEntity<String> entityConflict(InvalidInputException e) {
-        return new ResponseEntity<String>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> entityNotFound(EntityNotFoundException e) {
-        return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ResponseStatus(value=HttpStatus.CONFLICT, reason="Constraint violation")  // 409
     @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
-    public void constraintViolation() {
+    public ResponseEntity<Status> constraintViolation(org.hibernate.exception.ConstraintViolationException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
+
+        return new ResponseEntity<Status>(new Status(-2, "Some persistence constraint occurred"),
+                HttpStatus.CONFLICT);
     }
 
-    @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Input length violation")  // 400
-    @ExceptionHandler(org.hibernate.exception.DataException.class)
-    public void inputLengthViolation() {
+    @ExceptionHandler(DataException.class)
+    public ResponseEntity inputLengthViolation(DataException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
+        return new ResponseEntity("Input length violation", HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidInputException.class)
-    public ResponseEntity<Status> inputViolation(InvalidInputException e) {
+    public ResponseEntity<Status> violation(InvalidInputException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
         return new ResponseEntity<Status>(new Status(0, e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Status> formatViolation(MethodArgumentTypeMismatchException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
         return new ResponseEntity<Status>(new Status(-1, "Input of wrong type(eg. string when expecting integer)"),
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Status> formatViolation(IllegalArgumentException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
+        return new ResponseEntity<Status>(new Status(-3, "Entity not found."), HttpStatus.NOT_FOUND);
+    }
+
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Status> formatViolation(EntityNotFoundException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
+        return new ResponseEntity<Status>(new Status(-5, "Entity not found."), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EntityConflictException.class)
+    public ResponseEntity<Status> formatViolation(EntityConflictException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(e.getMessage());
+        return new ResponseEntity<Status>(new Status(-5, "Conflicting entities."), HttpStatus.CONFLICT);
     }
 }
