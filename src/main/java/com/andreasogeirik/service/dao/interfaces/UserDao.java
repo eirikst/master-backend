@@ -30,4 +30,5 @@ public interface UserDao {
     Set<String> getGcmTokensByUserId(int userId);
     void registerGcmToken(int userId, String gcmToken);
     void removeGcmToken(int userId, String gcmToken);
+    Set<Integer> findGcmTokensForUsersWithNoUpcomingEvents();
 }

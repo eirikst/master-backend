@@ -1,5 +1,6 @@
 package com.andreasogeirik.service.dao;
 
+import com.andreasogeirik.model.entities.Event;
 import com.andreasogeirik.model.entities.Friendship;
 import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.model.entities.UserRole;
@@ -446,5 +447,46 @@ public class UserDaoImpl implements UserDao {
 
         session.getTransaction().commit();
         session.close();
+    }
+
+    @Transactional
+    @Override
+    public Set<Integer> findGcmTokensForUsersWithNoUpcomingEvents() {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        Date now = new Date();
+
+        Calendar inAWeekCal = new GregorianCalendar();
+        inAWeekCal.add(Calendar.WEEK_OF_YEAR, 1);
+        Date inAWeek = inAWeekCal.getTime();
+
+        System.out.println("Now: " + now);
+        System.out.println("In a week: " + inAWeek);
+
+        Set<Integer> tokens = new HashSet<>();
+
+        List<User> users = session.createCriteria(User.class).list();
+
+        for(User user: users) {
+            Set<Event> events = user.getEvents();
+
+            boolean future = false;
+            for(Event event: events) {
+                if(event.getTimeStart().after(now) && event.getTimeStart().before(inAWeek)) {
+                    future = true;
+                    break;
+                }
+            }
+
+            if(!future) {
+                tokens.add(user.getId());
+            }
+        }
+
+        session.getTransaction().commit();
+        session.close();
+
+        return tokens;
     }
 }

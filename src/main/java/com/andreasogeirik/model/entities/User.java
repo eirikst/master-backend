@@ -139,7 +139,7 @@ public class User {
         this.timeCreated = timeCreated;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     public Set<UserRole> getUserRole() {
         return this.userRole;
     }

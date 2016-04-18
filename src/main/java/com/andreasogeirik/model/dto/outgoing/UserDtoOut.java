@@ -1,6 +1,7 @@
 package com.andreasogeirik.model.dto.outgoing;
 
 import com.andreasogeirik.model.entities.User;
+import com.andreasogeirik.model.entities.UserRole;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -17,6 +18,7 @@ public class UserDtoOut {
     private String location = "";
     private String imageUri = "";
     private String thumbUri = "";
+    private boolean admin = false;
 
     public UserDtoOut() {
 
@@ -31,6 +33,14 @@ public class UserDtoOut {
         this.location = user.getLocation();
         this.imageUri = user.getImageUri();
         this.thumbUri = user.getThumbUri();
+
+        if(user.getUserRole() != null && !user.getUserRole().isEmpty()) {
+            for(UserRole role: user.getUserRole()) {
+                if(role.getRole().equals("ADMIN")) {
+                    admin = true;
+                }
+            }
+        }
     }
 
     public int getId() {
@@ -98,6 +108,14 @@ public class UserDtoOut {
         this.thumbUri = thumbUri;
     }
 
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
     public JsonNode toJson() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
@@ -109,6 +127,7 @@ public class UserDtoOut {
         node.put("lastname", lastname);
         node.put("imageUri", imageUri);
         node.put("thumbUri", thumbUri);
+        node.put("admin", admin);
         return node;
     }
 }

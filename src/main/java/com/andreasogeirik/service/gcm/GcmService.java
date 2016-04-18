@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,6 +35,12 @@ public class GcmService {
 
     public void notifyFriendAccepted(String name, int userId) {
         notifyUser(name + " har godtatt din venneforespørsel!", userId);
+    }
+
+    public void notifyInactiveWeek(Set<Integer> tokens) {
+        for(Integer token: tokens) {
+            notifyUser("Meld deg på eller lag en aktivitet denne uka, så blir uka topp :)", token);
+        }
     }
 
     /*
