@@ -12,6 +12,7 @@ public class UserDtoOutSmall {
     private int id;
     private String firstname = "";
     private String lastname = "";
+    private String thumbUri = "";
 
     public UserDtoOutSmall() {
 
@@ -21,6 +22,7 @@ public class UserDtoOutSmall {
         this.id = user.getId();
         this.firstname = user.getFirstname();
         this.lastname = user.getLastname();
+        this.thumbUri = user.getThumbUri();
     }
 
     public int getId() {
@@ -45,5 +47,13 @@ public class UserDtoOutSmall {
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    public String getThumbUri() {
+        return thumbUri;
+    }
+
+    public void setThumbUri(String thumbUri) {
+        this.thumbUri = thumbUri;
     }
 }
