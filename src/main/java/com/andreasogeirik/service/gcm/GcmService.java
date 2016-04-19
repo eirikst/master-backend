@@ -1,5 +1,7 @@
 package com.andreasogeirik.service.gcm;
 
+import com.andreasogeirik.model.entities.Friendship;
+import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -21,6 +24,9 @@ public class GcmService {
     private Logger logger = Logger.getLogger(getClass().getName());
     private ObjectMapper mapper;
 
+    public static final String DEFAULT_ACTION = "default";
+    public static final String EVENT_ACTION = "event";
+
     @Autowired
     private UserDao userDao;
 
@@ -30,16 +36,25 @@ public class GcmService {
 
 
     public void notifyFriendRequest(String name, int userId) {
-        notifyUser(name + " har sendt deg en venneforespørsel!", userId);
+        notifyUser(name + " har sendt deg en venneforespørsel!", userId, DEFAULT_ACTION, -1);
     }
 
     public void notifyFriendAccepted(String name, int userId) {
-        notifyUser(name + " har godtatt din venneforespørsel!", userId);
+        notifyUser(name + " har godtatt din venneforespørsel!", userId, DEFAULT_ACTION, -1);
     }
 
-    public void notifyInactiveWeek(Set<Integer> tokens) {
-        for(Integer token: tokens) {
-            notifyUser("Meld deg på eller lag en aktivitet denne uka, så blir uka topp :)", token);
+    public void notifyInactiveWeek(Set<Integer> ids) {
+        for(Integer id: ids) {
+            notifyUser("Meld deg på eller lag en aktivitet denne uka, så blir uka topp :)", id, DEFAULT_ACTION, -1);
+        }
+    }
+
+    public void notifyNewEvent(int adminId, String firstname, String lastname, int eventId) {
+        List<Friendship> friendships = userDao.findFriends(adminId);
+        Set<Integer> ids = userDao.findFriendsIds(adminId);
+
+        for(Integer id: ids) {
+            notifyUser(firstname + " har akkurat opprettet en aktivitet!", id, EVENT_ACTION, eventId);
         }
     }
 
@@ -47,16 +62,16 @@ public class GcmService {
      * Only for test purposes
      */
     public void notifyTest(String msg, int userId) {
-        notifyUser(msg, userId);
+        notifyUser(msg, userId, DEFAULT_ACTION, -1);
     }
 
     /*
      * General purpose notification service, that receives the msg to display and the user's id
      */
-    private void notifyUser(String msg, int userId) {
+    private void notifyUser(String msg, int userId, String action, int actionId) {action:
         new Thread() {
             public void run() {
-                String data = "{ \"data\": {\"msg\":\"" + msg + "\"}";
+                String data = "{ \"data\": {\"msg\":\"" + msg + "\", \"action\":\"" + action + "\", \"actionId\":\"" + actionId + "\"}";
 
                 Set<String> gcmTokens = userDao.getGcmTokensByUserId(userId);
 

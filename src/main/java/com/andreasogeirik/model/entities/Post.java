@@ -135,19 +135,4 @@ public class Post {
     public void setLikes(Set<PostLike> likes) {
         this.likes = likes;
     }
-
-    @Override
-    public String toString() {
-        return "Post{" +
-                "id=" + id +
-                ", message='" + message + '\'' +
-                ", timeCreated=" + timeCreated +
-                ", imageUri='" + imageUri + '\'' +
-                ", writer=" + writer +
-                ", user=" + user +
-                ", event=" + event +
-                ", comments=" + comments +
-                ", likes=" + likes +
-                '}';
-    }
 }

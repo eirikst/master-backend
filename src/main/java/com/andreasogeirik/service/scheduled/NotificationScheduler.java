@@ -19,7 +19,7 @@ public class NotificationScheduler {
     @Autowired
     private UserDao userDao;
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(cron = "0 0 10 * * MON")
     private void notifyInactivity () {
         Set<Integer> tokens = userDao.findGcmTokensForUsersWithNoUpcomingEvents();
         gcm.notifyInactiveWeek(tokens);

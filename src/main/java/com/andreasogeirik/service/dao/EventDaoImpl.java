@@ -1,8 +1,10 @@
 package com.andreasogeirik.service.dao;
 
 import com.andreasogeirik.model.entities.Event;
+import com.andreasogeirik.model.entities.Friendship;
 import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
+import com.andreasogeirik.service.gcm.GcmService;
 import com.andreasogeirik.tools.*;
 import org.hibernate.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,10 @@ public class EventDaoImpl implements EventDao {
 
     @Autowired
     InputManager inputManager;
+
+    @Autowired
+    private GcmService gcmService;
+
 
     @Override
     @Transactional
@@ -53,6 +59,12 @@ public class EventDaoImpl implements EventDao {
         session.beginTransaction();
         User admin = session.get(User.class, userId);
 
+        if(admin == null) {
+            session.getTransaction().commit();
+            session.close();
+            throw new EntityNotFoundException("Cannot find user");
+        }
+
         event.setTimeCreated(new Date());
         event.setAdmin(admin);
 
@@ -65,6 +77,8 @@ public class EventDaoImpl implements EventDao {
 
         session.getTransaction().commit();
         session.close();
+
+        gcmService.notifyNewEvent(admin.getId(), admin.getFirstname(), admin.getLastname(), event.getId());
 
         return event;
     }

@@ -20,6 +20,7 @@ public interface UserDao {
 
     List<Friendship> findFriendsAndRequests(int userId);
     List<Friendship> findFriends(int userId);
+    Set<Integer> findFriendsIds(int userId);
 
     Friendship addFriendRequest(int userId1, int userId2);
     void acceptFriendRequest(int friendshipId, int userId);

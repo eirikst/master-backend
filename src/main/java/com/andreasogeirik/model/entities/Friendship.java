@@ -79,8 +79,8 @@ public class Friendship {
                 "id=" + id +
                 ", friendsSince=" + friendsSince +
                 ", status=" + status +
-                ", friend1=" + friend1 +
-                ", friend2=" + friend2 +
+                ", friend1=" + friend1.getFirstname() +
+                ", friend2=" + friend2.getFirstname() +
                 '}';
     }
 }

@@ -17,7 +17,7 @@ public class PostDtoOut {
     private UserDtoOut user;
     private EventDtoOut event;
     private Set<CommentDtoOut> comments;
-    private Set<UserDtoOutSmall> likers;
+    private Set<UserDtoOut> likers;
 
 
     public PostDtoOut() {
@@ -142,11 +142,11 @@ public class PostDtoOut {
         this.comments = comments;
     }
 
-    public Set<UserDtoOutSmall> getLikers() {
+    public Set<UserDtoOut> getLikers() {
         return likers;
     }
 
-    public void setLikers(Set<UserDtoOutSmall> likers) {
+    public void setLikers(Set<UserDtoOut> likers) {
         this.likers = likers;
     }
 }

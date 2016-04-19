@@ -167,10 +167,10 @@ public class EventController {
             postOut.setComments(comments);
 
             //iterate likes
-            Set<UserDtoOutSmall> likers = new HashSet<>();
+            Set<UserDtoOut> likers = new HashSet<>();
             Iterator<PostLike> likeIt = posts.get(i).getLikes().iterator();
             while(likeIt.hasNext()) {
-                likers.add(new UserDtoOutSmall(likeIt.next().getUser()));
+                likers.add(new UserDtoOut(likeIt.next().getUser()));
             }
 
 

@@ -37,9 +37,6 @@ public class UserDaoImpl implements UserDao {
     @Autowired
     private GcmService gcmService;
 
-    @Autowired
-    GcmService gcm;
-
     /*
      * Creates new user with role USER
      */
@@ -266,6 +263,37 @@ public class UserDaoImpl implements UserDao {
     }
 
     /*
+     * Finds all friends of the specified user, ignores requests
+     */
+    @Transactional
+    @Override
+    public Set<Integer> findFriendsIds(int userId) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        //the given user can be set on both friend1 and friend2, needs two queries
+        String hql = "FROM Friendship F WHERE F.status = " + Friendship.FRIENDS + " AND (F.friend1.id = " + userId +
+                " OR F.friend2.id = " + userId + ")";
+        Query query = session.createQuery(hql);
+        List<Friendship> friendships = (List<Friendship>) query.list();
+
+        Set<Integer> tokens = new HashSet<>();
+
+        for(Friendship friendship: friendships) {
+            if(friendship.getFriend1().getId() != userId) {
+                tokens.add(friendship.getFriend1().getId());
+            }
+            else {
+                tokens.add(friendship.getFriend2().getId());
+            }
+        }
+
+        session.getTransaction().commit();
+        session.close();
+        return tokens;
+    }
+
+    /*
      * The request is from userId1 to userId2
      */
     @Transactional
@@ -460,9 +488,6 @@ public class UserDaoImpl implements UserDao {
         Calendar inAWeekCal = new GregorianCalendar();
         inAWeekCal.add(Calendar.WEEK_OF_YEAR, 1);
         Date inAWeek = inAWeekCal.getTime();
-
-        System.out.println("Now: " + now);
-        System.out.println("In a week: " + inAWeek);
 
         Set<Integer> tokens = new HashSet<>();
 

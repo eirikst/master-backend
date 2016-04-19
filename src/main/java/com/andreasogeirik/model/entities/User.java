@@ -221,20 +221,6 @@ public class User {
     }
 
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", enabled=" + enabled +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
-                ", location='" + location + '\'' +
-                ", imageUri='" + imageUri + '\'' +
-                ", timeCreated=" + timeCreated +
-                '}';
-    }
 
     @Override
     public boolean equals(Object o) {

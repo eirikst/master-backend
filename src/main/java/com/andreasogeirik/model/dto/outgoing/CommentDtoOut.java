@@ -16,7 +16,7 @@ public class CommentDtoOut {
     private String message;
     private Date timeCreated;
     private UserDtoOut user;
-    private Set<UserDtoOutSmall> likers = new HashSet<>();
+    private Set<UserDtoOut> likers = new HashSet<>();
     //set med likes må inn en gang
 
 
@@ -63,17 +63,17 @@ public class CommentDtoOut {
         this.user = user;
     }
 
-    public Set<UserDtoOutSmall> getLikers() {
+    public Set<UserDtoOut> getLikers() {
         return likers;
     }
 
-    public void setLikers(Set<UserDtoOutSmall> likers) {
+    public void setLikers(Set<UserDtoOut> likers) {
         this.likers = likers;
     }
 
     public void setLikersFromEntity(Set<CommentLike> likersEntity) {
         for(CommentLike like: likersEntity) {
-            likers.add(new UserDtoOutSmall(like.getUser()));
+            likers.add(new UserDtoOut(like.getUser()));
         }
     }
 }
