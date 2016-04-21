@@ -25,7 +25,7 @@ public class PingController {
      * Pings itself with a fixed delay. Used because we have had trouble with azure going down when the server is
      * inactive...
      */
-    @Scheduled(fixedDelay = 300000)
+    /*@Scheduled(fixedDelay = 300000)
     private void pingSelf () {
         new Thread() {
             public void run() {
@@ -42,5 +42,5 @@ public class PingController {
                 }
             }
         }.start();
-    }
+    }*/
 }
