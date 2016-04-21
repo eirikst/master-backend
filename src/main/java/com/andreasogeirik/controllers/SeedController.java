@@ -35,10 +35,10 @@ public class SeedController {
      */
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<String> seedThisShit() {
-        userDao.createAdminUser(new com.andreasogeirik.model.entities.User("admin", "pwd", true, "Eirik", "Stadheim",
+        userDao.createAdminUser(new com.andreasogeirik.model.entities.User("admin", "gggpp", true, "Eirik", "Stadheim",
                 "Trondheim", new Date()));
         userDao.updateUser("Eirik", "Stadheim", "Trondheim", BACKEND_URL + "image/0-eirik", BACKEND_URL + "image/0S-eirik", 1);
-        userDao.createAdminUser(new com.andreasogeirik.model.entities.User("andreas", "pwd", true, "Andreas", "Næss",
+        userDao.createAdminUser(new com.andreasogeirik.model.entities.User("andreas", "Arid", true, "Andreas", "Næss",
                 "Trondheim", new Date()));
         userDao.updateUser("Andreas", "Næss", "Trondheim", BACKEND_URL + "image/0-andreas", BACKEND_URL + "image/0S-andreas", 2);
         userDao.createUser(new com.andreasogeirik.model.entities.User("mikael", "pwd", true, "Mikael", "Reiersølmoen",

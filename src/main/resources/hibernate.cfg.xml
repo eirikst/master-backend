@@ -7,16 +7,16 @@
     <session-factory>
 
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://129.241.102.163:5432/postgres</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://192.168.99.100:32770/postgres</property><!--SPECIFY IP AND PORT HERE<-->
         <property name="hibernate.connection.username">postgres</property>
-        <property name="hibernate.connection.password">pwd</property>
+        <property name="hibernate.connection.password">Arif1234</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL82Dialect</property>
 
         <!-- Print executed SQL to stdout -->
         <property name="show_sql">true</property>
 
         <!-- Drop and recreate or update on startup? -->
-        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.hbm2ddl.auto">create-drop</property>
 
         <!--c3p0 config-->
         <property name="hibernate.c3p0.min_size">5</property>

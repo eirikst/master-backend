@@ -13,14 +13,6 @@ public class Constants {
 
     public static final String GCM_API_KEY = "AIzaSyAzGkBvA_kYil5hLdPSv-26MdezrXJZfqo";
 
-    // Andreas NTNU
-    //public static final String BACKEND_URL = "http://129.241.102.250:8080/";
-
-    //Eirik NTNU
-    public static final String BACKEND_URL = "http://10.22.42.141:8080/";
-
-    //Eirik hjemme
-    //public static final String BACKEND_URL = "http://10.0.0.74:8080/";
-
-    //public static final String BACKEND_URL = "http://129.241.102.163:8080/";
+    // SPECIFY IP AND PORT HERE
+    public static final String BACKEND_URL = "http://192.168.99.100:8080/";
 }
