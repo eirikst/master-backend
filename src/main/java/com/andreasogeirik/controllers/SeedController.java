@@ -170,6 +170,19 @@ public class SeedController {
     }
 
 
+    @RequestMapping(value = "ip", method = RequestMethod.PUT)
+    public ResponseEntity specifyIp(@RequestParam String ip) {
+        Constants.BACKEND_URL = ip;
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "ip", method = RequestMethod.GET)
+    public ResponseEntity getIp() {
+        return new ResponseEntity(Constants.BACKEND_URL, HttpStatus.OK);
+    }
+
+
+
     /*
      * Exception handling
      */

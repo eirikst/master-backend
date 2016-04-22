@@ -13,6 +13,6 @@ public class Constants {
 
     public static final String GCM_API_KEY = "AIzaSyAzGkBvA_kYil5hLdPSv-26MdezrXJZfqo";
 
-    // SPECIFY IP AND PORT HERE
-    public static final String BACKEND_URL = "http://192.168.99.100:8080/";
+    // THIS IS THE URL OF THE REST ENDPOINT
+    public static String BACKEND_URL = "http://192.168.99.100:8080/";
 }
