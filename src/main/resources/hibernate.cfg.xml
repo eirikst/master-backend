@@ -7,7 +7,7 @@
     <session-factory>
 
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://192.168.99.100:32771/postgres</property><!--SPECIFY IP AND PORT FOR POSTGRES HERE, THE REST IS THE SAME<-->
+        <property name="hibernate.connection.url">jdbc:postgresql://192.168.99.100:32768/postgres</property><!--SPECIFY IP AND PORT FOR POSTGRES HERE, THE REST IS THE SAME<-->
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.connection.password">Arif1234</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL82Dialect</property>

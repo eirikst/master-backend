@@ -93,11 +93,9 @@
         </dependency>
 
         <dependency>
-            <groupId>imgscalr</groupId>
-            <artifactId>com.thebuzzmedia</artifactId>
-            <version>4.3</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/imgscalr-lib-4.3-SNAPSHOT.jar</systemPath>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>4.2</version>
         </dependency>
 
     </dependencies>
