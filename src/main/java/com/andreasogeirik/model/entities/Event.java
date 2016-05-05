@@ -23,6 +23,7 @@ public class Event {
     private String thumbURI;
     private User admin;
     private int difficulty = 1;
+    private ActivityType activityType;
     private Set<User> users = new HashSet<User>(0);
     private Set<Post> posts = new HashSet<Post>(0);
 
@@ -30,7 +31,7 @@ public class Event {
     }
 
     public Event(String name, String location, String description, Date timeStart,
-                 Date timeEnd, String imageURI, String thumbURI, int difficulty) {
+                 Date timeEnd, String imageURI, String thumbURI, int difficulty, long activityTypeId) {
         this.name = name;
         this.location = location;
         this.description = description;
@@ -39,6 +40,9 @@ public class Event {
         this.imageURI = imageURI;
         this.thumbURI = thumbURI;
         this.difficulty = difficulty;
+        for (ActivityType type : ActivityType.values()) {
+            if (type.getId() == activityTypeId) this.activityType = type;
+        }
     }
 
     @Id
@@ -139,6 +143,15 @@ public class Event {
         this.difficulty = difficulty;
     }
 
+    @Column(nullable = false)
+    public ActivityType getActivityType() {
+        return activityType;
+    }
+
+    public void setActivityType(ActivityType activityType) {
+        this.activityType = activityType;
+    }
+
     @ManyToMany(fetch = FetchType.LAZY)
     public Set<User> getUsers() {
         return users;
@@ -166,5 +179,6 @@ public class Event {
         this.imageURI = event.imageURI;
         this.thumbURI = event.thumbURI;
         this.difficulty = event.difficulty;
+        this.activityType = event.activityType;
     }
 }

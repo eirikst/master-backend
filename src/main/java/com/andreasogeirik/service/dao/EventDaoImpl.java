@@ -43,6 +43,12 @@ public class EventDaoImpl implements EventDao {
         if (!inputManager.isValidLocation(event.getLocation())) {
             throw new InvalidInputException("Invalid location format");
         }
+        if (!inputManager.isValidDifficulty(event.getDifficulty())){
+            throw new InvalidInputException("Invalid difficulty format");
+        }
+        if (!inputManager.isValidActivityType(event.getActivityType())){
+            throw new InvalidInputException("Invalid activity type format");
+        }
         if (event.getTimeStart().before(new Date())) {
             throw new InvalidInputException("Invalid start time");
         }
@@ -99,6 +105,12 @@ public class EventDaoImpl implements EventDao {
         }
         if (event.getTimeStart().before(new Date())) {
             throw new InvalidInputException("Invalid start time");
+        }
+        if (!inputManager.isValidDifficulty(event.getDifficulty())){
+            throw new InvalidInputException("Invalid difficulty format");
+        }
+        if (!inputManager.isValidActivityType(event.getActivityType())){
+            throw new InvalidInputException("Invalid activity type format");
         }
         if (event.getTimeEnd() != null) {
             if (event.getTimeEnd().before(new Date())) {

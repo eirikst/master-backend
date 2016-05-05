@@ -1,5 +1,6 @@
 package com.andreasogeirik.model.dto.incoming;
 
+import com.andreasogeirik.model.entities.ActivityType;
 import com.andreasogeirik.model.entities.Event;
 
 import java.util.Date;
@@ -16,9 +17,10 @@ public class EventDto {
     private String imageUri = "";
     private String thumbUri = "";
     private int difficulty = 1;
+    private long activityTypeId;
 
     public Event toEvent() {
-        return new Event(name, location, description, timeStart, timeEnd, imageUri, thumbUri, difficulty);
+        return new Event(name, location, description, timeStart, timeEnd, imageUri, thumbUri, difficulty, activityTypeId);
     }
 
     public String getName() {
@@ -83,5 +85,13 @@ public class EventDto {
 
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public long getActivityTypeId() {
+        return activityTypeId;
+    }
+
+    public void setActivityTypeId(long activityTypeId) {
+        this.activityTypeId = activityTypeId;
     }
 }

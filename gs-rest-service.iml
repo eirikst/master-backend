@@ -89,5 +89,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Maven: org.imgscalr:imgscalr-lib:4.2" level="project" />
   </component>
 </module>

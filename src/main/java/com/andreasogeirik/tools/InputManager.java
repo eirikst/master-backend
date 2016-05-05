@@ -1,5 +1,7 @@
 package com.andreasogeirik.tools;
 
+import com.andreasogeirik.model.entities.ActivityType;
+
 /**
  * Created by eirikstadheim on 29/01/16.
  */
@@ -13,6 +15,7 @@ public class InputManager {
     public static final int COMMENT_LENGTH = 500;
     public static final int EVENT_NAME_LENGTH = 100;
     public static final int EVENT_DESCRIPTION_LENGTH = 1000;
+    public static final int EVENT_ACTIVTY_TYPE_LENGTH = 50;
 
 
     //Needs more restrictions
@@ -50,5 +53,16 @@ public class InputManager {
 
     public boolean isValidEventDescription(String name) {
         return name.length() > 0 && name.length() <= EVENT_DESCRIPTION_LENGTH;
+    }
+
+    public boolean isValidDifficulty(int difficulty){
+        return difficulty > 0 && difficulty < 4;
+    }
+
+    public boolean isValidActivityType(ActivityType activityType){
+        for (ActivityType type : ActivityType.values()) {
+            if (type == activityType) return true;
+        }
+        return false;
     }
 }
