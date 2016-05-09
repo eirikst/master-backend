@@ -1,5 +1,6 @@
 package com.andreasogeirik.model.dto.outgoing;
 
+import com.andreasogeirik.model.entities.ActivityType;
 import com.andreasogeirik.model.entities.Event;
 import com.andreasogeirik.model.entities.User;
 
@@ -20,6 +21,7 @@ public class EventDtoOut {
     private String imageUri = "";
     private String thumbUri = "";
     private int difficulty = 1;
+    private int activityTypeId = 0;
     private Set<UserDtoOut> users = new HashSet<>();
     private UserDtoOut admin;
 
@@ -36,6 +38,7 @@ public class EventDtoOut {
         this.imageUri = event.getImageURI();
         this.thumbUri = event.getThumbURI();
         this.difficulty = event.getDifficulty();
+        this.activityTypeId = event.getActivityType().getId();
 
         for (User user : event.getUsers()) {
             users.add(new UserDtoOut(user));
@@ -53,6 +56,7 @@ public class EventDtoOut {
         instance.timeEnd = event.getTimeEnd();
         instance.imageUri = event.getImageURI();
         instance.difficulty = event.getDifficulty();
+        instance.activityTypeId = event.getActivityType().getId();
         return instance;
     }
 
@@ -126,6 +130,14 @@ public class EventDtoOut {
 
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public int getActivityTypeId() {
+        return activityTypeId;
+    }
+
+    public void setActivityTypeId(int activityTypeId) {
+        this.activityTypeId = activityTypeId;
     }
 
     public Set<UserDtoOut> getUsers() {

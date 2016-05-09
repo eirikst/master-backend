@@ -100,21 +100,21 @@ public class SeedController {
 
 
         eventDao.createEvent(new Event("Tur til Geitfjellet", "Trondheim", "Vi møtes i Ilaparken", twoDays.getTime(),
-                null, BACKEND_URL + "image/01-geitfjellet", BACKEND_URL + "image/01S-geitfjellet", 3), 1);
+                null, BACKEND_URL + "image/01-geitfjellet", BACKEND_URL + "image/01S-geitfjellet", 3, ActivityType.WALK.getId()), 1);
         eventDao.createEvent(new Event("Tur til Våttakammen", "Trondheim", "Vi møtes i Ilaparken", twoDays.getTime(),
-                null, BACKEND_URL + "image/01-vattakammen", BACKEND_URL + "image/01S-vattakammen", 2), 2);
+                null, BACKEND_URL + "image/01-vattakammen", BACKEND_URL + "image/01S-vattakammen", 2, ActivityType.WALK.getId()), 2);
         eventDao.createEvent(new Event("Skitur på Gautefall", "Gautefall", "Vi møtes ved skiheisen", fourDays.getTime(),
-                null, BACKEND_URL + "image/01-gautefall", BACKEND_URL + "image/01S-gautefall", 3), 3);
+                null, BACKEND_URL + "image/01-gautefall", BACKEND_URL + "image/01S-gautefall", 3, ActivityType.SKI.getId()), 3);
         eventDao.createEvent(new Event("Skitur i Heidal", "Heidal", "Vi møtes i Ilaparken", fourDays.getTime(),
-                null, BACKEND_URL + "image/01-hytta", BACKEND_URL + "image/01S-hytta", 3), 4);
+                null, BACKEND_URL + "image/01-hytta", BACKEND_URL + "image/01S-hytta", 3, ActivityType.SKI.getId()), 4);
         eventDao.createEvent(new Event("Tur til Glittertind", "Jotunheimen", "Vi møtes på Glitterheim",
-                twoDays.getTime(), null, BACKEND_URL + "image/01-jotunheimen", BACKEND_URL + "image/01S-jotunheimen", 3), 5);
+                twoDays.getTime(), null, BACKEND_URL + "image/01-jotunheimen", BACKEND_URL + "image/01S-jotunheimen", 3, ActivityType.WALK.getId()), 5);
         eventDao.createEvent(new Event("Svømming i Russvatnet", "Jotunheimen", "Vi på møtes Bessheim", aWeek.getTime(),
-                null, BACKEND_URL + "image/01-russvatnet", BACKEND_URL + "image/01S-russvatnet",  2), 1);
+                null, BACKEND_URL + "image/01-russvatnet", BACKEND_URL + "image/01S-russvatnet",  2, ActivityType.SWIM.getId()), 1);
         eventDao.createEvent(new Event("Spasere til Nidarosdomen", "Trondheim", "Vi møtes i på Torget", aWeek.getTime(),
-                null, BACKEND_URL + "image/01-nidarosdomen", BACKEND_URL + "image/01S-nidarosdomen",  1), 2);
+                null, BACKEND_URL + "image/01-nidarosdomen", BACKEND_URL + "image/01S-nidarosdomen",  1, ActivityType.WALK.getId()), 2);
         eventDao.createEvent(new Event("Sykle til Estenstadhytta", "Trondheim", "Vi møtes på Dragvoll", aWeek.getTime(),
-                null, BACKEND_URL + "image/01-estenstadhytta", BACKEND_URL + "image/01S-estenstadhytta", 3), 3);
+                null, BACKEND_URL + "image/01-estenstadhytta", BACKEND_URL + "image/01S-estenstadhytta", 3, ActivityType.BIKE.getId()), 3);
 
         eventDao.attendEvent(1, 1);
         eventDao.attendEvent(2, 1);

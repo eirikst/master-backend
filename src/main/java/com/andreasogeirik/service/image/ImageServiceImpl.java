@@ -3,13 +3,10 @@ package com.andreasogeirik.service.image;
 import com.andreasogeirik.service.image.interfaces.ImageService;
 import org.apache.commons.lang.RandomStringUtils;
 import org.imgscalr.Scalr;
-import org.omg.CORBA.portable.ApplicationException;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.file.Files;
 import java.util.logging.Logger;
 
 /**

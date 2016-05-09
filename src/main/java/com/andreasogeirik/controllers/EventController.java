@@ -79,8 +79,9 @@ public class EventController {
 //    @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{eventId}", method = RequestMethod.GET)
     public ResponseEntity<EventDtoOut> getEvent(@PathVariable(value="eventId") int eventId) {
+        EventDtoOut eventDtoOut = new EventDtoOut(eventDao.getEvent(eventId));
 
-        return new ResponseEntity(new EventDtoOut(eventDao.getEvent(eventId)), HttpStatus.OK);
+        return new ResponseEntity(eventDtoOut, HttpStatus.OK);
     }
 
     /**
