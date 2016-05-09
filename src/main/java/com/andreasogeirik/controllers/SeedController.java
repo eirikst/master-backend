@@ -35,10 +35,10 @@ public class SeedController {
      */
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<String> seedThisShit() {
-        userDao.createAdminUser(new com.andreasogeirik.model.entities.User("admin", "gggpp", true, "Eirik", "Stadheim",
+        userDao.createAdminUser(new com.andreasogeirik.model.entities.User("admin", "ggg", true, "Eirik", "Stadheim",
                 "Trondheim", new Date()));
         userDao.updateUser("Eirik", "Stadheim", "Trondheim", BACKEND_URL + "image/0-eirik", BACKEND_URL + "image/0S-eirik", 1);
-        userDao.createAdminUser(new com.andreasogeirik.model.entities.User("andreas", "Arid", true, "Andreas", "Næss",
+        userDao.createAdminUser(new com.andreasogeirik.model.entities.User("andreas", "ggg", true, "Andreas", "Næss",
                 "Trondheim", new Date()));
         userDao.updateUser("Andreas", "Næss", "Trondheim", BACKEND_URL + "image/0-andreas", BACKEND_URL + "image/0S-andreas", 2);
         userDao.createUser(new com.andreasogeirik.model.entities.User("mikael", "pwd", true, "Mikael", "Reiersølmoen",
@@ -57,24 +57,24 @@ public class SeedController {
         userDao.addFriendRequest(1, 3);
         userDao.acceptFriendRequest(2, 3);
 
-        userDao.addFriendRequest(3, 2);
+        userDao.addFriendRequest(3, 2);//denne får jeg ikke(2)
         userDao.acceptFriendRequest(3, 2);
 
-        userDao.addFriendRequest(4, 2);
+        userDao.addFriendRequest(4, 2);//denne får jeg ikke(1)
         userDao.acceptFriendRequest(4, 2);
 
         userDao.addFriendRequest(4, 1);
 
-        userDao.addFriendRequest(5, 3);
+        userDao.addFriendRequest(5, 3);//denne får jeg ikke(1) og ikke Andreas(1)
         userDao.acceptFriendRequest(6, 3);
 
-        userDao.addFriendRequest(5, 4);
+        userDao.addFriendRequest(5, 4);//denne skal jeg ikke ha og får ikke, Andreas får ikke(1)
         userDao.acceptFriendRequest(7, 4);
 
         userDao.addFriendRequest(1, 5);
         userDao.acceptFriendRequest(8, 5);
 
-        userDao.addFriendRequest(3, 4);
+        userDao.addFriendRequest(3, 4);//denne får jeg ikke(1,5) og ikke andreas(1,5)
         userDao.acceptFriendRequest(9, 4);
 
         postDao.userPost("Hadde en flotters tur idag med gode folk!", null, 1, 1);

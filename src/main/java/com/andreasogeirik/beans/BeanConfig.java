@@ -3,6 +3,7 @@ package com.andreasogeirik.beans;
 import com.andreasogeirik.security.AuthenticationSuccessHandlerImpl;
 import com.andreasogeirik.service.dao.*;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
+import com.andreasogeirik.service.dao.interfaces.LogDao;
 import com.andreasogeirik.service.dao.interfaces.PostDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.gcm.GcmService;
@@ -39,6 +40,11 @@ public class BeanConfig {
     @Bean
     public EventDao eventDao() {
         return new EventDaoImpl();
+    }
+
+    @Bean
+    public LogDao logDao() {
+        return new LogDaoImpl();
     }
 
     @Bean

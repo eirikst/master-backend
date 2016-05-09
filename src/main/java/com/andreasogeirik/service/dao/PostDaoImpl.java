@@ -1,6 +1,7 @@
 package com.andreasogeirik.service.dao;
 
 import com.andreasogeirik.model.entities.*;
+import com.andreasogeirik.service.dao.interfaces.LogDao;
 import com.andreasogeirik.service.dao.interfaces.PostDao;
 import com.andreasogeirik.tools.EntityConflictException;
 import com.andreasogeirik.tools.EntityNotFoundException;
@@ -29,6 +30,9 @@ public class PostDaoImpl implements PostDao {
 
     @Autowired
     private InputManager inputManager;
+
+    @Autowired
+    private LogDao logDao;
 
     /*
     * Finds a Post entity based on id
@@ -78,6 +82,9 @@ public class PostDaoImpl implements PostDao {
 
         session.save(post);
 
+        //add to logs
+        logDao.userPosted(userId, writerId, message);
+
         session.getTransaction().commit();
         session.close();
 
@@ -122,6 +129,10 @@ public class PostDaoImpl implements PostDao {
 
         session.getTransaction().commit();
         session.close();
+
+        //add to logs
+        System.out.println("KALLER EVENT POST LOG");
+        logDao.eventPosted(eventId, writerId, message);
 
         return post;
     }
@@ -175,8 +186,16 @@ public class PostDaoImpl implements PostDao {
         comment.setTimeCreated(new Date());
         session.save(comment);
 
+        if(post.getUser() != null) {
+            logDao.userCommented(post.getUser().getId(), userId, postId, comment.getMessage());
+        }
+        if (post.getEvent() != null) {
+            logDao.eventCommented(postId, userId, comment.getMessage());
+        }
+
         session.getTransaction().commit();
         session.close();
+
 
         return comment;
     }
@@ -223,6 +242,8 @@ public class PostDaoImpl implements PostDao {
 
         session.getTransaction().commit();
         session.close();
+
+        logDao.postLiked(userId, postId);
     }
 
     @Transactional
@@ -239,6 +260,8 @@ public class PostDaoImpl implements PostDao {
 
         session.getTransaction().commit();
         session.close();
+
+        logDao.commentLiked(userId, commentId);
     }
 
     @Transactional

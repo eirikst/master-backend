@@ -5,6 +5,7 @@ import com.andreasogeirik.model.dto.outgoing.*;
 import com.andreasogeirik.model.entities.*;
 import com.andreasogeirik.security.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
+import com.andreasogeirik.service.dao.interfaces.LogDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.dao.interfaces.PostDao;
 import com.andreasogeirik.tools.*;
@@ -32,6 +33,9 @@ public class MeController {
 
     @Autowired
     private EventDao eventDao;
+
+    @Autowired
+    private LogDao logDao;
 
     /**
      * Get the user entity of the logged in user
@@ -220,6 +224,57 @@ public class MeController {
 
         return new ResponseEntity(eventsOut, HttpStatus.OK);
     }
+
+
+    /**
+     * Gets the a given number of Posts(10 right now) for the logged in user, with an offset specified
+     * @param offset nr of log elements to skip
+     * @return list of 10(or less, if no more present) user userPost objects as JSON
+     */
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/log", method = RequestMethod.GET)
+    public ResponseEntity<List<LogElementDtoOut>> getLog(@RequestParam(value = "offset") int offset) {
+        if(offset < 0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        }
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        List<LogElement> log = logDao.getLog(userId, offset);
+
+        List<LogElementDtoOut> logOut = new ArrayList<>();
+
+        for(LogElement logElement: log) {
+            logOut.add(new LogElementDtoOut(logElement));
+        }
+
+        return new ResponseEntity<>(logOut, HttpStatus.OK);
+    }
+
+    @PreAuthorize(value="hasAuthority('USER')")
+    @RequestMapping(value = "/log/update", method = RequestMethod.GET)
+    public ResponseEntity<List<LogElementDtoOut>> updateLog(@RequestParam(value = "lastLogId") int lastLogId) {
+        int userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        List<LogElement> log;
+
+        if(lastLogId <= 0) {
+            log = logDao.getLog(userId, 0);
+        }
+        else {
+            log = logDao.getNewLogElements(userId, lastLogId);
+        }
+
+        List<LogElementDtoOut> logOut = new ArrayList<>();
+
+        for (LogElement logElement : log) {
+            logOut.add(new LogElementDtoOut(logElement));
+        }
+
+        return new ResponseEntity<>(logOut, HttpStatus.OK);
+
+    }
+
 
 
     /*

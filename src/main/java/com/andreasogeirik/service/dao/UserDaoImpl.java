@@ -4,6 +4,7 @@ import com.andreasogeirik.model.entities.Event;
 import com.andreasogeirik.model.entities.Friendship;
 import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.model.entities.UserRole;
+import com.andreasogeirik.service.dao.interfaces.LogDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.gcm.GcmService;
 import com.andreasogeirik.tools.*;
@@ -36,6 +37,9 @@ public class UserDaoImpl implements UserDao {
 
     @Autowired
     private GcmService gcmService;
+
+    @Autowired
+    private LogDao logDao;
 
     /*
      * Creates new user with role USER
@@ -101,6 +105,8 @@ public class UserDaoImpl implements UserDao {
 
         session.getTransaction().commit();
         session.close();
+
+        logDao.userRegistered(user.getId());
 
         return user;
     }
@@ -365,17 +371,20 @@ public class UserDaoImpl implements UserDao {
             friendship.setStatus(Friendship.FRIENDS);
             session.save(friendship);
             userIdToNotify = friendship.getFriend1().getId();
-            nameToNotify = friendship.getFriend1().getFirstname();
+            nameToNotify = friendship.getFriend2().getFirstname();
         } else if (friendship.getFriend1().getId() == userId) {
             friendship.setStatus(Friendship.FRIENDS);
             session.save(friendship);
             userIdToNotify = friendship.getFriend2().getId();
-            nameToNotify = friendship.getFriend2().getFirstname();
+            nameToNotify = friendship.getFriend1().getFirstname();
         } else {
             session.getTransaction().commit();
             session.close();
             throw new EntityConflictException("The user with user id " + userId + " is not part of the friendship");
         }
+
+        //create log for the feed
+        logDao.friendshipAccepted(friendship.getFriend1().getId(), friendship.getFriend2().getId());
 
         session.getTransaction().commit();
         session.close();

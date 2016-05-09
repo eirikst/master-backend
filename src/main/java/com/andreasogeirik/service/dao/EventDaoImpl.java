@@ -4,6 +4,7 @@ import com.andreasogeirik.model.entities.Event;
 import com.andreasogeirik.model.entities.Friendship;
 import com.andreasogeirik.model.entities.User;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
+import com.andreasogeirik.service.dao.interfaces.LogDao;
 import com.andreasogeirik.service.gcm.GcmService;
 import com.andreasogeirik.tools.*;
 import org.hibernate.*;
@@ -29,6 +30,9 @@ public class EventDaoImpl implements EventDao {
 
     @Autowired
     private GcmService gcmService;
+
+    @Autowired
+    private LogDao logDao;
 
 
     @Override
@@ -78,6 +82,7 @@ public class EventDaoImpl implements EventDao {
         session.getTransaction().commit();
         session.close();
 
+        logDao.eventCreated(event.getId());
         gcmService.notifyNewEvent(admin.getId(), admin.getFirstname(), admin.getLastname(), event.getId());
 
         return event;
@@ -128,6 +133,8 @@ public class EventDaoImpl implements EventDao {
 
         session.getTransaction().commit();
         session.close();
+
+        logDao.eventModified(eventId);
 
         return contextEvent;
     }
@@ -204,6 +211,9 @@ public class EventDaoImpl implements EventDao {
 
         session.getTransaction().commit();
         session.close();
+
+        //log
+        logDao.eventAttended(eventId, userId);
 
         return event;
     }

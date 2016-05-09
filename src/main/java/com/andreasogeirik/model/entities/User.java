@@ -29,6 +29,7 @@ public class User {
     private Set<PostLike> userPostLikes = new HashSet<PostLike>(0);
     private Set<CommentLike> commentLikes = new HashSet<CommentLike>(0);
     private Set<String> gcmTokens = new HashSet<String>(0);
+    private Set<LogElement> elements = new HashSet<LogElement>(0);
 
     public User() {
     }
@@ -220,7 +221,14 @@ public class User {
         this.gcmTokens = gcmTokens;
     }
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    public Set<LogElement> getElements() {
+        return elements;
+    }
 
+    public void setElements(Set<LogElement> elements) {
+        this.elements = elements;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -236,5 +244,24 @@ public class User {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", enabled=" + enabled +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", location='" + location + '\'' +
+                ", imageUri='" + imageUri + '\'' +
+                ", thumbUri='" + thumbUri + '\'' +
+                ", timeCreated=" + timeCreated +
+                ", userRole=" + userRole +
+                ", gcmTokens=" + gcmTokens +
+                ", elements=" + elements +
+                '}';
     }
 }
