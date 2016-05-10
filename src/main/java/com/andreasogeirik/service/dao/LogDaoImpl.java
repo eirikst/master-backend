@@ -239,13 +239,6 @@ public class LogDaoImpl implements LogDao {
 
                 Date now = new Date();
 
-                //notify admin
-                if(userId != event.getAdmin().getId()) {
-                    LogElement adminElement = new LogElement(event.getAdmin(), now, user.getFirstname() + " " + user.getLastname() +
-                            " deltar på " + event.getName(), ContentType.PARTICIPATE_EVENT, eventId);
-                    session.save(adminElement);
-                }
-
                 for (User receiver : users) {
                     //notify friend of user
                     LogElement element = new LogElement(receiver, now, user.getFirstname() + " " + user.getLastname() +
