@@ -392,17 +392,28 @@ public class EventDaoImpl implements EventDao {
                 (Constants.NUMBER_OF_EVENTS_RETURNED);
 
         List<Event> events = query.list();
+        List<Event> eventsWithoutMine = new ArrayList<>();
 
         if (events != null) {
-            for (int i = 0; i < events.size(); i++) {
-                Hibernate.initialize(events.get(i).getAdmin());
-                Hibernate.initialize(events.get(i).getUsers());
+            for (Event event: events) {
+                boolean removed = false;
+                for(User user: event.getUsers()) {
+                    if(user.getId() == userId) {
+                        removed = true;
+                        break;
+                    }
+                }
+                if(!removed) {
+                    eventsWithoutMine.add(event);
+                    Hibernate.initialize(event.getAdmin());
+                    Hibernate.initialize(event.getUsers());
+                }
             }
         }
 
         session.getTransaction().commit();
         session.close();
 
-        return events;
+        return eventsWithoutMine;
     }
 }
