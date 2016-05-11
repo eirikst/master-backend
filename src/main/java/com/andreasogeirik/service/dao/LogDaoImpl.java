@@ -256,7 +256,7 @@ public class LogDaoImpl implements LogDao {
      * Notify participants of event
      */
     @Override
-    public void eventPosted(int eventId, int userId, String msg) {
+    public void eventPosted(int eventId, int userId, int postId, String msg) {
         new Thread() {
             public void run() {
                 Session session = sessionFactory.openSession();
@@ -290,7 +290,7 @@ public class LogDaoImpl implements LogDao {
                     if(user.getId() != userId) {
                         LogElement element = new LogElement(user, now, writer.getFirstname() + " " + writer.getLastname()
                                 + " skrev et innlegg i " + event.getName() + ": \"" + msg + "\"",
-                                ContentType.POST_EVENT, event.getId());
+                                ContentType.POST_EVENT, event.getId(), postId);
                         session.save(element);
                     }
                 }
@@ -305,7 +305,7 @@ public class LogDaoImpl implements LogDao {
      * Notify poster and commenters on the post
      */
     @Override
-    public void eventCommented(int postId, int writerId, String msg) {
+    public void eventCommented(int postId, int writerId, int commentId, String msg) {
         new Thread() {
             public void run() {
                 Session session = sessionFactory.openSession();
@@ -347,7 +347,7 @@ public class LogDaoImpl implements LogDao {
                 if(postWriter.getId() != writerId) {
                     LogElement posterElement = new LogElement(postWriter, now, commentWriter.getFirstname() + " " +
                             commentWriter.getLastname() + " kommenterte innlegget ditt i " + event.getName()
-                            + ": \"" + msg + "\"", ContentType.COMMENT_EVENT, event.getId());
+                            + ": \"" + msg + "\"", ContentType.COMMENT_EVENT, event.getId(), commentId);
                     session.save(posterElement);
                 }
 
@@ -360,20 +360,20 @@ public class LogDaoImpl implements LogDao {
                         if (postWriter.getId() == writerId) {
                             LogElement writerElement = new LogElement(comment.getUser(), now, commentWriter.getFirstname() + " " +
                                     commentWriter.getLastname() + " kommenterte sitt eget innlegg i " +
-                                    event.getName() + ": \"" + msg + "\"", ContentType.COMMENT_EVENT, event.getId());
+                                    event.getName() + ": \"" + msg + "\"", ContentType.COMMENT_EVENT, event.getId(), commentId);
                             session.save(writerElement);
                         }
                         else if(postWriter.getId() == comment.getUser().getId()) {
                             LogElement writerElement = new LogElement(comment.getUser(), now, commentWriter.getFirstname() + " " +
                                     commentWriter.getLastname() + " kommenterte ditt innlegg i " + event.getName()
-                                    + ": \"" + msg + "\"", ContentType.COMMENT_EVENT, event.getId());
+                                    + ": \"" + msg + "\"", ContentType.COMMENT_EVENT, event.getId(), commentId);
                             session.save(writerElement);
                         }
                         else {
                             LogElement userElement = new LogElement(comment.getUser(), now, commentWriter.getFirstname() + " " +
                                     commentWriter.getLastname() +
                                     " kommenterte et innlegg i " + event.getName()  + ": \"" + msg + "\"",
-                                    ContentType.COMMENT_EVENT, event.getId());
+                                    ContentType.COMMENT_EVENT, event.getId(), commentId);
                             session.save(userElement);
                         }
                     }
@@ -386,7 +386,7 @@ public class LogDaoImpl implements LogDao {
     }
 
     @Override
-    public void userPosted(int userId, int writerId, String msg) {
+    public void userPosted(int userId, int writerId, int postId, String msg) {
         new Thread() {
             public void run() {
                 Session session = sessionFactory.openSession();
@@ -410,11 +410,11 @@ public class LogDaoImpl implements LogDao {
                 for (Friendship friendship : friendships) {
                     if (friendship.getFriend1().getId() != userId) {
                         LogElement element = new LogElement(friendship.getFriend1(), now, user.getFirstname() + " " + user.getLastname() +
-                                " la ut et innlegg på siden sin: \"" + msg + "\"", ContentType.POST_USER, userId);
+                                " la ut et innlegg på siden sin: \"" + msg + "\"", ContentType.POST_USER, userId, postId);
                         session.save(element);
                     } else {
                         LogElement element = new LogElement(friendship.getFriend2(), now, user.getFirstname() + " " + user.getLastname() +
-                                " la ut et innlegg på siden sin: \"" + msg + "\"", ContentType.POST_USER, userId);
+                                " la ut et innlegg på siden sin: \"" + msg + "\"", ContentType.POST_USER, userId, postId);
                         session.save(element);
                     }
                 }
@@ -426,7 +426,7 @@ public class LogDaoImpl implements LogDao {
     }
 
     @Override
-    public void userCommented(int userId, int writerId, int postId, String msg) {
+    public void userCommented(int userId, int writerId, int postId, int commentId, String msg) {
         new Thread() {
             public void run() {
                 Session session = sessionFactory.openSession();
@@ -457,12 +457,12 @@ public class LogDaoImpl implements LogDao {
 
                 if(userId != writerId) {
                     LogElement userElement = new LogElement(user, now, writer.getFirstname() + " " + writer.getLastname() +
-                            " kommenterte på et innlegg på siden din: \"" + msg + "\"", ContentType.COMMENT_USER, userId);
+                            " kommenterte på et innlegg på siden din: \"" + msg + "\"", ContentType.COMMENT_USER, userId, commentId);
                     session.save(userElement);
 
                     LogElement writerElement = new LogElement(writer, now, "Du kommenterte på et innlegg på siden til " +
                             user.getFirstname() + " " + user.getLastname() + ": \"" + msg + "\"",
-                            ContentType.COMMENT_USER, userId);
+                            ContentType.COMMENT_USER, userId, commentId);
                     session.save(writerElement);
                 }
 
@@ -473,7 +473,7 @@ public class LogDaoImpl implements LogDao {
                         LogElement userElement = new LogElement(comment.getUser(), now, writer.getFirstname() + " " +
                                 writer.getLastname() +
                                 " kommenterte på et innlegg på siden til " + user.getFirstname() + " " +
-                                user.getLastname() + ": \"" + msg + "\"", ContentType.COMMENT_USER, userId);
+                                user.getLastname() + ": \"" + msg + "\"", ContentType.COMMENT_USER, userId, commentId);
                         session.save(userElement);
                     }
                 }
@@ -627,14 +627,14 @@ public class LogDaoImpl implements LogDao {
                 if(post.getUser() != null) {
                     if(writer.getId() != userId) {
                         LogElement element = new LogElement(writer, new Date(), user.getFirstname() + " " + user.getLastname() +
-                                " likte innlegget ditt: \"" + msg + "\"", ContentType.LIKE_USER_POST, post.getUser().getId());
+                                " likte innlegget ditt: \"" + msg + "\"", ContentType.LIKE_USER_POST, post.getUser().getId(), postId);
                         session.save(element);
                     }
                 }
                 else if(post.getEvent() != null) {
                     if(writer.getId() != userId) {
                         LogElement element = new LogElement(writer, new Date(), user.getFirstname() + " " + user.getLastname() +
-                                " likte innlegget ditt: \"" + msg + "\"", ContentType.LIKE_EVENT_POST, post.getEvent().getId());
+                                " likte innlegget ditt: \"" + msg + "\"", ContentType.LIKE_EVENT_POST, post.getEvent().getId(), postId);
                         session.save(element);
                     }
                 }
@@ -686,13 +686,13 @@ public class LogDaoImpl implements LogDao {
                 if (post.getUser() != null) {
                     if (writer.getId() != userId) {
                         LogElement element = new LogElement(writer, new Date(), user.getFirstname() + " " + user.getLastname() +
-                                " likte kommentaren din: \"" + msg + "\"", ContentType.LIKE_USER_COMMENT, post.getUser().getId());
+                                " likte kommentaren din: \"" + msg + "\"", ContentType.LIKE_USER_COMMENT, post.getUser().getId(), commentId);
                         session.save(element);
                     }
                 } else if (post.getEvent() != null) {
                     if (comment.getUser().getId() != userId) {
                         LogElement element = new LogElement(writer, new Date(), user.getFirstname() + " " + user.getLastname() +
-                                " likte kommentaren din: \"" + msg + "\"", ContentType.LIKE_EVENT_COMMENT, post.getEvent().getId());
+                                " likte kommentaren din: \"" + msg + "\"", ContentType.LIKE_EVENT_COMMENT, post.getEvent().getId(), commentId);
                         session.save(element);
                     }
                 }

@@ -15,10 +15,10 @@ public interface LogDao {
     void eventCreated(int eventId);
     void eventModified(int eventId);
     void eventAttended(int eventId, int userId);
-    void eventPosted(int eventId, int userId, String msg);
-    void eventCommented(int postId, int writerId, String msg);
-    void userPosted(int userId, int writerId, String msg);
-    void userCommented(int userId, int writerId, int postId, String msg);
+    void eventPosted(int eventId, int userId, int postId, String msg);
+    void eventCommented(int postId, int writerId, int commentId, String msg);
+    void userPosted(int userId, int writerId, int postId, String msg);
+    void userCommented(int userId, int writerId, int postId, int commentId, String msg);
     void friendshipAccepted(int userId1, int userId2);
     void postLiked(int userId, int postId);
     void commentLiked(int userId, int commentId);

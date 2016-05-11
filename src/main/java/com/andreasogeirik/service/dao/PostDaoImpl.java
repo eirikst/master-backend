@@ -83,7 +83,7 @@ public class PostDaoImpl implements PostDao {
         session.save(post);
 
         //add to logs
-        logDao.userPosted(userId, writerId, message);
+        logDao.userPosted(userId, writerId, post.getId(), message);
 
         session.getTransaction().commit();
         session.close();
@@ -132,7 +132,7 @@ public class PostDaoImpl implements PostDao {
 
         //add to logs
         System.out.println("KALLER EVENT POST LOG");
-        logDao.eventPosted(eventId, writerId, message);
+        logDao.eventPosted(eventId, writerId, post.getId(), message);
 
         return post;
     }
@@ -187,10 +187,10 @@ public class PostDaoImpl implements PostDao {
         session.save(comment);
 
         if(post.getUser() != null) {
-            logDao.userCommented(post.getUser().getId(), userId, postId, comment.getMessage());
+            logDao.userCommented(post.getUser().getId(), userId, postId, comment.getId(), comment.getMessage());
         }
         if (post.getEvent() != null) {
-            logDao.eventCommented(postId, userId, comment.getMessage());
+            logDao.eventCommented(postId, userId, comment.getId(), comment.getMessage());
         }
 
         session.getTransaction().commit();

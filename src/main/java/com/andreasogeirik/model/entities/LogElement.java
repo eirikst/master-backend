@@ -16,7 +16,8 @@ public class LogElement {
     private Date time;
     private String content;
     private ContentType type;
-    private int contentId;
+    private int contentId;//id of the content to view when clicking the log element
+    private int refId;// if of something to reference inside content: eg a comment inside a user
 
     public LogElement() {
     }
@@ -27,6 +28,15 @@ public class LogElement {
         this.content = content;
         this.type = type;
         this.contentId = contentId;
+    }
+
+    public LogElement(User user, Date time, String content, ContentType type, int contentId, int refId) {
+        this.user = user;
+        this.time = time;
+        this.content = content;
+        this.type = type;
+        this.contentId = contentId;
+        this.refId = refId;
     }
 
     @Id
@@ -81,5 +91,13 @@ public class LogElement {
 
     public void setContentId(int contentId) {
         this.contentId = contentId;
+    }
+
+    public int getRefId() {
+        return refId;
+    }
+
+    public void setRefId(int refId) {
+        this.refId = refId;
     }
 }

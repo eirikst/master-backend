@@ -1,6 +1,5 @@
 package com.andreasogeirik.model.dto.outgoing;
 
-import com.andreasogeirik.model.entities.ContentType;
 import com.andreasogeirik.model.entities.LogElement;
 
 import java.util.Date;
@@ -14,6 +13,7 @@ public class LogElementDtoOut {
     private String content;
     private int type;
     private int contentId;
+    private int refId;
 
 
     public LogElementDtoOut() {
@@ -25,6 +25,7 @@ public class LogElementDtoOut {
         this.content = element.getContent();
         this.type = element.getType().getNumber();
         this.contentId = element.getContentId();
+        this.refId = element.getRefId();
     }
 
     public int getId() {
@@ -65,5 +66,13 @@ public class LogElementDtoOut {
 
     public void setContentId(int contentId) {
         this.contentId = contentId;
+    }
+
+    public int getRefId() {
+        return refId;
+    }
+
+    public void setRefId(int refId) {
+        this.refId = refId;
     }
 }
