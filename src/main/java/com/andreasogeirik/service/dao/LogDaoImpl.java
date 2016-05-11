@@ -709,4 +709,35 @@ public class LogDaoImpl implements LogDao {
             }
         }.start();
     }
+
+    @Override
+    public void eventDeleted(Event event, int userId) {
+        new Thread() {
+            public void run() {
+                Session session = sessionFactory.openSession();
+                session.beginTransaction();
+
+                User admin = session.get(User.class, userId);
+                if (admin == null) {
+                    session.getTransaction().commit();
+                    session.close();
+                    throw new EntityNotFoundException("Cannot find the specified user.");
+                }
+
+                Date now = new Date();
+
+                for(User user: event.getUsers()) {
+                    if(user.getId() != userId) {
+                        LogElement element = new LogElement(user, now, admin.getFirstname() + " " + admin.getLastname()
+                                + " har avlyst aktiviteten " + event.getName(),
+                                ContentType.DELETE_EVENT, event.getId());
+                        session.save(element);
+                    }
+                }
+
+                session.getTransaction().commit();
+                session.close();
+            }
+        }.start();
+    }
 }
