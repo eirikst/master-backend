@@ -164,11 +164,15 @@ public class EventDaoImpl implements EventDao {
             session.close();
             throw new EntityConflictException("The user is not allowed to delete this event");
         }
+        Hibernate.initialize(event.getUsers());
 
         session.delete(event);
 
         session.getTransaction().commit();
         session.close();
+
+        //log
+        logDao.eventDeleted(event, userId);
     }
 
     @Override

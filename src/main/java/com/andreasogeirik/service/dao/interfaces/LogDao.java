@@ -1,5 +1,6 @@
 package com.andreasogeirik.service.dao.interfaces;
 
+import com.andreasogeirik.model.entities.Event;
 import com.andreasogeirik.model.entities.LogElement;
 
 import java.util.List;
@@ -22,4 +23,5 @@ public interface LogDao {
     void friendshipAccepted(int userId1, int userId2);
     void postLiked(int userId, int postId);
     void commentLiked(int userId, int commentId);
+    void eventDeleted(Event event, int userId);
 }
