@@ -24,6 +24,7 @@ public class Event {
     private User admin;
     private int difficulty = 1;
     private ActivityType activityType;
+    private boolean enabled;
     private Set<User> users = new HashSet<User>(0);
     private Set<Post> posts = new HashSet<Post>(0);
 
@@ -150,6 +151,15 @@ public class Event {
 
     public void setActivityType(ActivityType activityType) {
         this.activityType = activityType;
+    }
+
+    @Column(name = "enabled", nullable = false)
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @ManyToMany(fetch = FetchType.LAZY)

@@ -82,6 +82,7 @@ public class EventDaoImpl implements EventDao {
         users.add(admin);
 
         event.setUsers(users);
+        event.setEnabled(true);
 
         session.save(event);
 
@@ -166,7 +167,7 @@ public class EventDaoImpl implements EventDao {
         }
         Hibernate.initialize(event.getUsers());
 
-        session.delete(event);
+        event.setEnabled(false);
 
         session.getTransaction().commit();
         session.close();
@@ -390,7 +391,7 @@ public class EventDaoImpl implements EventDao {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        String hql = "SELECT E FROM Event E WHERE E.timeStart > (:date) ORDER BY E.timeStart ASC, E.id ASC";
+        String hql = "SELECT E FROM Event E WHERE E.timeStart > (:date) AND E.enabled = TRUE ORDER BY E.timeStart ASC, E.id ASC";
 
         Query query = session.createQuery(hql).setTimestamp("date", new Date()).setFirstResult(offset).setMaxResults
                 (Constants.NUMBER_OF_EVENTS_RETURNED);

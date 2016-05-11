@@ -22,6 +22,7 @@ public class EventDtoOut {
     private String thumbUri = "";
     private int difficulty = 1;
     private int activityTypeId = 0;
+    private boolean enabled;
     private Set<UserDtoOut> users = new HashSet<>();
     private UserDtoOut admin;
 
@@ -39,6 +40,7 @@ public class EventDtoOut {
         this.thumbUri = event.getThumbURI();
         this.difficulty = event.getDifficulty();
         this.activityTypeId = event.getActivityType().getId();
+        this.enabled = event.isEnabled();
 
         for (User user : event.getUsers()) {
             users.add(new UserDtoOut(user));
@@ -57,6 +59,7 @@ public class EventDtoOut {
         instance.imageUri = event.getImageURI();
         instance.difficulty = event.getDifficulty();
         instance.activityTypeId = event.getActivityType().getId();
+        instance.enabled = event.isEnabled();
         return instance;
     }
 
@@ -138,6 +141,14 @@ public class EventDtoOut {
 
     public void setActivityTypeId(int activityTypeId) {
         this.activityTypeId = activityTypeId;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Set<UserDtoOut> getUsers() {
