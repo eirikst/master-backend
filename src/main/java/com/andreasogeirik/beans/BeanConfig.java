@@ -2,10 +2,7 @@ package com.andreasogeirik.beans;
 
 import com.andreasogeirik.security.AuthenticationSuccessHandlerImpl;
 import com.andreasogeirik.service.dao.*;
-import com.andreasogeirik.service.dao.interfaces.EventDao;
-import com.andreasogeirik.service.dao.interfaces.LogDao;
-import com.andreasogeirik.service.dao.interfaces.PostDao;
-import com.andreasogeirik.service.dao.interfaces.UserDao;
+import com.andreasogeirik.service.dao.interfaces.*;
 import com.andreasogeirik.service.gcm.GcmService;
 import com.andreasogeirik.service.image.ImageServiceImpl;
 import com.andreasogeirik.service.image.interfaces.ImageService;
@@ -46,6 +43,9 @@ public class BeanConfig {
     public LogDao logDao() {
         return new LogDaoImpl();
     }
+
+    @Bean
+    public MiscDao miscDao() {return new MiscDaoImpl();}
 
     @Bean
     public ImageService imageService() {

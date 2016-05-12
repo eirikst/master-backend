@@ -7,7 +7,7 @@ import java.util.Map;
  * Created by andrena on 05.05.2016.
  */
 public enum ActivityType {
-    WALK(0), JOG(1), RUN(2), BIKE(3), SKI(4), SWIM(5), OTHER(6);
+    OTHER(-1), WALK(0), RUN(1), BIKE(2), SKI(3), SWIM(4), GROUP_WORKOUT(5);
 
     private int id;
 
