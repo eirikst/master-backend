@@ -239,9 +239,9 @@ public class UserController {
     }
 
     @PreAuthorize(value="hasAuthority('USER')")
-    @RequestMapping(value = "/search/{name}/{offset}", method = RequestMethod.GET)
-    public ResponseEntity searchUsers(@PathVariable(value = "name") String name,
-                                      @PathVariable(value = "offset") int offset) {
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public ResponseEntity searchUsers(@RequestParam(value = "name") String name,
+                                      @RequestParam(value = "offset") int offset) {
         List<com.andreasogeirik.model.entities.User> users = userDao.searchUsers(name, offset);
         List<UserDtoOut> usersOut = new ArrayList<>();
 
