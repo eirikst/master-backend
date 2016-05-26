@@ -68,7 +68,9 @@ public class UserController {
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<UserDtoOut> updateUser(@RequestBody UserDto user) {
-        UserDtoOut userOut = new UserDtoOut(userDao.updateUser(user.getFirstname(), user.getLastname(), user.getLocation(), user.getImageUri(), user.getThumbUri(), ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
+        UserDtoOut userOut = new UserDtoOut(userDao.updateUser(user.getFirstname(), user.getLastname(),
+                user.getLocation(), user.getImageUri(), user.getThumbUri(),
+                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId()));
 
         return new ResponseEntity<UserDtoOut>(userOut, HttpStatus.OK);
     }
@@ -144,6 +146,11 @@ public class UserController {
     }
 
 
+    /**
+     * Adds a friend request betweent he logged in user and userId
+     * @param userId user of user to request
+     * @return the new friendship entity
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{userId}/friendships", method = RequestMethod.PUT)
     public ResponseEntity<FriendshipDtoOut> friendRequest(@PathVariable(value = "userId") int userId) {
@@ -155,6 +162,11 @@ public class UserController {
         return new ResponseEntity<FriendshipDtoOut>(new FriendshipDtoOut(friendship, loggedInUserId), HttpStatus.CREATED);
     }
 
+    /**
+     * Accepts a friend request
+     * @param friendshipId id of friendship to accept
+     * @return nothing
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/friendships/{id}/accept", method = RequestMethod.POST)
     public ResponseEntity acceptFriend(@PathVariable(value = "id") int friendshipId) {
@@ -166,6 +178,11 @@ public class UserController {
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
+    /**
+     * Rejects a friend request
+     * @param friendshipId id of friendship to reject
+     * @return nothing
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/friendships/{id}/reject", method = RequestMethod.POST)
     public ResponseEntity rejectFriend(@PathVariable(value = "id") int friendshipId) {
@@ -177,6 +194,11 @@ public class UserController {
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
+    /**
+     * Removes the given friendship
+     * @param friendshipId id of friendship to remove
+     * @return nothing
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/friendships/{id}", method = RequestMethod.DELETE)
     public ResponseEntity unFriend(@PathVariable(value = "id") int friendshipId) {
@@ -188,7 +210,11 @@ public class UserController {
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
-
+    /**
+     * Gets future events the specified user is attending
+     * @param userId id of the user to find events from
+     * @return list of attending events of the user
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{userId}/events/attending", method = RequestMethod.GET)
     public ResponseEntity getAttendingEvents(@PathVariable(value = "userId") int userId) {
@@ -213,6 +239,12 @@ public class UserController {
         return new ResponseEntity<>(eventsOut, HttpStatus.OK);
     }
 
+    /**
+     * Gets events user has attended in the past(limited number, can get more by specifying offset)
+     * @param userId id of user
+     * @param start offset
+     * @return list of past events
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/{userId}/events/attended", method = RequestMethod.GET)
     public ResponseEntity getAttendingEventsPast(@PathVariable(value = "userId") int userId,
@@ -238,6 +270,12 @@ public class UserController {
         return new ResponseEntity<>(eventsOut, HttpStatus.OK);
     }
 
+    /**
+     * Search for the user with the current name. Matches firstname + " " + lastname with the name specified
+     * @param name the search string
+     * @param offset offset
+     * @return list of matching users
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public ResponseEntity searchUsers(@RequestParam(value = "name") String name,

@@ -251,6 +251,11 @@ public class MeController {
         return new ResponseEntity<>(logOut, HttpStatus.OK);
     }
 
+    /**
+     * Get updated list of log items
+     * @param lastLogId id of last log element
+     * @return logs after last log item
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(value = "/log/update", method = RequestMethod.GET)
     public ResponseEntity<List<LogElementDtoOut>> updateLog(@RequestParam(value = "lastLogId") int lastLogId) {

@@ -30,11 +30,9 @@ public class SeedController {
     @Autowired
     private EventDao eventDao;
 
-    /**
-     * Seed this shit
-     */
+
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<String> seedThisShit() {
+    public ResponseEntity<String> seedThis() {
         userDao.createAdminUser(new com.andreasogeirik.model.entities.User("admin", "ggg", true, "Eirik", "Stadheim",
                 "Trondheim", new Date()));
         userDao.updateUser("Eirik", "Stadheim", "Trondheim", BACKEND_URL + "image/0-eirik", BACKEND_URL + "image/0S-eirik", 1);

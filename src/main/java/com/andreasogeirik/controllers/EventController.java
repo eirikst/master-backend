@@ -47,6 +47,7 @@ public class EventController {
 
     /**
      * Updates an event
+     * @param eventId id of event to update
      * @param event JSON representation of the event to update
      * @return JSON representation of the event with the ID
      */
@@ -138,6 +139,13 @@ public class EventController {
      * Gets the a given number of Posts(10 right now) for the logged in user, with an offset specified
      * @param start offset
      * @return list of 10(or less, if no more present) user userPost objects as JSON
+     */
+
+    /**
+     * Gets a given number of Posts for the specified event, with the offset specified
+     * @param eventId event to get posts from
+     * @param start offset
+     * @return list of posts
      */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.GET, value = "/{eventId}/posts")

@@ -1,13 +1,8 @@
 package com.andreasogeirik.controllers;
 
-import com.andreasogeirik.tools.Constants;
 import org.springframework.http.*;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Date;
 import java.util.logging.Logger;
 
 

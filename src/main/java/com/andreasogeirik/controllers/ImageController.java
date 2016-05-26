@@ -32,6 +32,13 @@ public class ImageController {
     /*
     * Save image
     */
+
+    /**
+     * Upload an image
+     * @param image the image as a byte array
+     * @return JSON object with image uri and thumbnail uri
+     * @throws IOException
+     */
     @PreAuthorize(value = "hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<ImageDtoOut> saveImage(@RequestBody byte[] image) throws IOException {
@@ -44,13 +51,12 @@ public class ImageController {
     }
 
     /**
-     * Retrieves an event by id
-     * @param imageUri
-     * @return JSON representation of the event with the ID
+     * Gets the image with the given uri
+     * @param imageUri the id of the image
+     * @return byte array of specified image
      */
-//    @PreAuthorize(value = "hasAuthority('USER')")
     @RequestMapping(value = "{imageUri}", method = RequestMethod.GET)
-    public ResponseEntity<byte[]> getEvent(@PathVariable(value="imageUri") String imageUri) {
+    public ResponseEntity<byte[]> getImage(@PathVariable(value="imageUri") String imageUri) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);
         return new ResponseEntity(imageService.getImage(imageUri), headers, HttpStatus.OK);

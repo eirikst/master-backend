@@ -28,6 +28,11 @@ public class GcmController {
     @Autowired
     private GcmService gcmService;
 
+    /**
+     * Adds the specified gcm token to the logged in user, so that the user can retrieve notifications
+     * @param gcmToken token to add
+     * @return status ok
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity addGCMToken(@RequestParam(value = "gcmToken") String gcmToken) {
@@ -36,6 +41,12 @@ public class GcmController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    /**
+     * Removes the specified gcm token from the logged in user, so that he no longer retrieves notifications on that
+     * device
+     * @param gcmToken token to remove
+     * @return status ok
+     */
     @PreAuthorize(value="hasAuthority('USER')")
     @RequestMapping(method = RequestMethod.DELETE)
     public ResponseEntity removeGCMToken(@RequestParam(value = "gcmToken") String gcmToken) {
@@ -44,6 +55,7 @@ public class GcmController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    //should not be documented
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity sendGCM(@RequestParam(value = "msg") String msg, @RequestParam(value = "userId") int userId) {
         gcmService.notifyTest(msg, userId);
