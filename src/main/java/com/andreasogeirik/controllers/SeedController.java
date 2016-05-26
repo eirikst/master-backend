@@ -2,13 +2,17 @@ package com.andreasogeirik.controllers;
 
 import com.andreasogeirik.model.entities.*;
 import com.andreasogeirik.service.dao.interfaces.EventDao;
+import com.andreasogeirik.service.dao.interfaces.MiscDao;
 import com.andreasogeirik.service.dao.interfaces.UserDao;
 import com.andreasogeirik.service.dao.interfaces.PostDao;
 import com.andreasogeirik.tools.*;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.web.header.Header;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -29,6 +33,24 @@ public class SeedController {
 
     @Autowired
     private EventDao eventDao;
+
+
+    @Autowired
+    private MiscDao miscDao;
+
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity<String> createUserInfo(@RequestParam(value = "name") String name, @RequestParam(value = "email") String email){
+        HttpHeaders headers = new HttpHeaders();
+        try {
+            miscDao.createMisc(new Misc(name, email));
+            headers.add("Location", "http://ludi123.github.io/complete");
+            return new ResponseEntity(headers,HttpStatus.FOUND);
+        }
+        catch (Exception e){
+            headers.add("Location", "http://ludi123.github.io/error");
+            return new ResponseEntity(headers,HttpStatus.I_AM_A_TEAPOT);
+        }
+    }
 
 
     @RequestMapping(method = RequestMethod.PUT)
@@ -178,6 +200,8 @@ public class SeedController {
     public ResponseEntity getIp() {
         return new ResponseEntity(Constants.BACKEND_URL, HttpStatus.OK);
     }
+
+
 
 
 

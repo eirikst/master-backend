@@ -39,6 +39,9 @@
 
         <mapping class="com.andreasogeirik.model.entities.LogElement"/>
 
+        <mapping class="com.andreasogeirik.model.entities.Misc"/>
+
+
 
     </session-factory>
 </hibernate-configuration>
